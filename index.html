@@ -709,13 +709,8 @@ input, select, textarea {
     scroll-snap-align: start;
   }
 
-  /* Transaction rows — always show edit/delete on mobile */
-  .tx-hover-btns {
-    opacity: 1;
-    transform: none;
-    margin-left: 4px;
-  }
-  .tx-hover-btns .ib { width: 32px; height: 32px; }
+  /* Transaction rows — hide edit/delete on mobile (use tap → detail sheet instead) */
+  .tx-hover-btns { display: none !important; }
 
   /* Toast — above bottom nav */
   .toast { bottom: calc(70px + env(safe-area-inset-bottom)); right: 12px; }
@@ -752,6 +747,17 @@ input, select, textarea {
   #restore-banner { padding: 7px 12px; font-size: 11px; }
   #restore-banner span:first-of-type { font-size: 14px; }
 }
+
+/* ── TRANSACTION DETAIL SHEET ── */
+.tdd-row {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 12px 16px; border-bottom: 1px solid var(--border);
+}
+.tdd-row:last-child { border-bottom: none; }
+.tdd-row-icon { font-size: 16px; width: 22px; text-align: center; flex-shrink: 0; margin-top: 1px; }
+.tdd-row-label { font-size: 11px; font-weight: 700; text-transform: uppercase;
+                 letter-spacing: .06em; color: var(--text2); width: 72px; flex-shrink: 0; padding-top: 2px; }
+.tdd-row-val { font-size: 14px; color: var(--text); font-weight: 500; flex: 1; line-height: 1.4; }
 
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
 </style>
@@ -1032,8 +1038,12 @@ input, select, textarea {
       </div>
     </div>
     <div class="qa-row">
-      <div class="qa-lbl">Description</div>
+      <div class="qa-lbl">Name</div>
       <input class="qa-input" id="qa-desc" type="text" placeholder="What was this for?" autocomplete="off">
+    </div>
+    <div class="qa-row">
+      <div class="qa-lbl">Description <span style="font-size:10px;opacity:.5;font-weight:500;text-transform:none;letter-spacing:0">— optional</span></div>
+      <input class="qa-input" id="qa-notes" type="text" placeholder="Any extra details…" autocomplete="off">
     </div>
     <div class="qa-row">
       <div class="qa-lbl">Category</div>
@@ -1048,10 +1058,6 @@ input, select, textarea {
         <div class="fg">
           <label>Date</label>
           <input class="fi" type="date" id="qa-date">
-        </div>
-        <div class="fg">
-          <label>Notes</label>
-          <input class="fi" type="text" id="qa-notes" placeholder="Optional note…">
         </div>
       </div>
       <label class="chk-row" style="margin-top:8px">
@@ -1068,6 +1074,30 @@ input, select, textarea {
     <div class="qa-save-row">
       <button class="btn-save" id="qa-save-btn" onclick="saveQA()">Save</button>
       <button class="btn-cancel" onclick="closeQA()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ TRANSACTION DETAIL SHEET ═══ -->
+<div class="qa-overlay" id="tx-detail-overlay" onclick="closeTxDetail(event)">
+  <div class="qa-sheet" id="tx-detail-sheet" style="max-height:80vh;overflow-y:auto">
+    <div class="qa-handle"></div>
+    <div class="qa-title">
+      <span>Transaction</span>
+      <button class="qa-close" onclick="closeTxDetail()">✕</button>
+    </div>
+    <!-- header: icon + name + amount -->
+    <div id="tdd-header" style="display:flex;align-items:center;gap:14px;padding:14px 22px 12px"></div>
+    <!-- detail rows -->
+    <div id="tdd-rows" style="background:var(--surf2);border-radius:14px;margin:0 22px 16px;overflow:hidden"></div>
+    <!-- action buttons -->
+    <div style="display:flex;gap:10px;padding:4px 22px 8px">
+      <button onclick="tddEdit()" style="flex:1;padding:13px;border-radius:12px;border:none;
+        background:var(--accent);color:#fff;font-size:14px;font-weight:700;cursor:pointer;
+        touch-action:manipulation">✎ Edit</button>
+      <button onclick="tddDelete()" style="flex:1;padding:13px;border-radius:12px;
+        border:1.5px solid var(--red);background:var(--red-lt);color:var(--red);
+        font-size:14px;font-weight:700;cursor:pointer;touch-action:manipulation">✕ Delete</button>
     </div>
   </div>
 </div>
@@ -1500,6 +1530,73 @@ function toggleMore() {
   opts.classList.toggle('show');
 }
 
+// ═══════════════════════════════════════════════
+// TRANSACTION DETAIL SHEET
+// ═══════════════════════════════════════════════
+let currentTxId = null;
+
+function fmtDateLong(dateStr) {
+  if (!dateStr) return '';
+  const d = new Date(dateStr + 'T00:00:00');
+  return d.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+}
+
+function tddRowHtml(icon, label, value) {
+  return `<div class="tdd-row">
+    <span class="tdd-row-icon">${icon}</span>
+    <span class="tdd-row-label">${label}</span>
+    <span class="tdd-row-val">${esc(value)}</span>
+  </div>`;
+}
+
+function openTxDetail(id) {
+  const t = S.transactions.find(x => x.id === id);
+  if (!t) return;
+  currentTxId = id;
+  const catColor  = cc(t.cat);
+  const cardInfo  = CARDS[t.card || 'none'] || CARDS.none;
+  const isIncome  = t.type === 'income';
+  const amtSign   = isIncome ? '+' : '-';
+  const amtColor  = isIncome ? 'var(--green)' : 'var(--text)';
+
+  document.getElementById('tdd-header').innerHTML = `
+    <div style="width:50px;height:50px;border-radius:14px;background:${catColor}20;
+                display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0">${ce(t.cat)}</div>
+    <div style="flex:1;min-width:0">
+      <div style="font-size:17px;font-weight:800;color:var(--text);line-height:1.25;word-break:break-word">${esc(t.desc)}</div>
+      <div style="font-size:12px;color:${catColor};font-weight:600;margin-top:3px">${t.cat}</div>
+    </div>
+    <div style="font-size:21px;font-weight:900;font-variant-numeric:tabular-nums;color:${amtColor};flex-shrink:0">${amtSign}${fmt(t.amount)}</div>
+  `;
+
+  document.getElementById('tdd-rows').innerHTML =
+    tddRowHtml('📅', 'Date',   fmtDateLong(t.date)) +
+    tddRowHtml('💳', 'Card',   cardInfo.label) +
+    (t.notes ? tddRowHtml('📝', 'Notes', t.notes) : '');
+
+  document.getElementById('tx-detail-overlay').classList.add('open');
+}
+
+function closeTxDetail(e) {
+  if (e && e.target !== document.getElementById('tx-detail-overlay')) return;
+  document.getElementById('tx-detail-overlay').classList.remove('open');
+  currentTxId = null;
+}
+
+function tddEdit() {
+  const id = currentTxId;
+  document.getElementById('tx-detail-overlay').classList.remove('open');
+  currentTxId = null;
+  setTimeout(() => openQAEdit(id), 60);
+}
+
+function tddDelete() {
+  const id = currentTxId;
+  document.getElementById('tx-detail-overlay').classList.remove('open');
+  currentTxId = null;
+  deleteTx(id);
+}
+
 document.getElementById('qa-recurring').addEventListener('change', function() {
   document.getElementById('qa-freq-wrap').style.display = this.checked ? '' : 'none';
 });
@@ -1750,16 +1847,20 @@ function txRow(t) {
 
   const largeClass = isLarge ? ` tx-large-${cardKey}` : '';
 
-  // Dynamic proportional fill
-  const fillPct   = cardFillPct(t.amount);
-  const clipPath  = cardClipPath(fillPct);
+  // Fixed 35% on mobile, dynamic on desktop
+  const fillPct  = window.innerWidth <= 640 ? 0.35 : cardFillPct(t.amount);
+  const clipPath = cardClipPath(fillPct);
+
+  // Truncate name at 24 chars so it never overflows into ellipsis
+  const displayName = t.desc.length > 24 ? t.desc.slice(0, 24) : t.desc;
 
   // Amount text color inside the card half
   let amtColorClass = '';
   if (isIncome) amtColorClass = isApple ? 'a-inc-cbg-apple' : 'a-inc-cbg';
 
   return `<div class="tx-wrap">
-  <div class="tx${largeClass}" style="border-left:4.5px solid ${catColor};padding-right:0">
+  <div class="tx${largeClass}" style="border-left:4.5px solid ${catColor};padding-right:0;cursor:pointer"
+       onclick="openTxDetail('${t.id}')">
 
     <!-- ── Diagonal card-themed right half ── -->
     <div class="tx-cbg tx-cbg-${cardKey}" style="clip-path:${clipPath};width:100%">
@@ -1771,19 +1872,18 @@ function txRow(t) {
     <!-- ── Left content ── -->
     <div class="tx-ico" style="background:${catBg};flex-shrink:0">${ce(t.cat)}</div>
     <div class="tx-mid" style="max-width:52%;min-width:0">
-      <div class="tx-name">${esc(t.desc)}</div>
+      <div class="tx-name">${esc(displayName)}</div>
       <div class="tx-meta">
         <span class="chip chip-cat" style="border-color:${catColor}30;color:${catColor}">${t.cat}</span>
         ${t.recurringId ? '<span class="chip chip-rec">↻</span>' : ''}
-        ${t.notes ? `<span class="tx-note">${esc(t.notes)}</span>` : ''}
       </div>
     </div>
 
   </div>
-  <!-- ── Hover-reveal edit/delete buttons (outside the bar) ── -->
+  <!-- ── Hover-reveal edit/delete buttons (desktop only, hidden on mobile) ── -->
   <div class="tx-hover-btns">
-    <button class="ib e" title="Edit" onclick="openQAEdit('${t.id}')">✎</button>
-    <button class="ib d" title="Delete" onclick="deleteTx('${t.id}')">✕</button>
+    <button class="ib e" title="Edit" onclick="event.stopPropagation();openQAEdit('${t.id}')">✎</button>
+    <button class="ib d" title="Delete" onclick="event.stopPropagation();deleteTx('${t.id}')">✕</button>
   </div>
 </div>`;
 }
