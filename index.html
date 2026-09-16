@@ -806,15 +806,15 @@ input, select, textarea {
 <nav class="tabs">
   <button class="tab on" data-tab="feed"><span class="tab-ico" style="display:none">🏠</span><span class="tab-lbl">Dashboard</span></button>
   <button class="tab"    data-tab="flow"><span class="tab-ico" style="display:none">💸</span><span class="tab-lbl">Flow</span></button>
-  <button class="tab"    data-tab="budgets"><span class="tab-ico" style="display:none">🎯</span><span class="tab-lbl">Budgets</span></button>
-  <!-- Desktop-only tabs (hidden on mobile) -->
+  <!-- Desktop-only tabs (hidden on mobile, shown between flow and FAB on desktop) -->
   <button class="tab desk-only" data-tab="recurring"><span class="tab-ico" style="display:none">🔁</span><span class="tab-lbl">Bills</span></button>
   <button class="tab desk-only" data-tab="convert"><span class="tab-ico" style="display:none">💱</span><span class="tab-lbl">FX</span></button>
   <button class="tab desk-only" data-tab="cards"><span class="tab-ico" style="display:none">💳</span><span class="tab-lbl">Cards</span></button>
-  <!-- FAB slot — mobile only -->
+  <!-- FAB slot — mobile only, centered between Flow and Budgets -->
   <div class="tab-fab-slot mob-only">
     <button class="mob-fab" onclick="openQA()" aria-label="Add transaction">+</button>
   </div>
+  <button class="tab"    data-tab="budgets"><span class="tab-ico" style="display:none">🎯</span><span class="tab-lbl">Budgets</span></button>
   <!-- Hamburger tab — mobile only -->
   <button class="tab tab-menu mob-only" onclick="toggleMobMenu()" id="mob-menu-tab">
     <span class="tab-ico" style="display:none">☰</span><span class="tab-lbl">Menu</span>
@@ -1728,14 +1728,14 @@ function renderInsights() {
 // Compute how much of the card gradient fills the bar (10%–100% based on display amount)
 function cardFillPct(usdAmt) {
   const display = toDisplay(Math.abs(+usdAmt));
-  // Anchors: ≤$5 → 28% (min), $40 → 51.5% (mid), $100+ → 75% (max)
+  // Anchors: ≤$5 → 35% (min), $40 → ~55% (mid), $100+ → 75% (max)
   const t = Math.max(0, Math.min(1, (display - 5) / 95));
-  return 0.28 + Math.pow(t, 0.7) * 0.47;
+  return 0.35 + Math.pow(t, 0.7) * 0.40;
 }
 // Build the polygon clip-path so the diagonal fill matches the fill percentage
 function cardClipPath(fillPct) {
   const bl = Math.round((1 - fillPct) * 100);   // bottom-left corner X %
-  const tl = Math.min(100, bl + 18);             // top-left corner X % (diagonal slant)
+  const tl = Math.min(100, bl + 10);             // top-left corner X % (gentle diagonal slant)
   return `polygon(${tl}% 0, 100% 0, 100% 100%, ${bl}% 100%)`;
 }
 
