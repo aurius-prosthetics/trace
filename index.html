@@ -36,12 +36,15 @@
   color-scheme: light;
 }
 *{box-sizing:border-box;margin:0;padding:0}
+html{overflow-x:hidden}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
-     background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;min-height:100vh}
+     background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;min-height:100vh;
+     overflow-x:hidden}
 
 /* ── HEADER ── */
-.hdr{background:var(--surf);border-bottom:1px solid var(--border);padding:0 22px;
-     display:flex;align-items:center;gap:12px;height:54px;position:sticky;top:0;z-index:100;box-shadow:var(--sh)}
+.hdr{background:var(--surf);border-bottom:1px solid var(--border);padding:env(safe-area-inset-top) 22px 0;
+     display:flex;align-items:center;gap:12px;min-height:54px;height:calc(54px + env(safe-area-inset-top));
+     position:sticky;top:0;z-index:100;box-shadow:var(--sh)}
 .logo{font-size:17px;font-weight:800;letter-spacing:-.04em;display:flex;align-items:center;gap:8px}
 .logo-dot{width:9px;height:9px;background:var(--accent);border-radius:50%}
 .hsp{flex:1}
@@ -540,6 +543,7 @@ body {
   -webkit-tap-highlight-color: transparent;
   overscroll-behavior: none;
   -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
 }
 button, [role="button"] {
   touch-action: manipulation;
@@ -553,17 +557,23 @@ input, select, textarea {
 .mobile-cur-row { display: none; }
 @media (max-width: 640px) { .mobile-cur-row { display: flex; } }
 
+/* ── SHOW/HIDE HELPERS ── */
+.mob-only { display: none !important; }
+@media (max-width: 640px) {
+  .mob-only { display: flex !important; }
+  .desk-only { display: none !important; }
+}
+
 /* ── MOBILE — main overrides ── */
 @media (max-width: 640px) {
-  /* Header — compact */
-  .hdr { padding: 0 12px; height: 50px; gap: 8px; }
+  /* Header — compact; safe area already handled by min-height on .hdr */
+  .hdr { padding-left: 12px; padding-right: 12px; padding-bottom: 0; gap: 8px; }
   .logo { font-size: 16px; }
-  /* Hide backup/restore in header on mobile — access via settings or menu */
-  .hdr > div:nth-child(5) { display: none; }
+  /* Hide backup/restore + old fab in header on mobile — accessible via ☰ menu */
+  .hdr-backup-btns { display: none !important; }
+  .add-fab { display: none !important; }
   .m-lbl { min-width: 76px; font-size: 12px; font-weight: 600; }
   .m-btn { width: 28px; height: 28px; }
-  .add-fab { padding: 7px 12px; font-size: 13px; }
-  .add-fab span:last-child { display: none; }
 
   /* Currency toggle — smaller on mobile */
   .cur-wrap { display: none; }
@@ -603,6 +613,73 @@ input, select, textarea {
   }
   .tab-ico { display: block !important; font-size: 18px; line-height: 1; }
   .tab-lbl { display: block !important; }
+
+  /* FAB slot + button */
+  .tab-fab-slot {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    position: relative;
+  }
+  .mob-fab {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--green);
+    color: #fff;
+    font-size: 28px;
+    font-weight: 300;
+    line-height: 1;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+    position: absolute;
+    bottom: 8px;
+    transition: transform .12s, box-shadow .12s;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .mob-fab:active { transform: scale(0.93); box-shadow: 0 2px 8px rgba(0,0,0,0.18); }
+
+  /* Mobile menu dropdown */
+  #mob-menu-panel {
+    position: fixed;
+    bottom: calc(62px + env(safe-area-inset-bottom));
+    left: 8px;
+    right: 8px;
+    background: var(--surf);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    box-shadow: var(--sh2);
+    z-index: 200;
+    overflow: hidden;
+    padding: 8px 0;
+  }
+  .mob-menu-item {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 20px;
+    background: none;
+    border: none;
+    color: var(--text);
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: left;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    transition: background .1s;
+  }
+  .mob-menu-item:active { background: var(--border); }
+  .mob-menu-item span:first-child { font-size: 20px; width: 24px; text-align: center; }
+  .mob-menu-divider {
+    height: 1px;
+    background: var(--border);
+    margin: 4px 16px;
+  }
 
   /* Content padding for bottom nav + top header */
   .content { padding: 12px 12px calc(62px + env(safe-area-inset-bottom)); }
@@ -694,7 +771,7 @@ input, select, textarea {
     <span class="m-lbl" id="mLabel"></span>
     <button class="m-btn" onclick="changeMonth(1)">&#8250;</button>
   </div>
-  <div style="display:flex;gap:6px">
+  <div class="hdr-backup-btns" style="display:flex;gap:6px">
     <button title="Backup all data to a file" onclick="backupJSON()"
       style="padding:7px 11px;background:var(--bg);border:1px solid var(--border);border-radius:20px;
              font-size:12px;font-weight:700;cursor:pointer;color:var(--text2);transition:all .15s;white-space:nowrap"
@@ -730,10 +807,39 @@ input, select, textarea {
   <button class="tab on" data-tab="feed"><span class="tab-ico" style="display:none">🏠</span><span class="tab-lbl">Dashboard</span></button>
   <button class="tab"    data-tab="flow"><span class="tab-ico" style="display:none">💸</span><span class="tab-lbl">Flow</span></button>
   <button class="tab"    data-tab="budgets"><span class="tab-ico" style="display:none">🎯</span><span class="tab-lbl">Budgets</span></button>
-  <button class="tab"    data-tab="recurring"><span class="tab-ico" style="display:none">🔁</span><span class="tab-lbl">Bills</span></button>
-  <button class="tab"    data-tab="convert"><span class="tab-ico" style="display:none">💱</span><span class="tab-lbl">FX</span></button>
-  <button class="tab"    data-tab="cards"><span class="tab-ico" style="display:none">💳</span><span class="tab-lbl">Cards</span></button>
+  <!-- Desktop-only tabs (hidden on mobile) -->
+  <button class="tab desk-only" data-tab="recurring"><span class="tab-ico" style="display:none">🔁</span><span class="tab-lbl">Bills</span></button>
+  <button class="tab desk-only" data-tab="convert"><span class="tab-ico" style="display:none">💱</span><span class="tab-lbl">FX</span></button>
+  <button class="tab desk-only" data-tab="cards"><span class="tab-ico" style="display:none">💳</span><span class="tab-lbl">Cards</span></button>
+  <!-- FAB slot — mobile only -->
+  <div class="tab-fab-slot mob-only">
+    <button class="mob-fab" onclick="openQA()" aria-label="Add transaction">+</button>
+  </div>
+  <!-- Hamburger tab — mobile only -->
+  <button class="tab tab-menu mob-only" onclick="toggleMobMenu()" id="mob-menu-tab">
+    <span class="tab-ico" style="display:none">☰</span><span class="tab-lbl">Menu</span>
+  </button>
 </nav>
+
+<!-- ═══ MOBILE MENU DROPDOWN ═══ -->
+<div id="mob-menu-panel" style="display:none">
+  <button class="mob-menu-item" onclick="switchTab('recurring');closeMobMenu()">
+    <span>🔁</span> Bills
+  </button>
+  <button class="mob-menu-item" onclick="switchTab('convert');closeMobMenu()">
+    <span>💱</span> FX Converter
+  </button>
+  <button class="mob-menu-item" onclick="switchTab('cards');closeMobMenu()">
+    <span>💳</span> Cards
+  </button>
+  <div class="mob-menu-divider"></div>
+  <button class="mob-menu-item" onclick="backupJSON();closeMobMenu()">
+    <span>⬇</span> Backup Data
+  </button>
+  <button class="mob-menu-item" onclick="triggerRestoreJSON();closeMobMenu()">
+    <span>↩</span> Restore Backup
+  </button>
+</div>
 
 <!-- ═══ CONTENT ═══ -->
 <main class="content">
@@ -1263,7 +1369,10 @@ function updateMLabel() {
 // TABS
 // ═══════════════════════════════════════════════
 function switchTab(name) {
-  document.querySelectorAll('.tab').forEach(b => b.classList.toggle('on', b.dataset.tab===name));
+  document.querySelectorAll('.tab[data-tab]').forEach(b => b.classList.toggle('on', b.dataset.tab===name));
+  // Remove 'on' from the menu tab when switching to a real panel
+  const menuTab = document.getElementById('mob-menu-tab');
+  if (menuTab) menuTab.classList.remove('on');
   document.querySelectorAll('.panel').forEach(p => p.classList.toggle('on', p.id==='panel-'+name));
   if (name==='feed')      renderFeed();
   if (name==='flow')      renderFlow();
@@ -1272,7 +1381,30 @@ function switchTab(name) {
   if (name==='convert')   renderConverter();
   if (name==='cards')     renderCards();
 }
-document.querySelectorAll('.tab').forEach(b => b.addEventListener('click', () => switchTab(b.dataset.tab)));
+document.querySelectorAll('.tab[data-tab]').forEach(b => b.addEventListener('click', () => switchTab(b.dataset.tab)));
+
+function toggleMobMenu() {
+  const panel = document.getElementById('mob-menu-panel');
+  const menuTab = document.getElementById('mob-menu-tab');
+  const isOpen = panel.style.display !== 'none';
+  panel.style.display = isOpen ? 'none' : 'block';
+  if (menuTab) menuTab.classList.toggle('on', !isOpen);
+}
+function closeMobMenu() {
+  const panel = document.getElementById('mob-menu-panel');
+  const menuTab = document.getElementById('mob-menu-tab');
+  if (panel) panel.style.display = 'none';
+  if (menuTab) menuTab.classList.remove('on');
+}
+// Close menu when tapping outside
+document.addEventListener('click', function(e) {
+  const panel = document.getElementById('mob-menu-panel');
+  const menuTab = document.getElementById('mob-menu-tab');
+  if (!panel || panel.style.display === 'none') return;
+  if (!panel.contains(e.target) && e.target !== menuTab && !menuTab.contains(e.target)) {
+    closeMobMenu();
+  }
+});
 
 // ═══════════════════════════════════════════════
 // QUICK-ADD SHEET
