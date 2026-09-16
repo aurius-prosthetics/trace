@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>Trace — Expense Tracker</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#1C2B4A">
@@ -504,16 +504,179 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
                color:var(--text3);margin-bottom:4px}
 .rate-card-val{font-size:18px;font-weight:800;color:var(--accent)}
 
-@media(max-width:600px){
-  .content{padding:14px 12px}
-  .stats{grid-template-columns:1fr 1fr}
-  .stats .stat:nth-child(3){grid-column:1/-1}
-  .hdr{padding:0 14px}
-  .tabs{padding:0 14px;overflow-x:auto}
-  .m-lbl{min-width:86px;font-size:12px}
-  .add-fab span{display:none}
+/* ── DARK MODE ── */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg:     #0F1117;
+    --surf:   #1A1F2E;
+    --surf2:  #232838;
+    --border: #2E3447;
+    --text:   #E8EEFF;
+    --text2:  #8A96B0;
+    --text3:  #4A5568;
+    --accent: #5B9A8A;
+    --acc-lt: #1A2E2A;
+    --acc-dk: #6BB09E;
+    --green:  #3D9A6A;
+    --grn-lt: #142A1E;
+    --red:    #E05A5A;
+    --red-lt: #2A1414;
+    --amber:  #D4943A;
+    --amb-lt: #2A1F0E;
+    --sh:     0 1px 3px rgba(0,0,0,0.4),0 1px 2px rgba(0,0,0,0.3);
+    --sh2:    0 8px 24px rgba(0,0,0,0.5);
+    color-scheme: dark;
+  }
+  .tx-cbg-none { background: linear-gradient(158deg, #232838, #1A1F2E); }
+  .ins-alert { border-color:#7A2020; background:#2A1414; }
+  .tx-hover-btns .ib.e:hover { background:#1a2a4a; color:#7a9fff; border-color:#3a5aaa; }
+  .tx-hover-btns .ib.d:hover { background:#2a1414; color:#e05a5a; border-color:#7a2020; }
+  #restore-banner { background:#2A1F0E; border-color:#5A3A0E; }
+  .imp-table th { background: var(--surf2); }
 }
-@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* ── BODY TOUCH IMPROVEMENTS ── */
+body {
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: none;
+  -webkit-overflow-scrolling: touch;
+}
+button, [role="button"] {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+input, select, textarea {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ── MOBILE CURRENCY ROW ── */
+.mobile-cur-row { display: none; }
+@media (max-width: 640px) { .mobile-cur-row { display: flex; } }
+
+/* ── MOBILE — main overrides ── */
+@media (max-width: 640px) {
+  /* Header — compact */
+  .hdr { padding: 0 12px; height: 50px; gap: 8px; }
+  .logo { font-size: 16px; }
+  /* Hide backup/restore in header on mobile — access via settings or menu */
+  .hdr > div:nth-child(5) { display: none; }
+  .m-lbl { min-width: 76px; font-size: 12px; font-weight: 600; }
+  .m-btn { width: 28px; height: 28px; }
+  .add-fab { padding: 7px 12px; font-size: 13px; }
+  .add-fab span:last-child { display: none; }
+
+  /* Currency toggle — smaller on mobile */
+  .cur-wrap { display: none; }
+
+  /* Tabs → fixed bottom navigation */
+  .tabs {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    top: auto;
+    padding: 2px 0 env(safe-area-inset-bottom);
+    border-top: 1px solid var(--border);
+    border-bottom: none;
+    box-shadow: 0 -1px 16px rgba(0,0,0,.10);
+    z-index: 100;
+    overflow: visible;
+    gap: 0;
+  }
+  .tab {
+    flex: 1;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 2px 4px;
+    font-size: 9px;
+    font-weight: 600;
+    border-bottom: none;
+    border-top: 2.5px solid transparent;
+    margin-bottom: 0;
+    gap: 2px;
+    display: flex;
+    letter-spacing: 0;
+  }
+  .tab.on {
+    border-bottom-color: transparent;
+    border-top-color: var(--accent);
+    color: var(--accent);
+  }
+  .tab-ico { display: block !important; font-size: 18px; line-height: 1; }
+  .tab-lbl { display: block !important; }
+
+  /* Content padding for bottom nav + top header */
+  .content { padding: 12px 12px calc(62px + env(safe-area-inset-bottom)); }
+
+  /* Stats grid — 2 col on mobile */
+  .stats { grid-template-columns: 1fr 1fr; }
+  .stats .stat:nth-child(3) { grid-column: 1 / -1; }
+  .stat { padding: 12px 14px; }
+  .stat-val { font-size: 22px; }
+
+  /* Insights bar — horizontal scroll */
+  #insights-bar {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+    gap: 8px;
+    padding-bottom: 4px;
+    margin-left: -12px;
+    margin-right: -12px;
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+  .ins-card {
+    min-width: 160px;
+    flex-shrink: 0;
+    scroll-snap-align: start;
+  }
+
+  /* Transaction rows — always show edit/delete on mobile */
+  .tx-hover-btns {
+    opacity: 1;
+    transform: none;
+    margin-left: 4px;
+  }
+  .tx-hover-btns .ib { width: 32px; height: 32px; }
+
+  /* Toast — above bottom nav */
+  .toast { bottom: calc(70px + env(safe-area-inset-bottom)); right: 12px; }
+
+  /* Cards grid — 2 col */
+  .cards-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+
+  /* Sankey — shorter on mobile */
+  #sankey-wrap { height: 340px; }
+
+  /* Modal — full width on mobile */
+  .modal { padding: 18px 16px; }
+  .mg { grid-template-columns: 1fr; }
+  .fg.full { grid-column: 1; }
+
+  /* Budget settings — stack on mobile */
+  .bset-row { flex-wrap: wrap; }
+  .bset-name { width: 100%; }
+
+  /* Section labels */
+  .sec-lbl { padding: 14px 0 6px; }
+
+  /* Rate info grid — 1 col on small */
+  .rate-info-grid { grid-template-columns: 1fr 1fr; }
+
+  /* Conv grid — stack */
+  .conv-grid { grid-template-columns: 1fr; }
+  .conv-arrow { transform: rotate(90deg); }
+
+  /* QA sheet — extra bottom padding for safe area */
+  .qa-sheet { padding-bottom: calc(28px + env(safe-area-inset-bottom)); }
+
+  /* Restore banner — thin strip */
+  #restore-banner { padding: 7px 12px; font-size: 11px; }
+  #restore-banner span:first-of-type { font-size: 14px; }
+}
+
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
 </style>
 </head>
 <body>
@@ -555,21 +718,21 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 </header>
 
 <!-- ═══ RESTORE BANNER (shown when no data found) ═══ -->
-<div id="restore-banner" style="display:none;background:#FDF3E3;border-bottom:1px solid #F0D5A0;padding:10px 22px;display:none;align-items:center;gap:10px;font-size:13px">
-  <span style="font-size:18px">⚠️</span>
-  <span style="flex:1;color:#7A4F1A;font-weight:600">No saved data found — if you have a backup file, restore it now to get your data back.</span>
-  <button onclick="triggerRestoreJSON()" style="padding:6px 14px;background:#C47A2A;color:#fff;border:none;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer">↩ Restore from backup</button>
-  <button onclick="document.getElementById('restore-banner').style.display='none'" style="padding:6px 10px;background:none;border:1px solid #C47A2A;border-radius:7px;font-size:12px;color:#7A4F1A;cursor:pointer">Dismiss</button>
+<div id="restore-banner" style="display:none;background:#FDF3E3;border-bottom:1px solid #F0D5A0;padding:8px 16px;align-items:center;gap:8px;font-size:12px">
+  <span>⚠️</span>
+  <span style="flex:1;color:#7A4F1A;font-weight:600">No data found — restore a backup to recover your transactions.</span>
+  <button onclick="triggerRestoreJSON()" style="padding:5px 11px;background:#C47A2A;color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap">↩ Restore</button>
+  <button onclick="document.getElementById('restore-banner').style.display='none'" style="padding:5px 8px;background:none;border:1px solid #C47A2A;border-radius:6px;font-size:11px;color:#7A4F1A;cursor:pointer">✕</button>
 </div>
 
 <!-- ═══ TABS ═══ -->
 <nav class="tabs">
-  <button class="tab on"  data-tab="feed">Dashboard</button>
-  <button class="tab"     data-tab="flow">Cash Flow</button>
-  <button class="tab"     data-tab="budgets">Budgets</button>
-  <button class="tab"     data-tab="recurring">Recurring</button>
-  <button class="tab"     data-tab="convert">💱 Convert</button>
-  <button class="tab"     data-tab="cards">💳 Cards</button>
+  <button class="tab on" data-tab="feed"><span class="tab-ico" style="display:none">🏠</span><span class="tab-lbl">Dashboard</span></button>
+  <button class="tab"    data-tab="flow"><span class="tab-ico" style="display:none">💸</span><span class="tab-lbl">Flow</span></button>
+  <button class="tab"    data-tab="budgets"><span class="tab-ico" style="display:none">🎯</span><span class="tab-lbl">Budgets</span></button>
+  <button class="tab"    data-tab="recurring"><span class="tab-ico" style="display:none">🔁</span><span class="tab-lbl">Bills</span></button>
+  <button class="tab"    data-tab="convert"><span class="tab-ico" style="display:none">💱</span><span class="tab-lbl">FX</span></button>
+  <button class="tab"    data-tab="cards"><span class="tab-ico" style="display:none">💳</span><span class="tab-lbl">Cards</span></button>
 </nav>
 
 <!-- ═══ CONTENT ═══ -->
@@ -577,6 +740,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 
   <!-- FEED -->
   <div class="panel on" id="panel-feed">
+    <div style="display:flex;justify-content:flex-end;margin-bottom:6px" class="mobile-cur-row">
+      <div class="cur-wrap" id="mobile-cur-wrap">
+        <button class="cur-btn on" id="mob-btn-usd" onclick="setCurrency('USD')">$ USD</button>
+        <button class="cur-btn"    id="mob-btn-gbp" onclick="setCurrency('GBP')">£ GBP</button>
+      </div>
+    </div>
     <div class="stats" id="feed-stats"></div>
     <div class="card" style="padding:0">
       <div class="chead"><span class="ctitle">Budget Breakdown</span></div>
@@ -957,15 +1126,67 @@ function updateRateUI(state) {
 function refreshRate() { fetchRate(true).then(() => { toast('Rate refreshed ✓'); updateConvUI(); }); }
 
 // ═══════════════════════════════════════════════
-// PERSISTENCE
+// ═══════════════════════════════════════════════
+// PERSISTENCE — IndexedDB primary, localStorage backup
 // ═══════════════════════════════════════════════
 const STORE_KEY = 'trace_v3';
-function persist() { try { localStorage.setItem(STORE_KEY, JSON.stringify(S)); } catch(e){} }
-function hydrate() {
+
+// Minimal IndexedDB key-value wrapper
+const IDB = (() => {
+  let _db = null;
+  function open() {
+    return new Promise((res, rej) => {
+      if (_db) return res(_db);
+      const req = indexedDB.open('TraceDB', 1);
+      req.onupgradeneeded = e => e.target.result.createObjectStore('kv');
+      req.onsuccess  = e => { _db = e.target.result; res(_db); };
+      req.onerror    = () => rej(req.error);
+    });
+  }
+  return {
+    async get(key) {
+      const db = await open();
+      return new Promise((res, rej) => {
+        const req = db.transaction('kv','readonly').objectStore('kv').get(key);
+        req.onsuccess = () => res(req.result ?? null);
+        req.onerror   = () => rej(req.error);
+      });
+    },
+    async set(key, val) {
+      const db = await open();
+      return new Promise((res, rej) => {
+        const req = db.transaction('kv','readwrite').objectStore('kv').put(val, key);
+        req.onsuccess = () => res();
+        req.onerror   = () => rej(req.error);
+      });
+    }
+  };
+})();
+
+// persist — writes to IDB (durable) and localStorage (fast session cache)
+function persist() {
+  const json = JSON.stringify(S);
+  try { localStorage.setItem(STORE_KEY, json); } catch(e) {}
+  IDB.set(STORE_KEY, json).catch(() => {});
+}
+
+// hydrateAsync — tries IDB first, migrates from localStorage if empty
+async function hydrateAsync() {
   try {
-    const d = localStorage.getItem(STORE_KEY);
+    let d = await IDB.get(STORE_KEY);
+    if (!d) {
+      // Migrate existing localStorage data into IDB on first run
+      d = localStorage.getItem(STORE_KEY);
+      if (d) await IDB.set(STORE_KEY, d).catch(() => {});
+    }
     if (d) S = { ...S, ...JSON.parse(d) };
-  } catch(e){}
+  } catch(e) {
+    // Last-resort fallback: localStorage only
+    try {
+      const d = localStorage.getItem(STORE_KEY);
+      if (d) S = { ...S, ...JSON.parse(d) };
+    } catch(e2) {}
+  }
 }
 
 // ═══════════════════════════════════════════════
@@ -1015,6 +1236,9 @@ function setCurrency(c) {
   S.settings.currency = c;
   document.getElementById('btn-usd').classList.toggle('on', c==='USD');
   document.getElementById('btn-gbp').classList.toggle('on', c==='GBP');
+  const mu = document.getElementById('mob-btn-usd');
+  const mg = document.getElementById('mob-btn-gbp');
+  if (mu) { mu.classList.toggle('on', c==='USD'); mg.classList.toggle('on', c==='GBP'); }
   document.getElementById('qa-sym').textContent = sym();
   // If editing is open, refresh the displayed amount
   if (editId && document.getElementById('qa-overlay').classList.contains('open')) {
@@ -2505,18 +2729,20 @@ function refresh() {
 // ═══════════════════════════════════════════════
 // INIT
 // ═══════════════════════════════════════════════
-(function init() {
-  hydrate();
+(async function init() {
+  await hydrateAsync();
   updateMLabel();
   document.getElementById('qa-sym').textContent = sym();
   document.getElementById('btn-usd').classList.toggle('on', S.settings.currency==='USD');
   document.getElementById('btn-gbp').classList.toggle('on', S.settings.currency==='GBP');
+  const mu2 = document.getElementById('mob-btn-usd');
+  const mg2 = document.getElementById('mob-btn-gbp');
+  if (mu2) { mu2.classList.toggle('on', S.settings.currency==='USD'); mg2.classList.toggle('on', S.settings.currency==='GBP'); }
   document.getElementById('qa-date').value = today();
   buildCatGrid();
   maybeApplyRecurring();
-  // Show restore banner if no data found (e.g. after browser cleared localStorage)
-  const hadData = localStorage.getItem(STORE_KEY);
-  if (!hadData && !S.transactions.length) {
+  // Show restore banner if no data found
+  if (!S.transactions.length) {
     const banner = document.getElementById('restore-banner');
     if (banner) banner.style.display = 'flex';
   }
@@ -2527,51 +2753,40 @@ function refresh() {
     const t=document.querySelector('.tab.on');
     if(t&&t.dataset.tab==='flow') renderFlow();
   });
-})();
-</script>
-
-<script>
-// ── Service Worker registration (PWA) ──
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js').catch(() => {});
-  });
-}
-
-// ── Periodic backup nudge ──
-(function checkBackupNudge() {
-  const NUDGE_KEY = 'trace_last_nudge';
-  const BACKUP_KEY = 'trace_last_backup';
-  const SEVEN_DAYS = 7 * 24 * 60 * 60 * 1000;
-  const now = Date.now();
-  const lastNudge  = parseInt(localStorage.getItem(NUDGE_KEY)  || '0');
-  const lastBackup = parseInt(localStorage.getItem(BACKUP_KEY) || '0');
-  if (now - lastNudge < SEVEN_DAYS) return;
-  if (now - lastBackup < SEVEN_DAYS) return;
-  // Only nudge if there's actual data
-  try {
-    const s = JSON.parse(localStorage.getItem('trace_v3') || '{}');
-    if (!s.transactions || s.transactions.length < 3) return;
-  } catch(e) { return; }
-  localStorage.setItem(NUDGE_KEY, now);
+  // Periodic backup nudge (shows after 7 days without a backup)
   setTimeout(() => {
+    const NUDGE_KEY  = 'trace_last_nudge';
+    const BACKUP_KEY = 'trace_last_backup';
+    const SEVEN_DAYS = 7 * 24 * 60 * 60 * 1000;
+    const now        = Date.now();
+    const lastNudge  = parseInt(localStorage.getItem(NUDGE_KEY)  || '0');
+    const lastBackup = parseInt(localStorage.getItem(BACKUP_KEY) || '0');
+    if (now - lastNudge  < SEVEN_DAYS) return;
+    if (now - lastBackup < SEVEN_DAYS) return;
+    if (S.transactions.length < 3) return;
+    localStorage.setItem(NUDGE_KEY, now);
     const bar = document.createElement('div');
     bar.id = 'backup-nudge';
     bar.style.cssText = `position:fixed;bottom:0;left:0;right:0;background:#1C2B4A;color:#e8eeff;
       font-size:13px;padding:13px 18px;display:flex;align-items:center;gap:12px;
       z-index:9999;box-shadow:0 -2px 16px rgba(0,0,0,.25);font-family:-apple-system,sans-serif`;
     bar.innerHTML = `<span style="font-size:18px">💾</span>
-      <span style="flex:1">It's been a while — back up your Trace data so you don't lose it.</span>
+      <span style="flex:1">It's been a while — export a backup so you don't lose your data.</span>
       <button onclick="backupJSON();document.getElementById('backup-nudge').remove();
         localStorage.setItem('trace_last_backup',Date.now())"
         style="background:#E8680A;border:none;color:#fff;padding:7px 14px;border-radius:7px;
-        font-size:12px;font-weight:700;cursor:pointer">Export backup</button>
+        font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap">Export backup</button>
       <button onclick="document.getElementById('backup-nudge').remove()"
         style="background:transparent;border:1px solid rgba(255,255,255,.2);color:#a8bfda;
         padding:7px 10px;border-radius:7px;font-size:12px;cursor:pointer">Later</button>`;
     document.body.appendChild(bar);
-  }, 3000);
+  }, 4000);
 })();
+</script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+  }
 </script>
 </body>
 </html>
