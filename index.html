@@ -458,6 +458,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 .imp-cat-guessed{border-color:var(--accent)!important;background:var(--acc-lt)!important}
 .imp-chk{width:14px;height:14px;accent-color:var(--accent);cursor:pointer}
 .imp-skip{opacity:.4}
+.imp-dup td:first-child { border-left: 3px solid var(--amber); }
 .imp-amt-pos{color:var(--green);font-weight:700}
 .imp-amt-neg{color:var(--text);font-weight:700}
 .imp-actions{display:flex;gap:8px;margin-top:12px}
@@ -870,7 +871,7 @@ input, select, textarea {
         ⬆ Import CSV
       </button>
     </div>
-    <input type="file" id="csv-file-input" accept=".csv,.txt" style="display:none" onchange="handleCSVFile(this)">
+    <input type="file" id="csv-file-input" accept=".csv,.txt,.ofx,.qfx,.qbo" style="display:none" onchange="handleCSVFile(this)">
     <div id="import-panel" style="display:none" class="card" style="padding:0">
       <div class="cbody" style="padding:16px 18px">
         <div id="import-banner"></div>
@@ -2573,6 +2574,70 @@ function guessCat(desc) {
 }
 
 // Parse CSV text into array of row objects
+// ── Duplicate-detection fingerprint ──
+function txFingerprint(date, amount, rawDesc) {
+  return `${date}|${Math.round(amount * 100)}|${(rawDesc||'').toLowerCase().replace(/\s+/g,' ').trim()}`;
+}
+function existingFingerprints() {
+  const fps = new Set();
+  S.transactions.forEach(t => {
+    fps.add(txFingerprint(t.date, t.amount, t.rawDesc || t.desc));
+    fps.add(txFingerprint(t.date, t.amount, t.desc));
+  });
+  return fps;
+}
+
+// ── OFX / QFX parser ──
+function parseOFXDate(s) {
+  if (!s) return null;
+  const m = String(s).match(/^(\d{4})(\d{2})(\d{2})/);
+  return m ? `${m[1]}-${m[2]}-${m[3]}` : null;
+}
+
+function parseOFXBlock(block) {
+  const tag = name => { const m = block.match(new RegExp('<'+name+'>([^<\\r\\n]*)', 'i')); return m ? m[1].trim() : ''; };
+  const rawDate = tag('DTPOSTED') || tag('DTUSER');
+  const amtStr  = tag('TRNAMT');
+  const rawDesc = tag('NAME') || tag('MEMO') || 'Unknown';
+  const memo    = tag('MEMO');
+  // Use NAME as primary, append MEMO if different and non-empty
+  const fullDesc = (rawDesc && memo && memo !== rawDesc) ? `${rawDesc} – ${memo}` : rawDesc;
+  const date = parseOFXDate(rawDate);
+  const amt  = parseFloat(amtStr);
+  if (!date || isNaN(amt) || amt === 0) return null;
+  const usdAmt = toUSD(Math.abs(amt));
+  return { date, desc: fullDesc, rawDesc: fullDesc, amount: usdAmt,
+           cat: guessCat(fullDesc), type: amt < 0 ? 'expense' : 'income',
+           include: true, isDuplicate: false };
+}
+
+function processOFXText(text, filename) {
+  const txns = [];
+  // Try XML-style OFX first (with closing tags)
+  const xmlBlocks = [...text.matchAll(/<STMTTRN>([\s\S]*?)<\/STMTTRN>/gi)];
+  if (xmlBlocks.length) {
+    xmlBlocks.forEach(m => { const t = parseOFXBlock(m[0]); if (t) txns.push(t); });
+  } else {
+    // Older SGML OFX (no closing tags)
+    const parts = text.split(/<STMTTRN>/i).slice(1);
+    parts.forEach(chunk => {
+      const end = chunk.search(/<BANKTRANLIST|<\/STMTRS|<STMTTRN>/i);
+      const t = parseOFXBlock(end > 0 ? chunk.slice(0, end) : chunk);
+      if (t) txns.push(t);
+    });
+  }
+  if (!txns.length) {
+    showImportBanner('warn', '⚠️ No transactions found in this OFX/QFX file.');
+    return;
+  }
+  const fps = existingFingerprints();
+  importedRows = txns.map(t => {
+    const dup = fps.has(txFingerprint(t.date, t.amount, t.rawDesc));
+    return { ...t, isDuplicate: dup, include: !dup };
+  });
+  renderImportPreview(filename, 'ofx');
+}
+
 function parseCSV(text) {
   const lines = text.trim().split(/\r?\n/);
   if (lines.length < 2) return null;
@@ -2608,6 +2673,16 @@ function parseCSV(text) {
 // Detect column mapping for known bank formats
 function detectColumns(headers) {
   const h = headers.map(x => x.toLowerCase());
+
+  // Apple Card: Transaction Date, Clearing Date, Description, Merchant, Category, Type, Amount (USD)
+  if (h.some(x => x.includes('clearing date')) && h.some(x => x.includes('merchant'))) {
+    return {
+      dateCol:   headers[h.findIndex(x => x.includes('transaction date') || x === 'date')],
+      descCol:   headers[h.findIndex(x => x === 'merchant')],
+      amtCol:    headers[h.findIndex(x => x.includes('amount'))],
+      creditCol: null, format: 'apple'
+    };
+  }
 
   // American Express: Date, Description, Amount
   if (h.includes('date') && h.includes('description') && h.includes('amount')) {
@@ -2695,18 +2770,18 @@ function parseDate(s) {
 
 // Convert CSV rows → preview transaction objects
 function csvRowsToTxns(rows, cols) {
+  const fps = existingFingerprints();
   const result = [];
   for (const row of rows) {
     const rawDate = row[cols.dateCol] || '';
     const rawDesc = row[cols.descCol] || '';
     const date = parseDate(rawDate);
-    if (!date) continue; // skip unreadable dates
+    if (!date) continue;
 
     let amount = 0;
     let type = 'expense';
 
     if (cols.creditCol && cols.amtCol) {
-      // Separate debit/credit columns
       const debit  = parseFloat((row[cols.amtCol]  ||'').replace(/[^0-9.\-]/g,''));
       const credit = parseFloat((row[cols.creditCol]||'').replace(/[^0-9.\-]/g,''));
       if (!isNaN(credit) && credit > 0) { amount = credit; type = 'income'; }
@@ -2716,8 +2791,8 @@ function csvRowsToTxns(rows, cols) {
       const raw = (row[cols.amtCol]||'').replace(/[^0-9.\-]/g,'');
       const num = parseFloat(raw);
       if (isNaN(num) || num === 0) continue;
-      // Amex: positive = charge (expense), negative = payment/refund (income)
-      // Chase: negative = expense, positive = income
+      // Apple Card & Chase: negative = expense, positive = income/payment
+      // Amex: positive = charge (expense), negative = payment (income)
       if (cols.format === 'amex') {
         amount = Math.abs(num); type = num > 0 ? 'expense' : 'income';
       } else {
@@ -2725,10 +2800,15 @@ function csvRowsToTxns(rows, cols) {
       }
     }
 
-    // Amount stored in USD; if currently viewing in GBP, convert
     const usdAmount = toUSD(amount);
-    // Store rawDesc separately; desc starts as raw but user can rename
-    result.push({ date, desc: rawDesc, rawDesc, amount: usdAmount, cat: 'Miscellaneous', type, include: true });
+    const fp = txFingerprint(date, usdAmount, rawDesc);
+    const isDuplicate = fps.has(fp);
+    result.push({
+      date, desc: rawDesc, rawDesc, amount: usdAmount,
+      cat: guessCat(rawDesc), type,
+      include: !isDuplicate,   // pre-uncheck duplicates
+      isDuplicate
+    });
   }
   return result;
 }
@@ -2738,9 +2818,12 @@ let importedRows = [];
 function handleCSVFile(input) {
   const file = input.files[0];
   if (!file) return;
-  input.value = ''; // reset so same file can be re-imported
+  input.value = '';
   const reader = new FileReader();
-  reader.onload = e => processCSVText(e.target.result, file.name);
+  const isOFX = /\.(ofx|qfx|qbo)$/i.test(file.name);
+  reader.onload = e => isOFX
+    ? processOFXText(e.target.result, file.name)
+    : processCSVText(e.target.result, file.name);
   reader.readAsText(file);
 }
 
@@ -2773,9 +2856,11 @@ function renderImportPreview(filename, format) {
   const preview= document.getElementById('import-preview');
   panel.style.display = '';
 
-  const formatName = { amex:'American Express', chase:'Chase', monzo:'Monzo/Starling', barclays:'Barclays', generic:'Generic bank' }[format] || 'Bank';
+  const dupCount = importedRows.filter(r => r.isDuplicate).length;
+  const dupNote  = dupCount ? ` · <span style="color:var(--amber)">⚠ ${dupCount} already imported (pre-unchecked)</span>` : '';
+  const formatName = { amex:'American Express', apple:'Apple Card', chase:'Chase', monzo:'Monzo/Starling', barclays:'Barclays', ofx:'OFX/QFX Bank Export', generic:'Generic bank' }[format] || 'Bank';
   banner.innerHTML = `<div class="imp-banner imp-banner-ok">
-    ✓ Detected <strong>${formatName}</strong> format · ${importedRows.length} transactions from <em>${esc(filename)}</em>
+    ✓ Detected <strong>${formatName}</strong> · ${importedRows.length} transactions from <em>${esc(filename)}</em>${dupNote}
   </div>`;
 
   preview.innerHTML = `
@@ -2818,13 +2903,20 @@ function buildImportRow(r, i) {
     `<option value="${c}"${c===r.cat?' selected':''}>${ce(c)} ${c}</option>`
   ).join('');
   const rawDiffers = r.rawDesc && r.rawDesc !== r.desc;
-  return `<tr id="imp-row-${i}" class="${r.include?'':'imp-skip'}">
+  const dupBadge = r.isDuplicate
+    ? `<span style="font-size:9px;font-weight:700;background:var(--amb-lt);color:var(--amber);
+                   border-radius:4px;padding:1px 5px;margin-left:6px;white-space:nowrap">already imported</span>`
+    : '';
+  return `<tr id="imp-row-${i}" class="${r.include?'':'imp-skip'}${r.isDuplicate?' imp-dup':''}">
     <td><input type="checkbox" class="imp-chk" ${r.include?'checked':''} onchange="toggleImportRow(${i},this.checked)"></td>
     <td style="white-space:nowrap;color:var(--text2);font-size:11px">${r.date}</td>
     <td>
-      <input class="imp-desc-inp" id="imp-desc-${i}" type="text" value="${esc(r.desc)}"
-             oninput="onDescChange(${i})" onblur="onDescBlur(${i})"
-             placeholder="Enter a readable name…">
+      <div style="display:flex;align-items:center;flex-wrap:wrap;gap:4px">
+        <input class="imp-desc-inp" id="imp-desc-${i}" type="text" value="${esc(r.desc)}"
+               oninput="onDescChange(${i})" onblur="onDescBlur(${i})"
+               placeholder="Enter a readable name…" style="flex:1;min-width:100px">
+        ${dupBadge}
+      </div>
       ${rawDiffers ? `<div class="imp-raw" title="${esc(r.rawDesc)}">Raw: ${esc(r.rawDesc)}</div>` : ''}
     </td>
     <td id="imp-amt-cell-${i}" class="${r.type==='income'?'imp-amt-pos':'imp-amt-neg'}" style="white-space:nowrap;font-size:12px">
@@ -2917,20 +3009,20 @@ function confirmImport() {
     if (typeEl) r.type = typeEl.value;
   });
 
-  // Check for duplicates (same date + raw original desc + amount)
+  // Fingerprint-based duplicate check — catches re-imports and overlapping date ranges
+  const fps = existingFingerprints();
   let skipped = 0;
   toAdd.forEach(r => {
-    const isDup = S.transactions.some(t =>
-      t.date === r.date &&
-      Math.abs(t.amount - r.amount) < 0.01 &&
-      (t.desc === r.desc || t.rawDesc === r.rawDesc)
-    );
-    if (isDup) { skipped++; return; }
-    S.transactions.unshift({
-      id: uid(), amount: r.amount, desc: r.desc,
-      rawDesc: r.rawDesc,   // keep original for future duplicate checks
-      cat: r.cat, date: r.date, notes: '', type: r.type, recurringId: null
-    });
+    if (fps.has(txFingerprint(r.date, r.amount, r.rawDesc)) ||
+        fps.has(txFingerprint(r.date, r.amount, r.desc))) {
+      skipped++; return;
+    }
+    const newTx = { id: uid(), amount: r.amount, desc: r.desc,
+      rawDesc: r.rawDesc, cat: r.cat, date: r.date,
+      notes: '', type: r.type, recurringId: null };
+    S.transactions.unshift(newTx);
+    // Add to fingerprint set so back-to-back dupes in the same file are caught
+    fps.add(txFingerprint(r.date, r.amount, r.rawDesc));
   });
 
   persist();
