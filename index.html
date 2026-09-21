@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>Trace — Expense Tracker</title>
 <link rel="manifest" href="manifest.json">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@700&display=swap" rel="stylesheet">
 <meta name="theme-color" content="#1C2B4A">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -45,8 +48,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
      display:flex;align-items:center;gap:12px;min-height:54px;height:calc(54px + env(safe-area-inset-top));
      position:sticky;top:0;z-index:100;box-shadow:var(--sh)}
 .logo{display:flex;align-items:center}
-.logo img{height:32px;width:auto;display:block}
-@media (max-width:640px){.logo img{height:26px}}
+.logo-wordmark{font-family:'Cormorant Garamond',Georgia,serif;font-weight:700;font-size:26px;
+               letter-spacing:-.01em;color:var(--text);line-height:1;user-select:none}
+@media (max-width:640px){.logo-wordmark{font-size:22px}}
 .hsp{flex:1}
 .cur-wrap{display:flex;background:var(--bg);border:1px solid var(--border);border-radius:8px;overflow:hidden}
 .cur-btn{padding:5px 12px;font-size:12px;font-weight:700;letter-spacing:.01em;
@@ -204,11 +208,21 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 .a-inc-cbg { color:#6effc0!important; }
 .a-inc-cbg-apple { color:#1a7a40!important; }
 
-/* Large transaction glow borders */
-.tx-large-amex  { box-shadow:0 0 0 2px #c4a03a, var(--sh2); }
-.tx-large-apple { box-shadow:0 0 0 2px #c090e0, var(--sh2); }
-.tx-large-chase { box-shadow:0 0 0 2px #4a90e0, var(--sh2); }
-.tx-large-none  { box-shadow:0 0 0 2px var(--text3), var(--sh); }
+/* Large transaction glow — applied via inline style now */
+.tx-large-card  { /* glow applied inline */ }
+
+/* Brushed-metal sheen for all Amex cards */
+.tx-cbg-metal {
+  background-image:
+    linear-gradient(108deg, transparent 25%, rgba(196,210,255,0.13) 40%,
+      rgba(255,255,255,0.18) 50%, rgba(196,210,255,0.08) 60%, transparent 75%) !important;
+}
+.tx-cbg-metal::after {
+  content:''; position:absolute; inset:0;
+  background: repeating-linear-gradient(
+    180deg, transparent 0, transparent 2px, rgba(255,255,255,0.03) 2px, rgba(255,255,255,0.03) 4px
+  );
+}
 
 /* Hover-reveal edit/delete buttons outside the tx bar */
 .tx-wrap { position:relative; display:flex; align-items:stretch; margin-bottom:2px; }
@@ -578,7 +592,7 @@ input, select, textarea {
 
   /* Header — compact; safe area already handled by min-height on .hdr */
   .hdr { padding-left: 12px; padding-right: 12px; padding-bottom: 0; gap: 8px; }
-  .logo { line-height: 0; }
+  /* logo handled by .logo-wordmark responsive rule */
   /* Hide backup/restore + old fab in header on mobile — accessible via ☰ menu */
   .hdr-backup-btns { display: none !important; }
   .add-fab { display: none !important; }
@@ -788,6 +802,15 @@ input, select, textarea {
          font-weight:700;cursor:pointer;background:var(--surf2);text-align:center;
          transition:all .18s;color:var(--text2);line-height:1.4}
 .ob-chip.on{border-color:var(--accent);background:var(--acc-lt);color:var(--accent)}
+.ob-card-scroll{max-height:340px;overflow-y:auto;padding:4px 0 8px;-webkit-overflow-scrolling:touch}
+.ob-brand-section{margin-bottom:16px}
+.ob-brand-label{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:8px}
+.ob-card-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ob-card-tile{border-radius:10px;padding:12px 14px;cursor:pointer;position:relative;border:2px solid transparent;transition:all .2s;min-height:52px;display:flex;flex-direction:column;justify-content:flex-end}
+.ob-card-tile.on{border-color:rgba(255,255,255,0.8);box-shadow:0 0 0 3px rgba(255,255,255,0.25);transform:scale(1.02)}
+.ob-card-tile-name{font-size:12px;font-weight:700;line-height:1.2}
+.ob-card-tile-check{position:absolute;top:8px;right:8px;width:20px;height:20px;border-radius:50%;border:2px solid rgba(255,255,255,0.5);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;transition:all .2s}
+.ob-card-tile.on .ob-card-tile-check{background:rgba(255,255,255,0.9);border-color:transparent;color:#222}
 .ob-freq-grid{display:flex;flex-direction:column;gap:10px;margin-bottom:28px}
 .ob-freq-opt{padding:15px 16px;border:2px solid var(--border);border-radius:12px;cursor:pointer;
              background:var(--surf2);transition:all .18s}
@@ -909,7 +932,7 @@ input, select, textarea {
 
 <!-- ═══ HEADER ═══ -->
 <header class="hdr">
-  <div class="logo"><img src="logo-horizontal.png" alt="Trace"></div>
+  <div class="logo"><span class="logo-wordmark">Trace</span></div>
   <div class="hsp"></div>
   <div class="cur-wrap">
     <button class="cur-btn on" id="btn-usd" onclick="setCurrency('USD')">$ USD</button>
@@ -1183,12 +1206,7 @@ input, select, textarea {
     <div class="qa-row" style="padding-top:10px">
       <div class="qa-lbl">Card</div>
     </div>
-    <div class="card-pill-row" id="qa-card-grid">
-      <button class="card-pill on-amex" id="cp-amex"  onclick="setQACard('amex')"><span class="cp-logo">💳</span>Amex<br>Platinum</button>
-      <button class="card-pill"         id="cp-apple" onclick="setQACard('apple')"><span class="cp-logo">⬜</span>Apple<br>Card</button>
-      <button class="card-pill"         id="cp-chase" onclick="setQACard('chase')"><span class="cp-logo">💳</span>Chase<br>Sapphire</button>
-      <button class="card-pill"         id="cp-none"  onclick="setQACard('none')"><span class="cp-logo">💵</span>Cash /<br>Other</button>
-    </div>
+    <div class="card-pill-row" id="qa-card-grid"></div>
 
     <div class="qa-amount-wrap">
       <div class="qa-amount-lbl">Amount</div>
@@ -1317,11 +1335,8 @@ input, select, textarea {
     <!-- Step 2: Cards -->
     <div id="ob-step-2" style="display:none">
       <div class="ob-step-title">Which cards do you use?</div>
-      <div class="ob-chip-grid">
-        <button class="ob-chip on" id="ob-chip-amex" onclick="obToggleCard('amex')">💳<br>Amex Platinum</button>
-        <button class="ob-chip" id="ob-chip-apple" onclick="obToggleCard('apple')">⬜<br>Apple Card</button>
-        <button class="ob-chip" id="ob-chip-chase" onclick="obToggleCard('chase')">💳<br>Chase Sapphire</button>
-        <button class="ob-chip" id="ob-chip-none" onclick="obToggleCard('none')">💵<br>Cash / Other</button>
+      <div class="ob-card-scroll" id="ob-card-list">
+        <!-- dynamically filled by obRenderCardList() -->
       </div>
       <button class="ob-cta" onclick="obGoStep(3)">Continue →</button>
     </div>
@@ -1418,11 +1433,48 @@ input, select, textarea {
 // ═══════════════════════════════════════════════
 // ── CARD DEFINITIONS ──
 const CARDS = {
-  amex:  { label: 'Amex Platinum',   short: 'Amex',  tagClass: 'tag-amex',  barColor: '#1C2B4A' },
-  apple: { label: 'Apple Card',      short: 'Apple', tagClass: 'tag-apple', barColor: 'linear-gradient(90deg,#f8a8b8,#fde0a0,#b8f0a8,#a8c8f8)' },
-  chase: { label: 'Chase Sapphire',  short: 'Chase', tagClass: 'tag-chase', barColor: '#0A4C9A' },
-  none:  { label: 'Cash / Other',    short: 'Cash',  tagClass: 'tag-none',  barColor: '#9AA3B2' },
+  // ── American Express ──
+  'amex-platinum':  { label:'Amex Platinum',      short:'Amex Plat',   brand:'amex',        gradient:'linear-gradient(135deg,#1C2B4A,#2E4070)',          textColor:'#D4C9B0', glowColor:'#c4a03a' },
+  'amex-gold':      { label:'Amex Gold',           short:'Amex Gold',   brand:'amex',        gradient:'linear-gradient(135deg,#7B5C14,#C8920A,#E8B830)',   textColor:'#FFF8DC', glowColor:'#E8B830' },
+  'amex-green':     { label:'Amex Green',          short:'Amex Green',  brand:'amex',        gradient:'linear-gradient(135deg,#1B4D30,#2E7D4F)',          textColor:'#C8F5D8', glowColor:'#4CAF50' },
+  'amex-blue':      { label:'Amex Blue Cash',      short:'Amex Blue',   brand:'amex',        gradient:'linear-gradient(135deg,#0D47A1,#1976D2)',          textColor:'#BBDEFB', glowColor:'#1976D2' },
+  'amex-delta':     { label:'Amex Delta Gold',     short:'Delta',       brand:'amex',        gradient:'linear-gradient(135deg,#00235B,#003087,#C41E3A)',   textColor:'#CCE0FF', glowColor:'#C41E3A' },
+  'amex-hilton':    { label:'Amex Hilton Surpass', short:'Hilton',      brand:'amex',        gradient:'linear-gradient(135deg,#002855,#004A99)',          textColor:'#C5DEFF', glowColor:'#1565C0' },
+  // ── Chase ──
+  'chase-sapphire-preferred': { label:'Chase Sapphire Preferred', short:'Sapphire+',  brand:'chase', gradient:'linear-gradient(135deg,#0A3D6B,#1565C0)', textColor:'#B8D4FF', glowColor:'#4a90e0' },
+  'chase-sapphire-reserve':   { label:'Chase Sapphire Reserve',   short:'Sapphire R', brand:'chase', gradient:'linear-gradient(135deg,#1A1A2A,#2D3555)', textColor:'#C0C8E8', glowColor:'#6070A0' },
+  'chase-freedom-unlimited':  { label:'Chase Freedom Unlimited',   short:'Freedom U',  brand:'chase', gradient:'linear-gradient(135deg,#1565C0,#4A9FD5)', textColor:'#DFF0FF', glowColor:'#4A9FD5' },
+  'chase-freedom-flex':       { label:'Chase Freedom Flex',        short:'Freedom F',  brand:'chase', gradient:'linear-gradient(135deg,#003087,#0070E0)', textColor:'#D0E8FF', glowColor:'#0070E0' },
+  // ── Apple ──
+  'apple':          { label:'Apple Card',           short:'Apple',       brand:'apple',       gradient:'linear-gradient(135deg,#E8E8ED,#B0B0BB)',          textColor:'#1d1d1f', glowColor:'#c090e0' },
+  // ── Capital One ──
+  'capital-one-venture-x':   { label:'Capital One Venture X',   short:'Venture X',   brand:'capital-one', gradient:'linear-gradient(135deg,#0D1117,#1A2332)', textColor:'#C8D8E8', glowColor:'#4060A0' },
+  'capital-one-savor':       { label:'Capital One Savor',        short:'Savor',       brand:'capital-one', gradient:'linear-gradient(135deg,#3D0010,#6B0020)', textColor:'#FFCCCC', glowColor:'#B22222' },
+  'capital-one-quicksilver': { label:'Capital One Quicksilver',  short:'Quicksilver', brand:'capital-one', gradient:'linear-gradient(135deg,#3A3A3A,#696969)', textColor:'#F0F0F0', glowColor:'#909090' },
+  // ── Citi ──
+  'citi-double-cash': { label:'Citi Double Cash', short:'Double Cash',  brand:'citi', gradient:'linear-gradient(135deg,#1B3A6B,#2E5EA8)', textColor:'#C8D8F8', glowColor:'#4070D0' },
+  'citi-premier':     { label:'Citi Premier',     short:'Citi Premier', brand:'citi', gradient:'linear-gradient(135deg,#003366,#0058A0)', textColor:'#CCE8FF', glowColor:'#0070C0' },
+  // ── Discover ──
+  'discover-it': { label:'Discover it', short:'Discover', brand:'discover', gradient:'linear-gradient(135deg,#D94F00,#F07000)', textColor:'#FFFFFF', glowColor:'#F07000' },
+  // ── Wells Fargo ──
+  'wells-active-cash': { label:'Wells Fargo Active Cash', short:'Wells Fargo', brand:'wells', gradient:'linear-gradient(135deg,#A81818,#C41A1A)', textColor:'#FFD0D0', glowColor:'#E53535' },
+  // ── Bank of America ──
+  'bofa-premium': { label:'BofA Premium Rewards', short:'BofA', brand:'bofa', gradient:'linear-gradient(135deg,#012169,#CC0000)', textColor:'#FFE0E0', glowColor:'#CC0000' },
+  // ── Fidelity ──
+  'fidelity-rewards': { label:'Fidelity Rewards Visa', short:'Fidelity', brand:'fidelity', gradient:'linear-gradient(135deg,#004A2A,#007040)', textColor:'#C0F0D0', glowColor:'#20A060' },
+  // ── UK cards ──
+  'hsbc-premier': { label:'HSBC Premier',  short:'HSBC',     brand:'uk', gradient:'linear-gradient(135deg,#990000,#CC0000)', textColor:'#FFCCCC', glowColor:'#E53535' },
+  'barclays':     { label:'Barclays',      short:'Barclays', brand:'uk', gradient:'linear-gradient(135deg,#0044BB,#0077CC)', textColor:'#CCE0FF', glowColor:'#4090DD' },
+  'monzo':        { label:'Monzo',         short:'Monzo',    brand:'uk', gradient:'linear-gradient(135deg,#E8003D,#FF3D6B)', textColor:'#FFFFFF', glowColor:'#FF6B8A' },
+  'natwest':      { label:'NatWest',       short:'NatWest',  brand:'uk', gradient:'linear-gradient(135deg,#42145F,#6A1F99)', textColor:'#E8C8FF', glowColor:'#8840CC' },
+  'starling':     { label:'Starling Bank', short:'Starling', brand:'uk', gradient:'linear-gradient(135deg,#007A70,#00B0A0)', textColor:'#CCFFF8', glowColor:'#00C8B8' },
+  'lloyds':       { label:'Lloyds Bank',   short:'Lloyds',   brand:'uk', gradient:'linear-gradient(135deg,#004B32,#006A4E)', textColor:'#C0F0D8', glowColor:'#20A060' },
+  // ── Other ──
+  'none': { label:'Cash / Other', short:'Cash', brand:'other', gradient:'linear-gradient(135deg,#4A5568,#718096)', textColor:'#F0F4F8', glowColor:'#9AA3B2' },
 };
+// Backward-compat aliases
+CARDS['amex']  = CARDS['amex-platinum'];
+CARDS['chase'] = CARDS['chase-sapphire-preferred'];
 
 // ── CATEGORY DEFINITIONS ──
 const CAT_DEFS = {
@@ -1593,6 +1645,28 @@ function persist() {
   IDB.set(STORE_KEY, json).catch(() => {});
 }
 
+// Category renames — old name → new name
+const CAT_RENAMES = {
+  'Food & Dining': 'Food & Drinks',
+  'Dining': 'Food & Drinks',
+};
+
+// Run after hydration to fix stale category names in persisted data
+function migrateData() {
+  S.transactions.forEach(t => {
+    if (CAT_RENAMES[t.cat]) t.cat = CAT_RENAMES[t.cat];
+  });
+  // Always rebuild categories from CATS so additions/renames are picked up
+  S.categories = [...CATS];
+  // Migrate budgets
+  Object.keys(CAT_RENAMES).forEach(old => {
+    if (S.budgets && S.budgets[old] !== undefined) {
+      S.budgets[CAT_RENAMES[old]] = S.budgets[old];
+      delete S.budgets[old];
+    }
+  });
+}
+
 // hydrateAsync — tries IDB first, migrates from localStorage if empty
 async function hydrateAsync() {
   try {
@@ -1610,6 +1684,7 @@ async function hydrateAsync() {
       if (d) S = { ...S, ...JSON.parse(d) };
     } catch(e2) {}
   }
+  migrateData();
 }
 
 // ═══════════════════════════════════════════════
@@ -1743,10 +1818,18 @@ function selectCat(c) {
 
 function setQACard(c) {
   qaCard = c;
-  ['amex','apple','chase','none'].forEach(k => {
-    const el = document.getElementById('cp-'+k);
-    if (!el) return;
-    el.className = 'card-pill' + (k===c ? ' on-'+k : '');
+  document.querySelectorAll('#qa-card-grid .card-pill').forEach(el => {
+    const k = el.dataset.card;
+    const info = CARDS[k] || CARDS.none;
+    if (k === c) {
+      el.style.background = info.gradient;
+      el.style.color = info.textColor;
+      el.style.borderColor = info.glowColor || '#888';
+    } else {
+      el.style.background = '';
+      el.style.color = '';
+      el.style.borderColor = '';
+    }
   });
 }
 
@@ -1754,6 +1837,20 @@ function setQAType(t) {
   qaType = t;
   document.getElementById('tp-exp').className = 'type-pill' + (t==='expense'?' on-exp':'');
   document.getElementById('tp-inc').className = 'type-pill' + (t==='income'?' on-inc':'');
+}
+
+function buildQACardPills() {
+  const grid = document.getElementById('qa-card-grid');
+  if (!grid) return;
+  const keys = (S.onboardingCards && S.onboardingCards.length) ? S.onboardingCards : ['amex','apple','chase','none'];
+  grid.innerHTML = keys.map(k => {
+    const info = CARDS[k] || CARDS.none;
+    return `<button class="card-pill" data-card="${k}" onclick="setQACard('${k}')">
+      <span class="cp-logo">💳</span>${info.short}
+    </button>`;
+  }).join('');
+  // Update grid columns to match count
+  grid.style.gridTemplateColumns = `repeat(${Math.min(keys.length, 4)},1fr)`;
 }
 
 function openQA(prefill) {
@@ -1772,7 +1869,8 @@ function openQA(prefill) {
   document.getElementById('more-opts').classList.remove('show');
   document.getElementById('more-toggle-btn').classList.remove('open');
   setQAType('expense');
-  setQACard('amex');
+  buildQACardPills();
+  setQACard(S.onboardingCards?.[0] || 'amex');
   buildCatGrid();
   document.getElementById('qa-overlay').classList.add('open');
   setTimeout(() => document.getElementById('qa-amt').focus(), 120);
@@ -1791,6 +1889,7 @@ function openQAEdit(id) {
   document.getElementById('qa-amt').value = toDisplay(tx.amount).toFixed(2);
   document.getElementById('qa-desc').value = tx.desc;
   document.getElementById('qa-date').value = tx.date;
+  buildQACardPills();
   setQACard(tx.card || 'none');
   document.getElementById('qa-notes').value = tx.notes || '';
   document.getElementById('qa-recurring').checked = false;
@@ -2209,8 +2308,11 @@ function txRow(t) {
   const isIncome = t.type === 'income';
   const isLarge  = toDisplay(t.amount) >= 30;
   const isApple  = cardKey === 'apple';
+  const metalClass = (cardInfo.brand === 'amex') ? ' tx-cbg-metal' : '';
 
-  const largeClass = isLarge ? ` tx-large-${cardKey}` : '';
+  const glowColor = cardInfo.glowColor || '#9AA3B2';
+  const largeClass = isLarge ? ' tx-large-card' : '';
+  const largeStyle = isLarge ? `box-shadow:0 0 0 2px ${glowColor}, var(--sh2);` : '';
 
   // Fixed 35% on mobile, dynamic on desktop
   const fillPct  = window.innerWidth <= 640 ? 0.35 : cardFillPct(t.amount);
@@ -2224,14 +2326,14 @@ function txRow(t) {
   if (isIncome) amtColorClass = isApple ? 'a-inc-cbg-apple' : 'a-inc-cbg';
 
   return `<div class="tx-wrap">
-  <div class="tx${largeClass}" style="border-left:4.5px solid ${catColor};padding-right:0;cursor:pointer"
+  <div class="tx${largeClass}" style="border-left:4.5px solid ${catColor};padding-right:0;cursor:pointer;${largeStyle}"
        onclick="openTxDetail('${t.id}')">
 
     <!-- ── Diagonal card-themed right half ── -->
-    <div class="tx-cbg tx-cbg-${cardKey}" style="clip-path:${clipPath};width:100%">
-      <div class="tx-cbg-lbl">${isIncome ? 'received' : 'charged'}</div>
-      <div class="tx-cbg-amt ${amtColorClass}">${isIncome ? '+' : '-'}${fmt(t.amount)}</div>
-      <div class="tx-cbg-card-name">${cardInfo.label}</div>
+    <div class="tx-cbg tx-cbg-card${metalClass}" style="clip-path:${clipPath};width:100%;background:${cardInfo.gradient||'linear-gradient(135deg,#4A5568,#718096)'}">
+      <div class="tx-cbg-lbl" style="color:${cardInfo.textColor||'#fff'}">${isIncome ? 'received' : 'charged'}</div>
+      <div class="tx-cbg-amt ${amtColorClass}" style="color:${cardInfo.textColor||'#fff'}">${isIncome ? '+' : '-'}${fmt(t.amount)}</div>
+      <div class="tx-cbg-card-name" style="color:${cardInfo.textColor||'#fff'}">${cardInfo.label}</div>
     </div>
 
     <!-- ── Left content ── -->
@@ -2540,12 +2642,12 @@ function renderCards() {
 
   // Summary cards
   const summaryEl = document.getElementById('cards-summary');
-  const cardKeys = ['amex','apple','chase','none'];
+  const cardKeys = [...new Set(S.onboardingCards)];
   summaryEl.innerHTML = cardKeys.map(k => {
-    const info = CARDS[k];
+    const info = CARDS[k] || CARDS.none;
     const total = txns.filter(t=>(t.card||'none')===k).reduce((s,t)=>s+t.amount,0);
     const count = txns.filter(t=>(t.card||'none')===k).length;
-    return `<div class="card-summary cs-${k}">
+    return `<div class="card-summary" style="background:${info.gradient||''};color:${info.textColor||'#fff'}">
       <div class="cs-lbl">${info.label}</div>
       <div class="cs-val">${fmt(total)}</div>
       <div class="cs-sub">${count} transaction${count!==1?'s':''}</div>
@@ -2563,7 +2665,7 @@ function renderCards() {
   cardKeys.forEach(k => {
     const cardTxns = txns.filter(t => (t.card||'none') === k);
     if (!cardTxns.length) return;
-    const info = CARDS[k];
+    const info = CARDS[k] || CARDS.none;
     const total = cardTxns.reduce((s,t)=>s+t.amount,0);
 
     // Group by category
@@ -2573,7 +2675,7 @@ function renderCards() {
 
     html += `<div style="margin-bottom:18px">
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
-        <span class="tx-card-tag ${info.tagClass}" style="font-size:11px;padding:3px 9px">${info.label}</span>
+        <span class="tx-card-tag" style="font-size:11px;padding:3px 9px;background:${info.gradient||''};color:${info.textColor||'#fff'};border-radius:6px">${info.label}</span>
         <span style="font-size:13px;font-weight:700">${fmt(total)}</span>
         <span style="font-size:11px;color:var(--text3)">${cardTxns.length} transactions</span>
       </div>
@@ -3653,13 +3755,50 @@ let _obStep = 1;
 let _obFreq = 7;
 let _obCards = ['amex'];
 
+// Brand display config for onboarding picker
+const OB_BRANDS = [
+  { key:'amex',        label:'American Express', cards:['amex-platinum','amex-gold','amex-green','amex-blue','amex-delta','amex-hilton'] },
+  { key:'chase',       label:'Chase',            cards:['chase-sapphire-preferred','chase-sapphire-reserve','chase-freedom-unlimited','chase-freedom-flex'] },
+  { key:'apple',       label:'Apple',            cards:['apple'] },
+  { key:'capital-one', label:'Capital One',      cards:['capital-one-venture-x','capital-one-savor','capital-one-quicksilver'] },
+  { key:'citi',        label:'Citi',             cards:['citi-double-cash','citi-premier'] },
+  { key:'discover',    label:'Discover',         cards:['discover-it'] },
+  { key:'wells',       label:'Wells Fargo',      cards:['wells-active-cash'] },
+  { key:'bofa',        label:'Bank of America',  cards:['bofa-premium'] },
+  { key:'fidelity',    label:'Fidelity',         cards:['fidelity-rewards'] },
+  { key:'uk',          label:'UK Banks',         cards:['hsbc-premier','barclays','monzo','natwest','starling','lloyds'] },
+  { key:'other',       label:'Other',            cards:['none'] },
+];
+
+function obRenderCardList() {
+  const el = document.getElementById('ob-card-list');
+  if (!el) return;
+  el.innerHTML = OB_BRANDS.map(brand => `
+    <div class="ob-brand-section">
+      <div class="ob-brand-label">${brand.label}</div>
+      <div class="ob-card-grid">
+        ${brand.cards.map(k => {
+          const info = CARDS[k] || CARDS.none;
+          const isOn = _obCards.includes(k) ? ' on' : '';
+          return `<div class="ob-card-tile${isOn}" data-card="${k}" onclick="obToggleCard('${k}')"
+                    style="background:${info.gradient||''};color:${info.textColor||'#fff'}">
+            <div class="ob-card-tile-check">${isOn ? '✓' : ''}</div>
+            <div class="ob-card-tile-name">${info.label}</div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>
+  `).join('');
+}
+
 function startOnboarding() {
   _obStep = 1;
   _obFreq = 7;
-  _obCards = ['amex'];
+  _obCards = ['amex-platinum'];
   document.getElementById('ob-overlay').classList.remove('hidden');
   obUpdateDots(1);
   obShowStep(1);
+  obRenderCardList();
 }
 
 function obGoStep(n) {
@@ -3690,10 +3829,13 @@ function obToggleCard(card) {
   const idx = _obCards.indexOf(card);
   if (idx === -1) _obCards.push(card);
   else if (_obCards.length > 1) _obCards.splice(idx, 1);
-  // Update chip states
-  ['amex','apple','chase','none'].forEach(k => {
-    const chip = document.getElementById('ob-chip-'+k);
-    if (chip) chip.classList.toggle('on', _obCards.includes(k));
+  // Update tile states
+  document.querySelectorAll('#ob-card-list .ob-card-tile').forEach(el => {
+    const k = el.dataset.card;
+    const isOn = _obCards.includes(k);
+    el.classList.toggle('on', isOn);
+    const chk = el.querySelector('.ob-card-tile-check');
+    if (chk) chk.textContent = isOn ? '✓' : '';
   });
 }
 
@@ -3706,9 +3848,8 @@ function obSetFreq(days) {
 }
 
 function obBuildSummary() {
-  const cardNames = { amex:'Amex Platinum', apple:'Apple Card', chase:'Chase Sapphire', none:'Cash / Other' };
   const freqLabel = _obFreq <= 7 ? 'Weekly' : _obFreq <= 14 ? 'Every 2 weeks' : 'Monthly';
-  const cards = _obCards.map(c => cardNames[c] || c).join(', ');
+  const cards = _obCards.map(c => CARDS[c]?.label || c).join(', ');
   const el = document.getElementById('ob-summary');
   if (el) el.innerHTML = `<strong>Cards:</strong> ${cards}<br><strong>Review frequency:</strong> ${freqLabel}`;
 }
