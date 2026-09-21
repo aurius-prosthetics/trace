@@ -253,6 +253,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 
 /* ── BUDGET BARS ── */
 .bbar{display:flex;flex-direction:column;gap:12px}
+/* ── Sort bar ── */
+.sort-bar{display:flex;gap:6px;flex-wrap:wrap;padding:4px 0 8px}
+.sort-pill{padding:5px 12px;font-size:12px;font-weight:600;border:1.5px solid var(--border);
+           border-radius:99px;background:none;color:var(--text2);cursor:pointer;
+           transition:all .15s;white-space:nowrap;letter-spacing:.01em}
+.sort-pill:hover{border-color:var(--accent);color:var(--accent)}
+.sort-pill-on{background:var(--acc-lt);border-color:var(--accent);color:var(--accent)}
 .bb{cursor:default}
 .bb-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px}
 .bb-name{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:600}
@@ -1017,6 +1024,8 @@ input, select, textarea {
         </button>
       </div>
     </div>
+    <!-- Sort bar -->
+    <div class="sort-bar" id="sort-bar"></div>
     <input type="file" id="csv-file-input" accept=".csv,.txt,.ofx,.qfx,.qbo" style="display:none" onchange="handleCSVFile(this)">
     <div id="import-panel" style="display:none" class="card" style="padding:0">
       <div class="cbody" style="padding:16px 18px">
@@ -1474,6 +1483,7 @@ let S = {
 
 let vMonth = new Date().getMonth();
 let vYear  = new Date().getFullYear();
+let feedSort = { field: 'date', dir: 'desc' };
 let editId  = null;
 let rmEditId = null;
 let rmType  = 'expense';
@@ -1967,36 +1977,111 @@ function renderFeed() {
   // Review queue
   renderReviewQueue();
 
-  // Transaction feed grouped by date
+  // Sort bar
+  renderSortBar();
+
+  // Transaction feed
   if (!txns.length) {
     document.getElementById('feed-list').innerHTML =
       '<div class="empty"><div class="empty-ico">📋</div><div class="empty-txt">No transactions yet — tap + Add to start</div></div>';
     return;
   }
 
-  // Group by date
-  const sorted = [...txns].sort((a,b) => b.date.localeCompare(a.date));
-  const byDay = {};
-  sorted.forEach(t => { (byDay[t.date] = byDay[t.date]||[]).push(t); });
-
   const now = new Date(); const todayStr = today();
   const yestD = new Date(now); yestD.setDate(yestD.getDate()-1);
   const yestStr = `${yestD.getFullYear()}-${p2(yestD.getMonth()+1)}-${p2(yestD.getDate())}`;
 
-  let html = '';
-  Object.entries(byDay).forEach(([date, dayTxns]) => {
-    const d = pd(date);
-    let label = date===todayStr ? 'Today' : date===yestStr ? 'Yesterday'
-      : d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
-    const dayNet = dayTxns.reduce((s,t) => t.type==='income'?s+t.amount:s-t.amount, 0);
-    const dayNetStr = (dayNet>=0?'+':'')+fmt(Math.abs(dayNet));
-    html += `<div class="day-group">
-      <div class="day-label">${label}<span class="day-total" style="color:${dayNet<0?'var(--red)':'var(--text2)'}">${dayNetStr}</span></div>
-      ${dayTxns.map(txRow).join('')}
-    </div>`;
+  const { field, dir } = feedSort;
+  const mul = dir === 'asc' ? 1 : -1;
+
+  // Sort the transactions
+  const sorted = [...txns].sort((a, b) => {
+    if (field === 'date')     return mul * b.date.localeCompare(a.date) * -1;
+    if (field === 'amount')   return mul * (a.amount - b.amount);
+    if (field === 'category') return mul * a.cat.localeCompare(b.cat);
+    if (field === 'card')     return mul * (a.card||'none').localeCompare(b.card||'none');
+    return 0;
   });
+
+  let html = '';
+
+  if (field === 'date') {
+    // Grouped by day
+    const byDay = {};
+    sorted.forEach(t => { (byDay[t.date] = byDay[t.date]||[]).push(t); });
+    Object.entries(byDay).forEach(([date, dayTxns]) => {
+      const d = pd(date);
+      let label = date===todayStr ? 'Today' : date===yestStr ? 'Yesterday'
+        : d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+      const dayNet = dayTxns.reduce((s,t) => t.type==='income'?s+t.amount:s-t.amount, 0);
+      const dayNetStr = (dayNet>=0?'+':'')+fmt(Math.abs(dayNet));
+      html += `<div class="day-group">
+        <div class="day-label">${label}<span class="day-total" style="color:${dayNet<0?'var(--red)':'var(--text2)'}">${dayNetStr}</span></div>
+        ${dayTxns.map(txRow).join('')}
+      </div>`;
+    });
+  } else if (field === 'category') {
+    // Grouped by category
+    const byCat = {};
+    sorted.forEach(t => { (byCat[t.cat] = byCat[t.cat]||[]).push(t); });
+    Object.entries(byCat).forEach(([cat, catTxns]) => {
+      const total = catTxns.filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0);
+      html += `<div class="day-group">
+        <div class="day-label"><span style="color:${cc(cat)}">${ce(cat)} ${cat}</span>
+          <span class="day-total">${fmt(total)}</span></div>
+        ${catTxns.map(txRow).join('')}
+      </div>`;
+    });
+  } else if (field === 'card') {
+    // Grouped by card
+    const byCard = {};
+    sorted.forEach(t => { const k=t.card||'none'; (byCard[k]=byCard[k]||[]).push(t); });
+    Object.entries(byCard).forEach(([cardKey, cardTxns]) => {
+      const info = (CARDS[cardKey]||CARDS.none);
+      const total = cardTxns.filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0);
+      html += `<div class="day-group">
+        <div class="day-label">💳 ${info.label}
+          <span class="day-total">${fmt(total)}</span></div>
+        ${cardTxns.map(txRow).join('')}
+      </div>`;
+    });
+  } else {
+    // Flat list (amount sort)
+    html = sorted.map(txRow).join('');
+  }
+
   document.getElementById('feed-list').innerHTML = html;
   renderInsights();
+}
+
+// ═══════════════════════════════════════════════
+// SORT BAR
+// ═══════════════════════════════════════════════
+const SORT_OPTIONS = [
+  { field: 'date',     label: 'Date' },
+  { field: 'amount',   label: 'Amount' },
+  { field: 'category', label: 'Category' },
+  { field: 'card',     label: 'Card' },
+];
+
+function renderSortBar() {
+  const bar = document.getElementById('sort-bar');
+  if (!bar) return;
+  bar.innerHTML = SORT_OPTIONS.map(opt => {
+    const active = feedSort.field === opt.field;
+    const arrow  = active ? (feedSort.dir === 'desc' ? ' ↓' : ' ↑') : '';
+    return `<button class="sort-pill${active ? ' sort-pill-on' : ''}"
+      onclick="setSort('${opt.field}')">${opt.label}${arrow}</button>`;
+  }).join('');
+}
+
+function setSort(field) {
+  if (feedSort.field === field) {
+    feedSort.dir = feedSort.dir === 'desc' ? 'asc' : 'desc';
+  } else {
+    feedSort = { field, dir: field === 'amount' ? 'desc' : (field === 'date' ? 'desc' : 'asc') };
+  }
+  renderFeed();
 }
 
 function renderInsights() {
