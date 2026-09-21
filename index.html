@@ -9,6 +9,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Trace">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" crossorigin="anonymous"></script>
 <style>
 :root {
@@ -43,8 +44,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 .hdr{background:var(--surf);border-bottom:1px solid var(--border);padding:env(safe-area-inset-top) 22px 0;
      display:flex;align-items:center;gap:12px;min-height:54px;height:calc(54px + env(safe-area-inset-top));
      position:sticky;top:0;z-index:100;box-shadow:var(--sh)}
-.logo{font-size:17px;font-weight:800;letter-spacing:-.04em;display:flex;align-items:center;gap:8px}
-.logo-dot{width:9px;height:9px;background:var(--accent);border-radius:50%}
+.logo{display:flex;align-items:center}
+.logo img{height:32px;width:auto;display:block}
+@media (max-width:640px){.logo img{height:26px}}
 .hsp{flex:1}
 .cur-wrap{display:flex;background:var(--bg);border:1px solid var(--border);border-radius:8px;overflow:hidden}
 .cur-btn{padding:5px 12px;font-size:12px;font-weight:700;letter-spacing:.01em;
@@ -576,7 +578,7 @@ input, select, textarea {
 
   /* Header — compact; safe area already handled by min-height on .hdr */
   .hdr { padding-left: 12px; padding-right: 12px; padding-bottom: 0; gap: 8px; }
-  .logo { font-size: 16px; }
+  .logo { line-height: 0; }
   /* Hide backup/restore + old fab in header on mobile — accessible via ☰ menu */
   .hdr-backup-btns { display: none !important; }
   .add-fab { display: none !important; }
@@ -907,7 +909,7 @@ input, select, textarea {
 
 <!-- ═══ HEADER ═══ -->
 <header class="hdr">
-  <div class="logo"><div class="logo-dot"></div>Trace</div>
+  <div class="logo"><img src="logo-horizontal.png" alt="Trace"></div>
   <div class="hsp"></div>
   <div class="cur-wrap">
     <button class="cur-btn on" id="btn-usd" onclick="setCurrency('USD')">$ USD</button>
