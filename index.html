@@ -761,6 +761,139 @@ input, select, textarea {
 .tdd-row-val { font-size: 14px; color: var(--text); font-weight: 500; flex: 1; line-height: 1.4; }
 
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+
+/* ── ONBOARDING OVERLAY ── */
+.ob-overlay{position:fixed;inset:0;background:var(--surf);z-index:1000;display:flex;
+            align-items:center;justify-content:center;padding:24px;overflow-y:auto}
+.ob-overlay.hidden{display:none}
+.ob-card{max-width:460px;width:100%;margin:auto}
+.ob-logo{font-size:28px;font-weight:900;letter-spacing:-.05em;display:flex;align-items:center;
+         gap:10px;margin-bottom:10px}
+.ob-logo-dot{width:12px;height:12px;background:var(--accent);border-radius:50%}
+.ob-tagline{font-size:22px;font-weight:800;letter-spacing:-.03em;color:var(--text);margin-bottom:28px;line-height:1.3}
+.ob-bullets{display:flex;flex-direction:column;gap:14px;margin-bottom:36px}
+.ob-bullet{display:flex;align-items:center;gap:13px;font-size:15px;color:var(--text2);font-weight:500}
+.ob-step-title{font-size:21px;font-weight:800;letter-spacing:-.03em;margin-bottom:20px}
+.ob-chip-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:28px}
+.ob-chip{padding:14px 12px;border:2px solid var(--border);border-radius:12px;font-size:13px;
+         font-weight:700;cursor:pointer;background:var(--surf2);text-align:center;
+         transition:all .18s;color:var(--text2);line-height:1.4}
+.ob-chip.on{border-color:var(--accent);background:var(--acc-lt);color:var(--accent)}
+.ob-freq-grid{display:flex;flex-direction:column;gap:10px;margin-bottom:28px}
+.ob-freq-opt{padding:15px 16px;border:2px solid var(--border);border-radius:12px;cursor:pointer;
+             background:var(--surf2);transition:all .18s}
+.ob-freq-opt.on{border-color:var(--accent);background:var(--acc-lt)}
+.ob-freq-opt-title{font-size:15px;font-weight:700;color:var(--text);margin-bottom:3px}
+.ob-freq-opt-desc{font-size:12px;color:var(--text2)}
+.ob-cta{width:100%;padding:16px;background:var(--accent);color:#fff;border:none;
+        border-radius:12px;font-size:16px;font-weight:800;cursor:pointer;
+        transition:all .15s;letter-spacing:-.02em;margin-top:4px}
+.ob-cta:hover{background:var(--acc-dk)}
+.ob-cta.green{background:var(--green)}
+.ob-cta.green:hover{background:#205f3a}
+.ob-step-dots{display:flex;gap:6px;justify-content:center;margin-bottom:28px}
+.ob-dot{width:8px;height:8px;border-radius:50%;background:var(--border);transition:all .25s}
+.ob-dot.on{background:var(--accent);width:22px;border-radius:4px}
+.ob-toggle-row{display:flex;align-items:center;justify-content:space-between;
+               padding:14px 0;border-top:1px solid var(--border);margin-top:14px}
+.ob-toggle-lbl{font-size:14px;font-weight:600;color:var(--text)}
+.ob-toggle{position:relative;width:44px;height:24px;flex-shrink:0}
+.ob-toggle input{opacity:0;width:0;height:0;position:absolute}
+.ob-toggle-slider{position:absolute;inset:0;border-radius:12px;background:var(--border);
+                  cursor:pointer;transition:.2s}
+.ob-toggle-slider::before{content:'';position:absolute;width:20px;height:20px;left:2px;top:2px;
+                           border-radius:50%;background:#fff;transition:.2s;box-shadow:0 1px 4px rgba(0,0,0,.2)}
+.ob-toggle input:checked + .ob-toggle-slider{background:var(--green)}
+.ob-toggle input:checked + .ob-toggle-slider::before{transform:translateX(20px)}
+.ob-export-btn{width:100%;padding:13px;background:var(--bg);color:var(--accent);
+               border:1.5px solid var(--accent);border-radius:12px;font-size:14px;
+               font-weight:700;cursor:pointer;transition:all .15s;margin-bottom:10px}
+.ob-export-btn:hover{background:var(--acc-lt)}
+.ob-summary{background:var(--bg);border-radius:10px;padding:14px 16px;margin-bottom:20px;
+            font-size:13px;color:var(--text2);line-height:1.6}
+.ob-checkmark{font-size:52px;text-align:center;margin-bottom:12px}
+
+/* ── REVIEW QUEUE ── */
+#review-queue-card{margin-bottom:14px}
+.rq-header{display:flex;align-items:center;gap:8px;padding:14px 18px 10px}
+.rq-title{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.09em;color:var(--text3);flex:1}
+.rq-count{display:inline-flex;align-items:center;justify-content:center;
+          min-width:20px;height:20px;padding:0 6px;background:var(--amber);
+          color:#fff;font-size:10px;font-weight:800;border-radius:10px}
+.rq-collapse{background:none;border:none;cursor:pointer;color:var(--text3);font-size:14px;
+             padding:4px 6px;transition:transform .2s;line-height:1}
+.rq-collapse.open{transform:rotate(180deg)}
+.rq-mark-all{padding:5px 11px;background:var(--grn-lt);color:var(--green);
+             border:1.5px solid var(--green);border-radius:6px;
+             font-size:11px;font-weight:700;cursor:pointer;transition:all .15s;white-space:nowrap}
+.rq-mark-all:hover{background:var(--green);color:#fff}
+.rq-body{padding:0 18px 14px}
+.rq-row{display:flex;align-items:center;gap:8px;padding:8px 0;
+        border-bottom:1px solid var(--border);transition:opacity .28s ease,max-height .28s ease,padding .28s ease;max-height:60px;overflow:hidden}
+.rq-row:last-child{border-bottom:none}
+.rq-row.fading{opacity:0;max-height:0;padding-top:0;padding-bottom:0}
+.rq-ico{font-size:15px;flex-shrink:0;width:22px;text-align:center}
+.rq-name{font-size:13px;font-weight:600;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.rq-date{font-size:11px;color:var(--text3);white-space:nowrap;flex-shrink:0}
+.rq-amt{font-size:13px;font-weight:700;white-space:nowrap;flex-shrink:0;min-width:56px;text-align:right}
+.rq-check{width:28px;height:28px;border:none;background:var(--grn-lt);color:var(--green);
+          border-radius:7px;cursor:pointer;font-size:13px;font-weight:800;
+          flex-shrink:0;transition:all .15s;display:flex;align-items:center;justify-content:center}
+.rq-check:hover{background:var(--green);color:#fff}
+.rq-done{text-align:center;padding:16px;font-size:13px;color:var(--green);font-weight:600}
+
+/* ── REVIEW REMINDER BANNER ── */
+#review-banner{display:none;background:var(--amb-lt);border-bottom:1px solid #f0d5a0;
+               padding:9px 18px;align-items:center;gap:10px;font-size:13px}
+.rb-text{flex:1;color:var(--amber);font-weight:600;font-size:13px}
+.rb-import{padding:6px 13px;background:var(--amber);color:#fff;border:none;
+            border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;
+            white-space:nowrap;transition:all .15s}
+.rb-import:hover{background:#a8621a}
+.rb-dismiss{font-size:12px;color:var(--amber);background:none;border:none;
+             cursor:pointer;text-decoration:underline;white-space:nowrap;font-weight:600}
+
+/* ── BUDGET RINGS ── */
+#budget-rings{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;padding:18px 20px 20px}
+@media(max-width:640px){#budget-rings{grid-template-columns:1fr 1fr;gap:12px;padding:14px 14px 16px}}
+.bring{display:flex;flex-direction:column;align-items:center;gap:6px}
+.bring-svg-wrap{position:relative;width:90px;height:90px;flex-shrink:0}
+.bring-svg-wrap svg{width:90px;height:90px}
+.bring-svg-wrap circle{fill:none}
+.bring-center{position:absolute;inset:0;display:flex;flex-direction:column;
+              align-items:center;justify-content:center;text-align:center;line-height:1.2;padding:4px}
+.bring-amt{font-size:12px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.02em;word-break:break-all}
+.bring-sub-lbl{font-size:9px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-top:1px}
+.bring-label{text-align:center}
+.bring-name{font-size:11px;font-weight:700;color:var(--text2)}
+.bring-amounts{font-size:10px;color:var(--text3);font-variant-numeric:tabular-nums;margin-top:1px}
+
+/* ── CSV GUIDE MODAL ── */
+#csv-guide-modal{position:fixed;inset:0;background:rgba(16,24,36,.42);backdrop-filter:blur(3px);
+                  z-index:400;display:none;align-items:center;justify-content:center;padding:20px}
+#csv-guide-modal.open{display:flex;animation:fadeIn .18s ease}
+.cg-modal{background:var(--surf);border-radius:var(--r);width:100%;max-width:500px;
+           max-height:88vh;overflow-y:auto;box-shadow:var(--sh2)}
+.cg-head{display:flex;align-items:center;justify-content:space-between;
+          padding:20px 22px 0;margin-bottom:16px}
+.cg-title{font-size:17px;font-weight:800;letter-spacing:-.03em}
+.cg-close{width:30px;height:30px;background:var(--bg);border:none;border-radius:50%;
+           cursor:pointer;font-size:16px;color:var(--text2);display:flex;align-items:center;justify-content:center}
+.cg-tabs{display:flex;gap:0;padding:0 22px;border-bottom:1px solid var(--border);margin-bottom:20px}
+.cg-tab{padding:8px 12px;font-size:12px;font-weight:600;color:var(--text2);cursor:pointer;
+         border:none;background:none;border-bottom:2.5px solid transparent;margin-bottom:-1px;
+         transition:all .15s;white-space:nowrap}
+.cg-tab.on{color:var(--accent);border-bottom-color:var(--accent);font-weight:700}
+.cg-content{padding:0 22px 22px;display:none}
+.cg-content.on{display:block}
+.cg-steps{display:flex;flex-direction:column;gap:14px;margin-bottom:24px}
+.cg-step{display:flex;gap:12px;align-items:flex-start}
+.cg-step-num{width:24px;height:24px;border-radius:50%;background:var(--acc-lt);color:var(--accent);
+             font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
+.cg-step-text{font-size:13px;color:var(--text);line-height:1.55}
+.cg-got-it{width:100%;padding:13px;background:var(--accent);color:#fff;border:none;border-radius:11px;
+            font-size:15px;font-weight:800;cursor:pointer;transition:all .15s;letter-spacing:-.02em}
+.cg-got-it:hover{background:var(--acc-dk)}
 </style>
 </head>
 <body>
@@ -807,6 +940,13 @@ input, select, textarea {
   <span style="flex:1;color:#7A4F1A;font-weight:600">No data found — restore a backup to recover your transactions.</span>
   <button onclick="triggerRestoreJSON()" style="padding:5px 11px;background:#C47A2A;color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap">↩ Restore</button>
   <button onclick="document.getElementById('restore-banner').style.display='none'" style="padding:5px 8px;background:none;border:1px solid #C47A2A;border-radius:6px;font-size:11px;color:#7A4F1A;cursor:pointer">✕</button>
+</div>
+
+<!-- ═══ REVIEW REMINDER BANNER ═══ -->
+<div id="review-banner">
+  <span class="rb-text" id="review-banner-text">📋 Time for your weekly review</span>
+  <button class="rb-import" onclick="triggerImportFromBanner()">Import now</button>
+  <button class="rb-dismiss" onclick="dismissReviewBanner()">Dismiss</button>
 </div>
 
 <!-- ═══ TABS ═══ -->
@@ -864,12 +1004,18 @@ input, select, textarea {
       <div class="chead"><span class="ctitle">Budget Breakdown</span></div>
       <div class="cbody"><div class="bbar" id="feed-bars"></div></div>
     </div>
+    <div id="review-queue-card" class="card" style="padding:0;display:none"></div>
+
     <div class="sec-lbl" style="display:flex;align-items:center;justify-content:space-between">
       <span>Transactions</span>
-      <button class="bs" style="padding:5px 12px;font-size:12px;display:flex;align-items:center;gap:5px"
-              onclick="document.getElementById('csv-file-input').click()">
-        ⬆ Import CSV
-      </button>
+      <div style="display:flex;align-items:center;gap:8px">
+        <button class="bs" style="padding:4px 10px;font-size:11px;color:var(--accent);border-color:var(--accent);background:var(--acc-lt)"
+                onclick="openCSVGuide()">How to export ›</button>
+        <button class="bs" style="padding:5px 12px;font-size:12px;display:flex;align-items:center;gap:5px"
+                onclick="document.getElementById('csv-file-input').click()">
+          ⬆ Import CSV
+        </button>
+      </div>
     </div>
     <input type="file" id="csv-file-input" accept=".csv,.txt,.ofx,.qfx,.qbo" style="display:none" onchange="handleCSVFile(this)">
     <div id="import-panel" style="display:none" class="card" style="padding:0">
@@ -907,8 +1053,12 @@ input, select, textarea {
   <!-- BUDGETS -->
   <div class="panel" id="panel-budgets">
     <div class="card" style="padding:0">
+      <div class="chead"><span class="ctitle">Spending Rings</span></div>
+      <div id="budget-rings"></div>
+    </div>
+    <div class="card" style="padding:0;margin-top:14px">
       <div class="chead">
-        <span class="ctitle">Monthly Limits</span>
+        <span class="ctitle">Set Monthly Limits</span>
         <button class="bp" style="padding:6px 14px;font-size:12px" onclick="saveBudgets()">Save</button>
       </div>
       <div class="cbody">
@@ -918,8 +1068,6 @@ input, select, textarea {
         <div id="budget-inputs"></div>
       </div>
     </div>
-    <div class="sec-lbl">What each category includes</div>
-    <div class="cat-def-list" id="cat-def-list"></div>
   </div>
 
   <!-- CATEGORY DEFINITIONS (in Budgets tab, below limits) -->
@@ -1132,6 +1280,127 @@ input, select, textarea {
 
 <div class="toast" id="toast"></div>
 
+<!-- ═══ ONBOARDING OVERLAY ═══ -->
+<div class="ob-overlay hidden" id="ob-overlay">
+  <div class="ob-card">
+    <!-- Step dots -->
+    <div class="ob-step-dots" id="ob-dots">
+      <div class="ob-dot on"></div>
+      <div class="ob-dot"></div>
+      <div class="ob-dot"></div>
+      <div class="ob-dot"></div>
+    </div>
+
+    <!-- Step 1: Welcome -->
+    <div id="ob-step-1">
+      <div class="ob-logo"><div class="ob-logo-dot"></div>Trace</div>
+      <div class="ob-tagline">Your money.<br>Yours alone.</div>
+      <div class="ob-bullets">
+        <div class="ob-bullet">📴 Runs completely offline</div>
+        <div class="ob-bullet">🔒 All data stays only on this device</div>
+        <div class="ob-bullet">👤 No account, no login, no tracking</div>
+      </div>
+      <button class="ob-cta" onclick="obGoStep(2)">Get started →</button>
+    </div>
+
+    <!-- Step 2: Cards -->
+    <div id="ob-step-2" style="display:none">
+      <div class="ob-step-title">Which cards do you use?</div>
+      <div class="ob-chip-grid">
+        <button class="ob-chip on" id="ob-chip-amex" onclick="obToggleCard('amex')">💳<br>Amex Platinum</button>
+        <button class="ob-chip" id="ob-chip-apple" onclick="obToggleCard('apple')">⬜<br>Apple Card</button>
+        <button class="ob-chip" id="ob-chip-chase" onclick="obToggleCard('chase')">💳<br>Chase Sapphire</button>
+        <button class="ob-chip" id="ob-chip-none" onclick="obToggleCard('none')">💵<br>Cash / Other</button>
+      </div>
+      <button class="ob-cta" onclick="obGoStep(3)">Continue →</button>
+    </div>
+
+    <!-- Step 3: Review Frequency -->
+    <div id="ob-step-3" style="display:none">
+      <div class="ob-step-title">How often will you review?</div>
+      <div class="ob-freq-grid">
+        <div class="ob-freq-opt on" id="ob-freq-7" onclick="obSetFreq(7)">
+          <div class="ob-freq-opt-title">Weekly</div>
+          <div class="ob-freq-opt-desc">Review every 7 days — stay on top of spending</div>
+        </div>
+        <div class="ob-freq-opt" id="ob-freq-14" onclick="obSetFreq(14)">
+          <div class="ob-freq-opt-title">Every 2 weeks</div>
+          <div class="ob-freq-opt-desc">A balanced cadence, great for most people</div>
+        </div>
+        <div class="ob-freq-opt" id="ob-freq-30" onclick="obSetFreq(30)">
+          <div class="ob-freq-opt-title">Monthly</div>
+          <div class="ob-freq-opt-desc">End-of-month recap to close out your finances</div>
+        </div>
+      </div>
+      <button class="ob-cta" onclick="obGoStep(4)">Continue →</button>
+    </div>
+
+    <!-- Step 4: All set -->
+    <div id="ob-step-4" style="display:none">
+      <div class="ob-checkmark">✅</div>
+      <div class="ob-step-title" style="text-align:center">You're all set!</div>
+      <div class="ob-summary" id="ob-summary"></div>
+      <div class="ob-toggle-row">
+        <span class="ob-toggle-lbl">🔔 Enable reminders</span>
+        <label class="ob-toggle">
+          <input type="checkbox" id="ob-notif-toggle" onchange="obToggleNotifications(this.checked)">
+          <span class="ob-toggle-slider"></span>
+        </label>
+      </div>
+      <button class="ob-export-btn" onclick="obOpenCSVGuide()">How to export from your bank ›</button>
+      <button class="ob-cta green" onclick="obFinish()">Start tracking →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ CSV GUIDE MODAL ═══ -->
+<div id="csv-guide-modal" onclick="if(event.target===this)closeCSVGuide()">
+  <div class="cg-modal">
+    <div class="cg-head">
+      <span class="cg-title">How to export your transactions</span>
+      <button class="cg-close" onclick="closeCSVGuide()">✕</button>
+    </div>
+    <div class="cg-tabs">
+      <button class="cg-tab on" onclick="switchCSVTab('amex')">Amex</button>
+      <button class="cg-tab" onclick="switchCSVTab('apple')">Apple Card</button>
+      <button class="cg-tab" onclick="switchCSVTab('chase')">Chase</button>
+      <button class="cg-tab" onclick="switchCSVTab('other')">Other banks</button>
+    </div>
+    <div class="cg-content on" id="cg-amex">
+      <div class="cg-steps">
+        <div class="cg-step"><div class="cg-step-num">1</div><div class="cg-step-text">Go to <strong>americanexpress.com</strong> → "Statements &amp; Activity"</div></div>
+        <div class="cg-step"><div class="cg-step-num">2</div><div class="cg-step-text">Click the <strong>Download</strong> icon → select your date range → choose <strong>CSV</strong></div></div>
+        <div class="cg-step"><div class="cg-step-num">3</div><div class="cg-step-text">Import the downloaded file into Trace using <strong>⬆ Import CSV</strong></div></div>
+      </div>
+      <button class="cg-got-it" onclick="closeCSVGuide()">Got it</button>
+    </div>
+    <div class="cg-content" id="cg-apple">
+      <div class="cg-steps">
+        <div class="cg-step"><div class="cg-step-num">1</div><div class="cg-step-text">Open the <strong>Wallet app</strong> on iPhone → tap <strong>Apple Card</strong></div></div>
+        <div class="cg-step"><div class="cg-step-num">2</div><div class="cg-step-text">Tap <strong>•••</strong> (top right) → <strong>Export Transactions</strong></div></div>
+        <div class="cg-step"><div class="cg-step-num">3</div><div class="cg-step-text">Choose your date range → Save to Files → import into Trace</div></div>
+      </div>
+      <button class="cg-got-it" onclick="closeCSVGuide()">Got it</button>
+    </div>
+    <div class="cg-content" id="cg-chase">
+      <div class="cg-steps">
+        <div class="cg-step"><div class="cg-step-num">1</div><div class="cg-step-text">Go to <strong>chase.com</strong> → your Sapphire account</div></div>
+        <div class="cg-step"><div class="cg-step-num">2</div><div class="cg-step-text">Click <strong>"Download account activity"</strong> → select <strong>CSV format</strong></div></div>
+        <div class="cg-step"><div class="cg-step-num">3</div><div class="cg-step-text">Choose your date range → download and import into Trace</div></div>
+      </div>
+      <button class="cg-got-it" onclick="closeCSVGuide()">Got it</button>
+    </div>
+    <div class="cg-content" id="cg-other">
+      <div class="cg-steps">
+        <div class="cg-step"><div class="cg-step-num">1</div><div class="cg-step-text">Log into your <strong>bank's website</strong></div></div>
+        <div class="cg-step"><div class="cg-step-num">2</div><div class="cg-step-text">Find <strong>"Download", "Export"</strong>, or <strong>"Quicken"</strong> in transaction history</div></div>
+        <div class="cg-step"><div class="cg-step-num">3</div><div class="cg-step-text">Download a <strong>.OFX</strong> or <strong>.QFX</strong> file → import into Trace (works with most US banks)</div></div>
+      </div>
+      <button class="cg-got-it" onclick="closeCSVGuide()">Got it</button>
+    </div>
+  </div>
+</div>
+
 <script>
 // ═══════════════════════════════════════════════
 // DATA & STATE
@@ -1195,7 +1464,12 @@ let S = {
   budgets: {},
   categories: [...CATS],
   settings: { currency: 'USD' },
-  appliedMonths: []
+  appliedMonths: [],
+  onboardingDone: false,
+  reviewFreqDays: 7,
+  notificationsEnabled: false,
+  lastReviewDate: null,
+  onboardingCards: ['amex']
 };
 
 let vMonth = new Date().getMonth();
@@ -1622,7 +1896,7 @@ function saveQA() {
     if (idx!==-1) S.transactions[idx] = { ...S.transactions[idx], amount, desc, cat: qaSelCat, date, notes, type: qaType, card: qaCard };
     toast('Transaction updated ✓');
   } else {
-    const tx = { id: uid(), amount, desc, cat: qaSelCat, date, notes, type: qaType, card: qaCard, recurringId: null };
+    const tx = { id: uid(), amount, desc, cat: qaSelCat, date, notes, type: qaType, card: qaCard, recurringId: null, reviewed: true };
     S.transactions.unshift(tx);
     if (isRec) {
       const r = { id: uid(), amount, desc, cat: qaSelCat, freq, notes, type: qaType, active: true };
@@ -1689,6 +1963,9 @@ function renderFeed() {
     document.getElementById('feed-bars').innerHTML =
       '<div class="empty" style="padding:20px 0"><div class="empty-txt">No expenses yet this month</div></div>';
   }
+
+  // Review queue
+  renderReviewQueue();
 
   // Transaction feed grouped by date
   if (!txns.length) {
@@ -2259,7 +2536,7 @@ function toggleCatDef(id) {
 // RENDER BUDGETS
 // ═══════════════════════════════════════════════
 function renderBudgets() {
-  renderCatDefs();
+  renderBudgetRings();
   const expCats = S.categories.filter(c=>c!=='Income');
   document.getElementById('budget-inputs').innerHTML = expCats.map(c => {
     // Show budget in display currency
@@ -2317,7 +2594,7 @@ function applyRec(id) {
   const r = S.recurring.find(x=>x.id===id);
   if (!r) return;
   S.transactions.unshift({ id:uid(), amount:r.amount, desc:r.desc, cat:r.cat,
-    date:today(), notes:r.notes||'', type:r.type, recurringId:r.id });
+    date:today(), notes:r.notes||'', type:r.type, recurringId:r.id, reviewed: true });
   persist(); toast('Applied: '+r.desc+' ✓'); renderFeed();
 }
 
@@ -2405,7 +2682,7 @@ function maybeApplyRecurring() {
       );
       if (!already) {
         S.transactions.unshift({id:uid(),amount:r.amount,desc:r.desc,cat:r.cat,
-          date:today(),notes:r.notes||'',type:r.type,recurringId:r.id});
+          date:today(),notes:r.notes||'',type:r.type,recurringId:r.id,reviewed:true});
         applied.push(r.desc);
       }
     }
@@ -3019,7 +3296,7 @@ function confirmImport() {
     }
     const newTx = { id: uid(), amount: r.amount, desc: r.desc,
       rawDesc: r.rawDesc, cat: r.cat, date: r.date,
-      notes: '', type: r.type, recurringId: null };
+      notes: '', type: r.type, recurringId: null, reviewed: false };
     S.transactions.unshift(newTx);
     // Add to fingerprint set so back-to-back dupes in the same file are caught
     fps.add(txFingerprint(r.date, r.amount, r.rawDesc));
@@ -3039,6 +3316,343 @@ function cancelImport() {
   document.getElementById('import-banner').innerHTML='';
   document.getElementById('import-preview').innerHTML='';
   importedRows = [];
+}
+
+// ═══════════════════════════════════════════════
+// REVIEW QUEUE
+// ═══════════════════════════════════════════════
+let rqCollapsed = false;
+
+function renderReviewQueue() {
+  const card = document.getElementById('review-queue-card');
+  if (!card) return;
+  const txns = mTxns(vMonth, vYear);
+  const unreviewed = txns.filter(t => t.reviewed === false);
+  if (!unreviewed.length) {
+    card.style.display = 'none';
+    return;
+  }
+  card.style.display = '';
+  const collapseClass = rqCollapsed ? '' : ' open';
+  card.innerHTML = `
+    <div class="rq-header">
+      <span class="rq-title">🔍 To Review</span>
+      <span class="rq-count">${unreviewed.length}</span>
+      <button class="rq-collapse${collapseClass}" onclick="toggleReviewQueue()" title="Collapse">▾</button>
+      <button class="rq-mark-all" onclick="markAllReviewed()">Mark all ✓</button>
+    </div>
+    ${rqCollapsed ? '' : `<div class="rq-body" id="rq-body">
+      ${unreviewed.map(t => {
+        const dispName = t.desc.length > 24 ? t.desc.slice(0,24) : t.desc;
+        const d = pd(t.date);
+        const dateStr = d.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+        return `<div class="rq-row" id="rqr-${t.id}">
+          <span class="rq-ico">${ce(t.cat)}</span>
+          <span class="rq-name">${esc(dispName)}</span>
+          <span class="rq-date">${dateStr}</span>
+          <span class="rq-amt">${fmt(t.amount)}</span>
+          <button class="rq-check" onclick="markReviewed('${t.id}')" title="Mark reviewed">✓</button>
+        </div>`;
+      }).join('')}
+    </div>`}`;
+}
+
+function toggleReviewQueue() {
+  rqCollapsed = !rqCollapsed;
+  renderReviewQueue();
+}
+
+function markReviewed(id) {
+  const row = document.getElementById('rqr-'+id);
+  if (row) {
+    row.classList.add('fading');
+    setTimeout(() => {
+      const tx = S.transactions.find(t => t.id===id);
+      if (tx) tx.reviewed = true;
+      persist();
+      // Check if all done
+      const remaining = mTxns(vMonth, vYear).filter(t => t.reviewed === false);
+      const card = document.getElementById('review-queue-card');
+      if (card && !remaining.length) {
+        card.innerHTML = `<div class="rq-done">✅ All reviewed ✓</div>`;
+        updateLastReviewIfAllDone();
+        setTimeout(() => { card.style.display='none'; }, 2200);
+      } else {
+        renderReviewQueue();
+      }
+    }, 320);
+  } else {
+    const tx = S.transactions.find(t => t.id===id);
+    if (tx) tx.reviewed = true;
+    persist();
+    renderReviewQueue();
+  }
+}
+
+function markAllReviewed() {
+  const txns = mTxns(vMonth, vYear);
+  txns.forEach(t => { if (t.reviewed === false) t.reviewed = true; });
+  persist();
+  updateLastReviewIfAllDone();
+  const card = document.getElementById('review-queue-card');
+  if (card) {
+    card.innerHTML = `<div class="rq-done">✅ All reviewed ✓</div>`;
+    setTimeout(() => { card.style.display='none'; }, 2200);
+  }
+  toast('All transactions reviewed ✓');
+}
+
+function updateLastReviewIfAllDone() {
+  S.lastReviewDate = today();
+  persist();
+  const banner = document.getElementById('review-banner');
+  if (banner) banner.style.display = 'none';
+}
+
+// ═══════════════════════════════════════════════
+// REVIEW REMINDER BANNER
+// ═══════════════════════════════════════════════
+function checkReviewReminder() {
+  if (!S.onboardingDone) return; // don't show during onboarding
+  const banner = document.getElementById('review-banner');
+  if (!banner) return;
+  const freqMs = S.reviewFreqDays * 86400000;
+  const isDue = !S.lastReviewDate || (Date.now() - new Date(S.lastReviewDate).getTime() >= freqMs);
+  if (!isDue) return;
+  const label = S.reviewFreqDays <= 7 ? 'weekly' : S.reviewFreqDays <= 14 ? 'biweekly' : 'monthly';
+  const textEl = document.getElementById('review-banner-text');
+  if (textEl) textEl.textContent = `📋 Time for your ${label} review`;
+  banner.style.display = 'flex';
+}
+
+function triggerImportFromBanner() {
+  document.getElementById('csv-file-input').click();
+}
+
+function dismissReviewBanner() {
+  S.lastReviewDate = today();
+  persist();
+  const banner = document.getElementById('review-banner');
+  if (banner) banner.style.display = 'none';
+}
+
+// ═══════════════════════════════════════════════
+// BUDGET RINGS
+// ═══════════════════════════════════════════════
+function renderBudgetRings() {
+  const el = document.getElementById('budget-rings');
+  if (!el) return;
+  const txns = mTxns(vMonth, vYear);
+  const expByCat = {};
+  txns.filter(t => t.type==='expense').forEach(t => expByCat[t.cat] = (expByCat[t.cat]||0) + t.amount);
+
+  // Show categories that have spending or a budget set
+  const cats = S.categories.filter(c => c !== 'Income' && (expByCat[c] || S.budgets[c]));
+  if (!cats.length) {
+    el.innerHTML = '<div class="empty" style="padding:20px 0;grid-column:1/-1"><div class="empty-txt">Add expenses to see spending rings</div></div>';
+    return;
+  }
+
+  const R = 36, SW = 7, CX = 45, CY = 45;
+  const CIRC = 2 * Math.PI * R; // ≈ 226
+
+  el.innerHTML = cats.map(c => {
+    const spent = expByCat[c] || 0;
+    const budget = S.budgets[c] || 0;
+    const hasBudget = budget > 0;
+    const pct = hasBudget ? Math.min(spent / budget, 1) : 0;
+    const catColor = cc(c);
+
+    // Color based on % usage
+    let fillColor;
+    if (!hasBudget) {
+      fillColor = 'var(--text3)';
+    } else if (pct >= 1) {
+      fillColor = 'var(--red)';
+    } else if (pct >= 0.8) {
+      fillColor = 'var(--amber)';
+    } else {
+      fillColor = catColor;
+    }
+
+    // SVG ring arc approach: rotate -90deg so arc starts at 12 o'clock
+    // For budget rings: dasharray = "filled empty" where filled=pct*CIRC
+    // For no-budget rings: full dashed track only
+    const fillDashArray = hasBudget ? `${pct * CIRC} ${CIRC}` : '0 0';
+    const trackStroke   = hasBudget ? 'var(--border)' : fillColor;
+    const trackDash     = hasBudget ? '' : 'stroke-dasharray="8 5"';
+
+    // Center text
+    let centerAmt, centerLbl;
+    if (hasBudget) {
+      const remaining = budget - spent;
+      if (remaining >= 0) {
+        centerAmt = fmt(remaining);
+        centerLbl = 'left';
+      } else {
+        centerAmt = fmt(Math.abs(remaining));
+        centerLbl = 'over';
+      }
+    } else {
+      centerAmt = fmt(spent);
+      centerLbl = 'spent';
+    }
+    const isOver = hasBudget && spent > budget;
+    const amtClass = isOver ? 'bring-amt bring-ovr' : 'bring-amt';
+
+    const subText = hasBudget ? `${fmt(spent)} / ${fmt(budget)}` : fmt(spent);
+
+    return `<div class="bring">
+      <div class="bring-svg-wrap">
+        <svg viewBox="0 0 90 90" xmlns="http://www.w3.org/2000/svg">
+          <!-- Track circle -->
+          <circle cx="${CX}" cy="${CY}" r="${R}" stroke="${trackStroke}" stroke-width="${SW}" ${trackDash}/>
+          <!-- Fill arc (only when budget set) -->
+          ${hasBudget ? `<circle cx="${CX}" cy="${CY}" r="${R}"
+            stroke="${fillColor}" stroke-width="${SW}"
+            stroke-linecap="round"
+            stroke-dasharray="${fillDashArray}"
+            stroke-dashoffset="0"
+            transform="rotate(-90 ${CX} ${CY})"
+          />` : ''}
+        </svg>
+        <div class="bring-center">
+          <span class="${amtClass}">${centerAmt}</span>
+          <span class="bring-sub-lbl">${centerLbl}</span>
+        </div>
+      </div>
+      <div class="bring-label">
+        <div class="bring-name">${ce(c)} ${c.split(' ')[0]}</div>
+        <div class="bring-amounts">${subText}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════
+// CSV GUIDE MODAL
+// ═══════════════════════════════════════════════
+let _csvGuidePendingFinish = false;
+
+function openCSVGuide() {
+  _csvGuidePendingFinish = false;
+  document.getElementById('csv-guide-modal').classList.add('open');
+  switchCSVTab('amex');
+}
+
+function closeCSVGuide() {
+  document.getElementById('csv-guide-modal').classList.remove('open');
+  if (_csvGuidePendingFinish) {
+    _csvGuidePendingFinish = false;
+    obFinish();
+  }
+}
+
+function switchCSVTab(tab) {
+  document.querySelectorAll('.cg-tab').forEach((b,i) => {
+    const tabs = ['amex','apple','chase','other'];
+    b.classList.toggle('on', tabs[i]===tab);
+  });
+  ['amex','apple','chase','other'].forEach(t => {
+    const el = document.getElementById('cg-'+t);
+    if (el) el.classList.toggle('on', t===tab);
+  });
+}
+
+// ═══════════════════════════════════════════════
+// ONBOARDING
+// ═══════════════════════════════════════════════
+let _obStep = 1;
+let _obFreq = 7;
+let _obCards = ['amex'];
+
+function startOnboarding() {
+  _obStep = 1;
+  _obFreq = 7;
+  _obCards = ['amex'];
+  document.getElementById('ob-overlay').classList.remove('hidden');
+  obUpdateDots(1);
+  obShowStep(1);
+}
+
+function obGoStep(n) {
+  // Validate step 2: need at least one card selected
+  if (_obStep === 2 && _obCards.length === 0) {
+    toast('Select at least one card'); return;
+  }
+  _obStep = n;
+  obShowStep(n);
+  obUpdateDots(n);
+  // Populate step 4 summary
+  if (n === 4) obBuildSummary();
+}
+
+function obShowStep(n) {
+  [1,2,3,4].forEach(i => {
+    const el = document.getElementById('ob-step-'+i);
+    if (el) el.style.display = i===n ? '' : 'none';
+  });
+}
+
+function obUpdateDots(n) {
+  const dotEls = document.querySelectorAll('#ob-dots .ob-dot');
+  dotEls.forEach((d, i) => d.classList.toggle('on', i+1===n));
+}
+
+function obToggleCard(card) {
+  const idx = _obCards.indexOf(card);
+  if (idx === -1) _obCards.push(card);
+  else if (_obCards.length > 1) _obCards.splice(idx, 1);
+  // Update chip states
+  ['amex','apple','chase','none'].forEach(k => {
+    const chip = document.getElementById('ob-chip-'+k);
+    if (chip) chip.classList.toggle('on', _obCards.includes(k));
+  });
+}
+
+function obSetFreq(days) {
+  _obFreq = days;
+  [7, 14, 30].forEach(d => {
+    const el = document.getElementById('ob-freq-'+d);
+    if (el) el.classList.toggle('on', d===days);
+  });
+}
+
+function obBuildSummary() {
+  const cardNames = { amex:'Amex Platinum', apple:'Apple Card', chase:'Chase Sapphire', none:'Cash / Other' };
+  const freqLabel = _obFreq <= 7 ? 'Weekly' : _obFreq <= 14 ? 'Every 2 weeks' : 'Monthly';
+  const cards = _obCards.map(c => cardNames[c] || c).join(', ');
+  const el = document.getElementById('ob-summary');
+  if (el) el.innerHTML = `<strong>Cards:</strong> ${cards}<br><strong>Review frequency:</strong> ${freqLabel}`;
+}
+
+function obToggleNotifications(checked) {
+  if (checked && 'Notification' in window) {
+    Notification.requestPermission().then(perm => {
+      S.notificationsEnabled = perm === 'granted';
+      if (perm !== 'granted') {
+        document.getElementById('ob-notif-toggle').checked = false;
+      }
+    });
+  } else {
+    S.notificationsEnabled = false;
+  }
+}
+
+function obOpenCSVGuide() {
+  _csvGuidePendingFinish = true;
+  document.getElementById('csv-guide-modal').classList.add('open');
+  switchCSVTab('amex');
+}
+
+function obFinish() {
+  S.onboardingDone = true;
+  S.reviewFreqDays = _obFreq;
+  S.onboardingCards = [..._obCards];
+  persist();
+  document.getElementById('ob-overlay').classList.add('hidden');
+  checkReviewReminder();
+  refresh();
 }
 
 // ═══════════════════════════════════════════════
@@ -3075,6 +3689,12 @@ function refresh() {
   if (!S.transactions.length) {
     const banner = document.getElementById('restore-banner');
     if (banner) banner.style.display = 'flex';
+  }
+  // Onboarding — show on first launch
+  if (!S.onboardingDone) {
+    startOnboarding();
+  } else {
+    checkReviewReminder();
   }
   renderFeed();
   // Fetch live rate asynchronously — renders after it arrives
