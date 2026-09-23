@@ -2056,24 +2056,41 @@ function renderFeed() {
   // Budget bars
   const expByCat = {};
   txns.filter(t=>t.type==='expense').forEach(t => expByCat[t.cat]=(expByCat[t.cat]||0)+t.amount);
+  const totalExp = Object.values(expByCat).reduce((s,v)=>s+v,0);
   const cats = Object.keys(expByCat).sort((a,b)=>expByCat[b]-expByCat[a]);
   if (cats.length) {
     document.getElementById('feed-bars').innerHTML = cats.map(c => {
       const spent = expByCat[c], budget = S.budgets[c]||0;
-      const pct = budget>0 ? Math.min(Math.round(spent/budget*100),100) : 0;
-      const barColor = budget>0 ? (pct>=100?'var(--red)':pct>=80?'var(--amber)':'var(--accent)') : cc(c);
+      const isPct = budgetView === 'pct';
+      let barWidth, barColor, rightLabel;
+      if (isPct) {
+        const share = totalExp > 0 ? spent / totalExp : 0;
+        barWidth = Math.round(share * 100);
+        barColor = cc(c);
+        rightLabel = barWidth + '%';
+      } else {
+        const pct = budget>0 ? Math.min(Math.round(spent/budget*100),100) : 0;
+        barWidth = budget>0 ? pct : Math.min(100, Math.round(spent/(totalExp||1)*100));
+        barColor = budget>0 ? (pct>=100?'var(--red)':pct>=80?'var(--amber)':'var(--accent)') : cc(c);
+        rightLabel = fmt(spent) + (budget>0?' / '+fmt(budget):'');
+      }
       return `<div class="bb">
         <div class="bb-top">
           <span class="bb-name"><span class="dot" style="background:${cc(c)}"></span>${ce(c)} ${c}</span>
-          <span class="bb-amt">${fmt(spent)}${budget>0?' / '+fmt(budget):''}</span>
+          <span class="bb-amt">${rightLabel}</span>
         </div>
-        <div class="track"><div class="fill" style="width:${budget>0?pct:Math.min(100,Math.round(spent/exp*100))}%;background:${barColor}"></div></div>
+        <div class="track"><div class="fill" style="width:${barWidth}%;background:${barColor}"></div></div>
       </div>`;
     }).join('');
   } else {
     document.getElementById('feed-bars').innerHTML =
       '<div class="empty" style="padding:20px 0"><div class="empty-txt">No expenses yet this month</div></div>';
   }
+  // Keep dashboard toggle buttons in sync with current budgetView
+  const _da = document.getElementById('dash-bv-amt');
+  const _dp = document.getElementById('dash-bv-pct');
+  if (_da) _da.classList.toggle('on', budgetView === 'amount');
+  if (_dp) _dp.classList.toggle('on', budgetView === 'pct');
 
   // Review queue
   renderReviewQueue();
