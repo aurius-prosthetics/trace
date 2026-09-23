@@ -157,21 +157,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
   justify-content:center; padding:0 14px 0 28px; z-index:1;
   pointer-events:none;
 }
-/* Amex Platinum — deep navy with layered metallic sheen */
-.tx-cbg-amex {
-  background:
-    linear-gradient(108deg, transparent 25%, rgba(196,210,255,0.13) 40%,
-      rgba(255,255,255,0.22) 50%, rgba(196,210,255,0.13) 60%, transparent 75%),
-    linear-gradient(158deg, #0b1628 0%, #1a3060 30%, #2a4a88 52%, #1a3060 72%, #0b1628 100%);
-}
-/* Subtle horizontal stripe lines for brushed metal */
-.tx-cbg-amex::after {
-  content:''; position:absolute; inset:0;
-  background: repeating-linear-gradient(
-    0deg, transparent, transparent 3px, rgba(255,255,255,0.03) 3px, rgba(255,255,255,0.03) 4px
-  );
-  pointer-events:none;
-}
+/* Legacy stub — .tx-cbg-amex no longer applied; gradient now inline via CARDS.gradient */
 /* Apple Card — prismatic chromatic gradient */
 .tx-cbg-apple {
   background: linear-gradient(135deg, #fbc2d4 0%, #fde8a8 22%, #b8f0c0 44%, #a8d8f8 66%, #d0b8f8 88%, #fbc2d4 100%);
@@ -211,17 +197,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 /* Large transaction glow — applied via inline style now */
 .tx-large-card  { /* glow applied inline */ }
 
-/* Brushed-metal sheen for all Amex cards */
-.tx-cbg-metal {
-  background-image:
-    linear-gradient(108deg, transparent 25%, rgba(196,210,255,0.13) 40%,
-      rgba(255,255,255,0.18) 50%, rgba(196,210,255,0.08) 60%, transparent 75%) !important;
-}
+/* Brushed-metal sheen overlay for Amex cards — base gradient comes from inline style */
 .tx-cbg-metal::after {
-  content:''; position:absolute; inset:0;
-  background: repeating-linear-gradient(
-    180deg, transparent 0, transparent 2px, rgba(255,255,255,0.03) 2px, rgba(255,255,255,0.03) 4px
-  );
+  content:''; position:absolute; inset:0; pointer-events:none;
+  background:
+    linear-gradient(108deg, transparent 20%, rgba(255,255,255,0.18) 40%,
+      rgba(255,255,255,0.30) 50%, rgba(255,255,255,0.18) 60%, transparent 80%),
+    repeating-linear-gradient(
+      180deg, transparent 0, transparent 2px, rgba(255,255,255,0.04) 2px, rgba(255,255,255,0.04) 4px
+    );
 }
 
 /* Hover-reveal edit/delete buttons outside the tx bar */
@@ -1037,7 +1021,13 @@ input, select, textarea {
     </div>
     <div class="stats" id="feed-stats"></div>
     <div class="card" style="padding:0">
-      <div class="chead"><span class="ctitle">Budget Breakdown</span></div>
+      <div class="chead">
+        <span class="ctitle">Budget Breakdown</span>
+        <div class="bv-toggle">
+          <button class="bv-btn on" id="dash-bv-amt" onclick="setBudgetView('amount')">$ Amount</button>
+          <button class="bv-btn"    id="dash-bv-pct" onclick="setBudgetView('pct')">% Share</button>
+        </div>
+      </div>
       <div class="cbody"><div class="bbar" id="feed-bars"></div></div>
     </div>
     <div id="review-queue-card" class="card" style="padding:0;display:none"></div>
@@ -3642,11 +3632,15 @@ let budgetView = 'amount'; // 'amount' | 'pct'
 
 function setBudgetView(v) {
   budgetView = v;
-  const amtBtn = document.getElementById('bv-amt');
-  const pctBtn = document.getElementById('bv-pct');
-  if (amtBtn) amtBtn.classList.toggle('on', v === 'amount');
-  if (pctBtn) pctBtn.classList.toggle('on', v === 'pct');
+  // Sync all toggle buttons (budget rings tab + dashboard)
+  ['bv-amt','bv-pct','dash-bv-amt','dash-bv-pct'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const isAmt = id.includes('amt');
+    el.classList.toggle('on', v === 'amount' ? isAmt : !isAmt);
+  });
   renderBudgetRings();
+  renderFeed(); // re-render dashboard bars
 }
 
 function renderBudgetRings() {
