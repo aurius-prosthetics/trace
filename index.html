@@ -886,6 +886,10 @@ input, select, textarea {
              cursor:pointer;text-decoration:underline;white-space:nowrap;font-weight:600}
 
 /* ── BUDGET RINGS ── */
+.bv-toggle{display:flex;gap:2px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:2px}
+.bv-btn{padding:4px 10px;font-size:11px;font-weight:700;border:none;border-radius:6px;
+        cursor:pointer;background:none;color:var(--text2);transition:all .15s;white-space:nowrap}
+.bv-btn.on{background:var(--surf);color:var(--text);box-shadow:var(--sh)}
 #budget-rings{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;padding:18px 20px 20px}
 @media(max-width:640px){#budget-rings{grid-template-columns:1fr 1fr;gap:12px;padding:14px 14px 16px}}
 .bring{display:flex;flex-direction:column;align-items:center;gap:6px}
@@ -1087,7 +1091,13 @@ input, select, textarea {
   <!-- BUDGETS -->
   <div class="panel" id="panel-budgets">
     <div class="card" style="padding:0">
-      <div class="chead"><span class="ctitle">Spending Rings</span></div>
+      <div class="chead">
+        <span class="ctitle">Spending Rings</span>
+        <div class="bv-toggle">
+          <button class="bv-btn on" id="bv-amt" onclick="setBudgetView('amount')">$ Amount</button>
+          <button class="bv-btn"    id="bv-pct" onclick="setBudgetView('pct')">% Share</button>
+        </div>
+      </div>
       <div id="budget-rings"></div>
     </div>
     <div class="card" style="padding:0;margin-top:14px">
@@ -1434,7 +1444,7 @@ input, select, textarea {
 // ── CARD DEFINITIONS ──
 const CARDS = {
   // ── American Express ──
-  'amex-platinum':  { label:'Amex Platinum',      short:'Amex Plat',   brand:'amex',        gradient:'linear-gradient(135deg,#1C2B4A,#2E4070)',          textColor:'#D4C9B0', glowColor:'#c4a03a' },
+  'amex-platinum':  { label:'Amex Platinum',      short:'Amex Plat',   brand:'amex',        gradient:'linear-gradient(135deg,#7A8EA8 0%,#B8C8D8 20%,#E2EAF2 40%,#C8D4E0 55%,#A0B0C4 75%,#7A8EA8 100%)', textColor:'#1A2A3A', glowColor:'#A8B8CC' },
   'amex-gold':      { label:'Amex Gold',           short:'Amex Gold',   brand:'amex',        gradient:'linear-gradient(135deg,#7B5C14,#C8920A,#E8B830)',   textColor:'#FFF8DC', glowColor:'#E8B830' },
   'amex-green':     { label:'Amex Green',          short:'Amex Green',  brand:'amex',        gradient:'linear-gradient(135deg,#1B4D30,#2E7D4F)',          textColor:'#C8F5D8', glowColor:'#4CAF50' },
   'amex-blue':      { label:'Amex Blue Cash',      short:'Amex Blue',   brand:'amex',        gradient:'linear-gradient(135deg,#0D47A1,#1976D2)',          textColor:'#BBDEFB', glowColor:'#1976D2' },
@@ -1446,7 +1456,7 @@ const CARDS = {
   'chase-freedom-unlimited':  { label:'Chase Freedom Unlimited',   short:'Freedom U',  brand:'chase', gradient:'linear-gradient(135deg,#1565C0,#4A9FD5)', textColor:'#DFF0FF', glowColor:'#4A9FD5' },
   'chase-freedom-flex':       { label:'Chase Freedom Flex',        short:'Freedom F',  brand:'chase', gradient:'linear-gradient(135deg,#003087,#0070E0)', textColor:'#D0E8FF', glowColor:'#0070E0' },
   // ── Apple ──
-  'apple':          { label:'Apple Card',           short:'Apple',       brand:'apple',       gradient:'linear-gradient(135deg,#E8E8ED,#B0B0BB)',          textColor:'#1d1d1f', glowColor:'#c090e0' },
+  'apple':          { label:'Apple Card',           short:'Apple',       brand:'apple',       gradient:'linear-gradient(135deg,#fbc2d4 0%,#fde8a8 22%,#b8f0c0 44%,#a8d8f8 66%,#d0b8f8 88%,#fbc2d4 100%)', textColor:'#1d1d1f', glowColor:'#c090e0' },
   // ── Capital One ──
   'capital-one-venture-x':   { label:'Capital One Venture X',   short:'Venture X',   brand:'capital-one', gradient:'linear-gradient(135deg,#0D1117,#1A2332)', textColor:'#C8D8E8', glowColor:'#4060A0' },
   'capital-one-savor':       { label:'Capital One Savor',        short:'Savor',       brand:'capital-one', gradient:'linear-gradient(135deg,#3D0010,#6B0020)', textColor:'#FFCCCC', glowColor:'#B22222' },
@@ -3628,12 +3638,24 @@ function dismissReviewBanner() {
 // ═══════════════════════════════════════════════
 // BUDGET RINGS
 // ═══════════════════════════════════════════════
+let budgetView = 'amount'; // 'amount' | 'pct'
+
+function setBudgetView(v) {
+  budgetView = v;
+  const amtBtn = document.getElementById('bv-amt');
+  const pctBtn = document.getElementById('bv-pct');
+  if (amtBtn) amtBtn.classList.toggle('on', v === 'amount');
+  if (pctBtn) pctBtn.classList.toggle('on', v === 'pct');
+  renderBudgetRings();
+}
+
 function renderBudgetRings() {
   const el = document.getElementById('budget-rings');
   if (!el) return;
   const txns = mTxns(vMonth, vYear);
   const expByCat = {};
   txns.filter(t => t.type==='expense').forEach(t => expByCat[t.cat] = (expByCat[t.cat]||0) + t.amount);
+  const totalSpent = Object.values(expByCat).reduce((s,v)=>s+v,0);
 
   // Show categories that have spending or a budget set
   const cats = S.categories.filter(c => c !== 'Income' && (expByCat[c] || S.budgets[c]));
@@ -3644,60 +3666,54 @@ function renderBudgetRings() {
 
   const R = 36, SW = 7, CX = 45, CY = 45;
   const CIRC = 2 * Math.PI * R; // ≈ 226
+  const isPct = budgetView === 'pct';
 
   el.innerHTML = cats.map(c => {
     const spent = expByCat[c] || 0;
     const budget = S.budgets[c] || 0;
     const hasBudget = budget > 0;
-    const pct = hasBudget ? Math.min(spent / budget, 1) : 0;
     const catColor = cc(c);
 
-    // Color based on % usage
-    let fillColor;
-    if (!hasBudget) {
-      fillColor = 'var(--text3)';
-    } else if (pct >= 1) {
-      fillColor = 'var(--red)';
-    } else if (pct >= 0.8) {
-      fillColor = 'var(--amber)';
-    } else {
+    let arcFill, fillColor, centerAmt, centerLbl, subText, amtClass = 'bring-amt';
+
+    if (isPct) {
+      // % of total spending mode
+      const share = totalSpent > 0 ? spent / totalSpent : 0;
+      arcFill = share; // fill arc = share of total
       fillColor = catColor;
-    }
-
-    // SVG ring arc approach: rotate -90deg so arc starts at 12 o'clock
-    // For budget rings: dasharray = "filled empty" where filled=pct*CIRC
-    // For no-budget rings: full dashed track only
-    const fillDashArray = hasBudget ? `${pct * CIRC} ${CIRC}` : '0 0';
-    const trackStroke   = hasBudget ? 'var(--border)' : fillColor;
-    const trackDash     = hasBudget ? '' : 'stroke-dasharray="8 5"';
-
-    // Center text
-    let centerAmt, centerLbl;
-    if (hasBudget) {
-      const remaining = budget - spent;
-      if (remaining >= 0) {
-        centerAmt = fmt(remaining);
-        centerLbl = 'left';
-      } else {
-        centerAmt = fmt(Math.abs(remaining));
-        centerLbl = 'over';
-      }
+      const pctStr = (share * 100).toFixed(0) + '%';
+      centerAmt = pctStr;
+      centerLbl = 'of spend';
+      subText = fmt(spent);
     } else {
-      centerAmt = fmt(spent);
-      centerLbl = 'spent';
-    }
-    const isOver = hasBudget && spent > budget;
-    const amtClass = isOver ? 'bring-amt bring-ovr' : 'bring-amt';
+      // $ amount mode (original)
+      const pct = hasBudget ? Math.min(spent / budget, 1) : 0;
+      arcFill = hasBudget ? pct : 0;
+      if (!hasBudget) fillColor = 'var(--text3)';
+      else if (pct >= 1) fillColor = 'var(--red)';
+      else if (pct >= 0.8) fillColor = 'var(--amber)';
+      else fillColor = catColor;
 
-    const subText = hasBudget ? `${fmt(spent)} / ${fmt(budget)}` : fmt(spent);
+      if (hasBudget) {
+        const remaining = budget - spent;
+        if (remaining >= 0) { centerAmt = fmt(remaining); centerLbl = 'left'; }
+        else { centerAmt = fmt(Math.abs(remaining)); centerLbl = 'over'; amtClass = 'bring-amt bring-ovr'; }
+      } else {
+        centerAmt = fmt(spent); centerLbl = 'spent';
+      }
+      subText = hasBudget ? `${fmt(spent)} / ${fmt(budget)}` : fmt(spent);
+    }
+
+    const fillDashArray = (arcFill > 0) ? `${arcFill * CIRC} ${CIRC}` : '0 0';
+    const trackStroke   = (!isPct && !hasBudget) ? fillColor : 'var(--border)';
+    const trackDash     = (!isPct && !hasBudget) ? 'stroke-dasharray="8 5"' : '';
+    const showArc       = isPct ? (spent > 0) : hasBudget;
 
     return `<div class="bring">
       <div class="bring-svg-wrap">
         <svg viewBox="0 0 90 90" xmlns="http://www.w3.org/2000/svg">
-          <!-- Track circle -->
           <circle cx="${CX}" cy="${CY}" r="${R}" stroke="${trackStroke}" stroke-width="${SW}" ${trackDash}/>
-          <!-- Fill arc (only when budget set) -->
-          ${hasBudget ? `<circle cx="${CX}" cy="${CY}" r="${R}"
+          ${showArc ? `<circle cx="${CX}" cy="${CY}" r="${R}"
             stroke="${fillColor}" stroke-width="${SW}"
             stroke-linecap="round"
             stroke-dasharray="${fillDashArray}"
