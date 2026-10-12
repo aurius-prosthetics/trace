@@ -513,6 +513,24 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
                color:var(--text3);margin-bottom:4px}
 .rate-card-val{font-size:18px;font-weight:800;color:var(--accent)}
 
+/* Month comparison */
+.cmp-stat { flex:1; background:var(--surf2); border:1px solid var(--border); border-radius:var(--r); padding:12px 14px; }
+.cmp-stat-lbl { font-size:10px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--text3); margin-bottom:4px; }
+.cmp-stat-val { font-size:20px; font-weight:800; font-variant-numeric:tabular-nums; letter-spacing:-.03em; color:var(--text); }
+.cmp-delta { margin-top:4px; font-size:11px; font-weight:700; }
+.cmp-delta.up { color:var(--red); }
+.cmp-delta.dn { color:var(--green); }
+.cmp-delta.flat { color:var(--text3); }
+.cmp-row { display:flex; align-items:center; gap:8px; padding:9px 0; border-bottom:1px solid var(--border); font-size:13px; }
+.cmp-row:last-child { border-bottom:none; }
+.cmp-row-name { display:flex; align-items:center; gap:6px; flex:1.4; font-weight:600; color:var(--text); min-width:0; }
+.cmp-row-amt { flex:1; font-variant-numeric:tabular-nums; font-weight:700; text-align:right; color:var(--text); }
+.cmp-row-arrow { color:var(--text3); font-size:11px; flex-shrink:0; }
+.cmp-row-delta { flex:1; text-align:right; font-size:11px; font-weight:700; }
+.cmp-row-delta.up { color:var(--red); }
+.cmp-row-delta.dn { color:var(--green); }
+.cmp-row-delta.flat { color:var(--text3); }
+
 /* ── DARK MODE ── */
 @media (prefers-color-scheme: dark) {
   :root {
@@ -1076,6 +1094,14 @@ input, select, textarea {
       <div class="chead"><span class="ctitle">6-Month Trend</span></div>
       <div class="cbody"><div style="position:relative;height:220px"><canvas id="chart-trend"></canvas></div></div>
     </div>
+    <div class="card" style="margin-top:14px;padding:0" id="cmp-card">
+      <div class="chead"><span class="ctitle" id="cmp-title">Month Comparison</span></div>
+      <div class="cbody">
+        <div id="cmp-summary" style="display:flex;gap:10px;margin-bottom:18px"></div>
+        <div style="position:relative;height:260px;margin-bottom:18px"><canvas id="chart-compare"></canvas></div>
+        <div id="cmp-cats"></div>
+      </div>
+    </div>
   </div>
 
   <!-- BUDGETS -->
@@ -1545,6 +1571,7 @@ let qaType  = 'expense';
 let qaSelCat = '';
 let qaCard = 'amex';
 let trendChart = null;
+let compareChart = null;
 
 // ── Exchange rate (USD → GBP). All amounts stored in USD internally. ──
 let FX = { rate: 0.79, updatedAt: null, source: 'fallback' };  // sensible fallback
@@ -2617,6 +2644,7 @@ function renderFlow() {
 
   // Trend chart
   renderTrend();
+  renderCompare();
 }
 
 function renderTrend() {
@@ -2648,6 +2676,177 @@ function renderTrend() {
       }
     }
   });
+}
+
+// ═══════════════════════════════════════════════
+// MONTH COMPARISON
+// ═══════════════════════════════════════════════
+function renderCompare() {
+  const now = new Date();
+  const isCurrentMonth = (vMonth === now.getMonth() && vYear === now.getFullYear());
+  const cutoffDay = isCurrentMonth ? now.getDate() : 31;
+
+  const curTxns = S.transactions.filter(t => {
+    const d = new Date(t.date + 'T00:00:00');
+    return t.type === 'expense' && d.getMonth() === vMonth && d.getFullYear() === vYear && d.getDate() <= cutoffDay;
+  });
+
+  const prevMonth = vMonth === 0 ? 11 : vMonth - 1;
+  const prevYear  = vMonth === 0 ? vYear - 1 : vYear;
+  const prevTxns = S.transactions.filter(t => {
+    const d = new Date(t.date + 'T00:00:00');
+    return t.type === 'expense' && d.getMonth() === prevMonth && d.getFullYear() === prevYear && d.getDate() <= cutoffDay;
+  });
+
+  const curLbl  = SMONTHS[vMonth]  + ' 1–' + cutoffDay;
+  const prevLbl = SMONTHS[prevMonth] + ' 1–' + cutoffDay;
+
+  const curTotal  = curTxns.reduce((s,t)=>s+t.amount,0);
+  const prevTotal = prevTxns.reduce((s,t)=>s+t.amount,0);
+
+  // Delta badge
+  let deltaHtml = '';
+  if (prevTotal === 0 && curTotal === 0) {
+    deltaHtml = '<div class="cmp-delta flat">No spending data</div>';
+  } else if (prevTotal === 0) {
+    deltaHtml = `<div class="cmp-delta flat">No prior month data</div>`;
+  } else {
+    const diff = curTotal - prevTotal;
+    const pct  = Math.abs(Math.round(diff / prevTotal * 100));
+    if (diff > 0)      deltaHtml = `<div class="cmp-delta up">&#9650; ${fmt(diff)} (+${pct}% vs prior)</div>`;
+    else if (diff < 0) deltaHtml = `<div class="cmp-delta dn">&#9660; ${fmt(Math.abs(diff))} (−${pct}% vs prior)</div>`;
+    else               deltaHtml = `<div class="cmp-delta flat">&#9644; No change</div>`;
+  }
+
+  document.getElementById('cmp-summary').innerHTML =
+    `<div class="cmp-stat">
+       <div class="cmp-stat-lbl">${curLbl}</div>
+       <div class="cmp-stat-val">${fmt(curTotal)}</div>
+       ${deltaHtml}
+     </div>
+     <div class="cmp-stat">
+       <div class="cmp-stat-lbl">${prevLbl}</div>
+       <div class="cmp-stat-val">${fmt(prevTotal)}</div>
+     </div>`;
+
+  // Gather all categories that appear in either month
+  const catSet = new Set([...curTxns.map(t=>t.cat), ...prevTxns.map(t=>t.cat)]);
+  const allCats = [...catSet];
+
+  // Build per-cat totals
+  const curByCat  = {}, prevByCat = {};
+  curTxns.forEach(t  => curByCat[t.cat]  = (curByCat[t.cat]||0)  + t.amount);
+  prevTxns.forEach(t => prevByCat[t.cat] = (prevByCat[t.cat]||0) + t.amount);
+
+  // Sort: cur-month spend desc, then prev-only
+  allCats.sort((a,b) => {
+    const ac = curByCat[a]||0, bc = curByCat[b]||0;
+    if (ac !== bc) return bc - ac;
+    return (prevByCat[b]||0) - (prevByCat[a]||0);
+  });
+
+  // Chart
+  if (compareChart) { try{compareChart.destroy();}catch(e){} compareChart=null; }
+  const cs = getComputedStyle(document.documentElement);
+  const textColor   = cs.getPropertyValue('--text').trim();
+  const text3Color  = cs.getPropertyValue('--text3').trim();
+  const borderColor = cs.getPropertyValue('--border').trim();
+
+  const chartLabels = allCats.map(c => c.split(' ')[0]);
+  const curData  = allCats.map(c => curByCat[c]||0);
+  const prevData = allCats.map(c => prevByCat[c]||0);
+
+  compareChart = new Chart(document.getElementById('chart-compare'), {
+    type: 'bar',
+    data: {
+      labels: chartLabels,
+      datasets: [
+        {
+          label: SMONTHS[vMonth],
+          data: curData,
+          backgroundColor: '#4A7C6E',
+          borderRadius: 5,
+          barPercentage: 0.7
+        },
+        {
+          label: SMONTHS[prevMonth],
+          data: prevData,
+          backgroundColor: '#9AA3B2',
+          borderRadius: 5,
+          barPercentage: 0.7
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { labels: { font: { size: 11 }, padding: 10, boxWidth: 10, color: textColor } },
+        tooltip: {
+          callbacks: {
+            title: (items) => allCats[items[0].dataIndex],
+            label: (item) => ' ' + item.dataset.label + ': ' + fmt(item.raw)
+          }
+        }
+      },
+      scales: {
+        y: {
+          grid: { color: borderColor },
+          ticks: { font: { size: 11 }, color: text3Color, callback: v => fmt(v) }
+        },
+        x: {
+          grid: { display: false },
+          ticks: { font: { size: 11 }, color: text3Color }
+        }
+      }
+    }
+  });
+
+  // Category delta rows
+  const catsEl = document.getElementById('cmp-cats');
+  if (!allCats.length) {
+    catsEl.innerHTML = '<div style="color:var(--text3);font-size:13px;text-align:center;padding:10px 0">No expense data to compare</div>';
+    return;
+  }
+
+  catsEl.innerHTML = allCats.map(cat => {
+    const cur  = curByCat[cat]  || 0;
+    const prev = prevByCat[cat] || 0;
+    const hasCur  = !!curByCat[cat];
+    const hasPrev = !!prevByCat[cat];
+    const diff = cur - prev;
+    const color = cc(cat);
+    const emoji = ce(cat);
+
+    let deltaClass = 'flat', deltaText = '—';
+    if (hasCur && hasPrev) {
+      if (diff > 0) {
+        const pct = Math.round(diff / prev * 100);
+        deltaClass = 'up';
+        deltaText = `&#9650; ${fmt(diff)} (${pct}%)`;
+      } else if (diff < 0) {
+        const pct = Math.round(Math.abs(diff) / prev * 100);
+        deltaClass = 'dn';
+        deltaText = `&#9660; ${fmt(Math.abs(diff))} (${pct}%)`;
+      } else {
+        deltaText = '&#9644; —';
+      }
+    }
+
+    const curAmt  = hasCur  ? `<span style="color:${color}">${fmt(cur)}</span>`  : '<span style="color:var(--text3)">—</span>';
+    const prevAmt = hasPrev ? fmt(prev) : '<span style="color:var(--text3)">—</span>';
+
+    return `<div class="cmp-row">
+      <div class="cmp-row-name">
+        <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${color};flex-shrink:0"></span>
+        ${emoji} ${cat}
+      </div>
+      <div class="cmp-row-amt">${curAmt}</div>
+      <div class="cmp-row-arrow">&#8594;</div>
+      <div class="cmp-row-amt">${prevAmt}</div>
+      <div class="cmp-row-delta ${deltaClass}">${deltaText}</div>
+    </div>`;
+  }).join('');
 }
 
 // ═══════════════════════════════════════════════
