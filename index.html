@@ -2684,22 +2684,26 @@ function renderTrend() {
 function renderCompare() {
   const now = new Date();
   const isCurrentMonth = (vMonth === now.getMonth() && vYear === now.getFullYear());
-  const cutoffDay = isCurrentMonth ? now.getDate() : 31;
+  const cutoffDay = isCurrentMonth ? now.getDate() : 31; // 31 always >= any real day-of-month
+
+  const prevMonth = vMonth === 0 ? 11 : vMonth - 1;
+  const prevYear  = vMonth === 0 ? vYear - 1 : vYear;
 
   const curTxns = S.transactions.filter(t => {
     const d = new Date(t.date + 'T00:00:00');
     return t.type === 'expense' && d.getMonth() === vMonth && d.getFullYear() === vYear && d.getDate() <= cutoffDay;
   });
-
-  const prevMonth = vMonth === 0 ? 11 : vMonth - 1;
-  const prevYear  = vMonth === 0 ? vYear - 1 : vYear;
   const prevTxns = S.transactions.filter(t => {
     const d = new Date(t.date + 'T00:00:00');
     return t.type === 'expense' && d.getMonth() === prevMonth && d.getFullYear() === prevYear && d.getDate() <= cutoffDay;
   });
 
-  const curLbl  = SMONTHS[vMonth]  + ' 1–' + cutoffDay;
-  const prevLbl = SMONTHS[prevMonth] + ' 1–' + cutoffDay;
+  const curLbl  = isCurrentMonth
+    ? SMONTHS[vMonth]  + ' 1–' + cutoffDay
+    : SMONTHS[vMonth]  + ' ' + vYear + ' (full)';
+  const prevLbl = isCurrentMonth
+    ? SMONTHS[prevMonth] + ' 1–' + cutoffDay
+    : SMONTHS[prevMonth] + ' ' + prevYear + ' (full)';
 
   const curTotal  = curTxns.reduce((s,t)=>s+t.amount,0);
   const prevTotal = prevTxns.reduce((s,t)=>s+t.amount,0);
