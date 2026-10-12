@@ -514,6 +514,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 .rate-card-val{font-size:18px;font-weight:800;color:var(--accent)}
 
 /* Month comparison */
+.cmp-period-pills { display:flex; gap:3px; }
+.cmp-pill { padding:4px 9px; font-size:11px; font-weight:700; border:1.5px solid var(--border);
+            border-radius:99px; background:none; color:var(--text2); cursor:pointer;
+            transition:all .15s; white-space:nowrap; }
+.cmp-pill:hover { border-color:var(--accent); color:var(--accent); }
+.cmp-pill.on { background:var(--acc-lt); border-color:var(--accent); color:var(--accent); }
 .cmp-stat { flex:1; background:var(--surf2); border:1px solid var(--border); border-radius:var(--r); padding:12px 14px; }
 .cmp-stat-lbl { font-size:10px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--text3); margin-bottom:4px; }
 .cmp-stat-val { font-size:20px; font-weight:800; font-variant-numeric:tabular-nums; letter-spacing:-.03em; color:var(--text); }
@@ -1090,17 +1096,25 @@ input, select, textarea {
         </p>
       </div>
     </div>
-    <div class="card" style="margin-top:14px;padding:0">
-      <div class="chead"><span class="ctitle">6-Month Trend</span></div>
-      <div class="cbody"><div style="position:relative;height:220px"><canvas id="chart-trend"></canvas></div></div>
-    </div>
     <div class="card" style="margin-top:14px;padding:0" id="cmp-card">
-      <div class="chead"><span class="ctitle" id="cmp-title">Month Comparison</span></div>
+      <div class="chead">
+        <span class="ctitle">Comparison</span>
+        <div class="cmp-period-pills" id="cmp-period-pills">
+          <button class="cmp-pill" data-w="7"   onclick="setCmpWindow(7)">7d</button>
+          <button class="cmp-pill" data-w="14"  onclick="setCmpWindow(14)">14d</button>
+          <button class="cmp-pill" data-w="30"  onclick="setCmpWindow(30)">30d</button>
+          <button class="cmp-pill on" data-w="0" onclick="setCmpWindow(0)">MTD</button>
+        </div>
+      </div>
       <div class="cbody">
         <div id="cmp-summary" style="display:flex;gap:10px;margin-bottom:18px"></div>
         <div style="position:relative;height:260px;margin-bottom:18px"><canvas id="chart-compare"></canvas></div>
         <div id="cmp-cats"></div>
       </div>
+    </div>
+    <div class="card" style="margin-top:14px;padding:0">
+      <div class="chead"><span class="ctitle">6-Month Trend</span></div>
+      <div class="cbody"><div style="position:relative;height:220px"><canvas id="chart-trend"></canvas></div></div>
     </div>
   </div>
 
@@ -2681,29 +2695,59 @@ function renderTrend() {
 // ═══════════════════════════════════════════════
 // MONTH COMPARISON
 // ═══════════════════════════════════════════════
+let cmpWindow = 0; // 0 = MTD, 7/14/30 = rolling days
+
+function setCmpWindow(w) {
+  cmpWindow = w;
+  document.querySelectorAll('.cmp-pill').forEach(el =>
+    el.classList.toggle('on', +el.dataset.w === w)
+  );
+  renderCompare();
+}
+
 function renderCompare() {
   const now = new Date();
-  const isCurrentMonth = (vMonth === now.getMonth() && vYear === now.getFullYear());
-  const cutoffDay = isCurrentMonth ? now.getDate() : 31; // 31 always >= any real day-of-month
+  now.setHours(0,0,0,0);
 
-  const prevMonth = vMonth === 0 ? 11 : vMonth - 1;
-  const prevYear  = vMonth === 0 ? vYear - 1 : vYear;
+  let curTxns, prevTxns, curLbl, prevLbl;
 
-  const curTxns = S.transactions.filter(t => {
-    const d = new Date(t.date + 'T00:00:00');
-    return t.type === 'expense' && d.getMonth() === vMonth && d.getFullYear() === vYear && d.getDate() <= cutoffDay;
-  });
-  const prevTxns = S.transactions.filter(t => {
-    const d = new Date(t.date + 'T00:00:00');
-    return t.type === 'expense' && d.getMonth() === prevMonth && d.getFullYear() === prevYear && d.getDate() <= cutoffDay;
-  });
+  if (cmpWindow > 0) {
+    // Rolling window: last N days vs the N days before that
+    const curEnd   = new Date(now); curEnd.setDate(curEnd.getDate() + 1); // exclusive
+    const curStart = new Date(now); curStart.setDate(curStart.getDate() - cmpWindow + 1);
+    const prevEnd  = new Date(curStart);
+    const prevStart= new Date(curStart); prevStart.setDate(prevStart.getDate() - cmpWindow);
 
-  const curLbl  = isCurrentMonth
-    ? SMONTHS[vMonth]  + ' 1–' + cutoffDay
-    : SMONTHS[vMonth]  + ' ' + vYear + ' (full)';
-  const prevLbl = isCurrentMonth
-    ? SMONTHS[prevMonth] + ' 1–' + cutoffDay
-    : SMONTHS[prevMonth] + ' ' + prevYear + ' (full)';
+    const inRange = (dateStr, start, end) => {
+      const d = new Date(dateStr + 'T00:00:00');
+      return d >= start && d < end;
+    };
+
+    curTxns  = S.transactions.filter(t => t.type==='expense' && inRange(t.date, curStart, curEnd));
+    prevTxns = S.transactions.filter(t => t.type==='expense' && inRange(t.date, prevStart, prevEnd));
+
+    const fmtDate = d => SMONTHS[d.getMonth()] + ' ' + d.getDate();
+    curLbl  = fmtDate(curStart) + '–' + fmtDate(new Date(now));
+    prevLbl = fmtDate(prevStart) + '–' + fmtDate(new Date(prevEnd.getTime() - 86400000));
+  } else {
+    // MTD: month-to-date vs same days last month
+    const isCurrentMonth = (vMonth === now.getMonth() && vYear === now.getFullYear());
+    const cutoffDay = isCurrentMonth ? now.getDate() : 31;
+    const prevMonth = vMonth === 0 ? 11 : vMonth - 1;
+    const prevYear  = vMonth === 0 ? vYear - 1 : vYear;
+
+    curTxns  = S.transactions.filter(t => {
+      const d = new Date(t.date + 'T00:00:00');
+      return t.type==='expense' && d.getMonth()===vMonth && d.getFullYear()===vYear && d.getDate()<=cutoffDay;
+    });
+    prevTxns = S.transactions.filter(t => {
+      const d = new Date(t.date + 'T00:00:00');
+      return t.type==='expense' && d.getMonth()===prevMonth && d.getFullYear()===prevYear && d.getDate()<=cutoffDay;
+    });
+
+    curLbl  = isCurrentMonth ? SMONTHS[vMonth]+' 1–'+cutoffDay : SMONTHS[vMonth]+' '+vYear+' (full)';
+    prevLbl = isCurrentMonth ? SMONTHS[prevMonth]+' 1–'+cutoffDay : SMONTHS[prevMonth]+' '+prevYear+' (full)';
+  }
 
   const curTotal  = curTxns.reduce((s,t)=>s+t.amount,0);
   const prevTotal = prevTxns.reduce((s,t)=>s+t.amount,0);
