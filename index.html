@@ -111,6 +111,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 .tx:hover{border-color:var(--border);box-shadow:0 2px 8px rgba(0,0,0,.07)}
 .tx-ico{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;position:relative;z-index:2;
         justify-content:center;font-size:16px;flex-shrink:0}
+.cat-ico-tile{display:flex;align-items:center;justify-content:center;border-radius:10px;
+              color:#fff;flex-shrink:0;position:relative;z-index:2}
+.ic{display:inline-block;vertical-align:-0.125em}
 .tx-mid{flex:1;min-width:0;position:relative;z-index:2}
 .tx-name{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .tx-meta{display:flex;align-items:center;gap:5px;margin-top:2px;flex-wrap:wrap}
@@ -242,14 +245,19 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 .cat-def-hd{display:flex;align-items:center;gap:10px;padding:12px 14px;cursor:pointer;
             background:var(--surf);transition:background .15s;user-select:none}
 .cat-def-hd:hover{background:var(--surf2)}
-.cat-def-hd-left{display:flex;align-items:center;gap:8px;flex:1}
-.cat-def-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.cat-def-hd-left{display:flex;align-items:center;gap:10px;flex:1}
 .cat-def-name{font-size:13px;font-weight:700}
 .cat-def-arr{font-size:10px;color:var(--text3);transition:transform .2s}
-.cat-def-body{display:none;padding:10px 14px 14px 35px;font-size:12px;color:var(--text2);
+.cat-def-body{display:none;padding:14px;font-size:12px;color:var(--text2);
               background:var(--surf2);border-top:1px solid var(--border);line-height:1.7}
 .cat-def.open .cat-def-arr{transform:rotate(180deg)}
 .cat-def.open .cat-def-body{display:block}
+.cat-swatch-row{display:flex;gap:9px;flex-wrap:wrap}
+.cat-swatch{width:26px;height:26px;border-radius:50%;cursor:pointer;flex-shrink:0;
+            display:flex;align-items:center;justify-content:center;color:#fff;
+            border:2px solid transparent;transition:transform .15s,border-color .15s}
+.cat-swatch:hover{transform:scale(1.12)}
+.cat-swatch.on{border-color:var(--surf);box-shadow:0 0 0 2px var(--text)}
 
 /* ── BUDGET BARS ── */
 .bbar{display:flex;flex-direction:column;gap:12px}
@@ -418,6 +426,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 /* ── TOAST ── */
 .toast{position:fixed;bottom:22px;right:20px;background:var(--text);color:#fff;
        padding:10px 16px;border-radius:var(--r3);font-size:13px;font-weight:600;
+       display:flex;align-items:center;gap:7px;
        z-index:999;opacity:0;transform:translateY(6px);transition:all .22s;pointer-events:none}
 .toast.show{opacity:1;transform:translateY(0)}
 
@@ -489,7 +498,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 .conv-box:focus-within{border-color:var(--accent)}
 .conv-box-lbl{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.09em;
               color:var(--text3);margin-bottom:6px;display:flex;align-items:center;gap:6px}
-.conv-flag{font-size:16px}
+.conv-flag{font-size:9px;font-weight:800;letter-spacing:.04em;background:var(--acc-lt);color:var(--acc-dk);
+           padding:2px 6px;border-radius:5px}
 .conv-inp{width:100%;font-size:28px;font-weight:800;font-variant-numeric:tabular-nums;
           letter-spacing:-.03em;border:none;outline:none;background:transparent;
           color:var(--text);caret-color:var(--accent)}
@@ -601,7 +611,7 @@ input, select, textarea {
   /* Header — compact; safe area already handled by min-height on .hdr */
   .hdr { padding-left: 12px; padding-right: 12px; padding-bottom: 0; gap: 8px; }
   /* logo handled by .logo-wordmark responsive rule */
-  /* Hide backup/restore + old fab in header on mobile — accessible via ☰ menu */
+  /* Hide backup/restore + old fab in header on mobile — accessible via hamburger menu */
   .hdr-backup-btns { display: none !important; }
   .add-fab { display: none !important; }
   .m-lbl { min-width: 76px; font-size: 12px; font-weight: 600; }
@@ -961,14 +971,14 @@ input, select, textarea {
              font-size:12px;font-weight:700;cursor:pointer;color:var(--text2);transition:all .15s;white-space:nowrap"
       onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'"
       onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text2)'">
-      ⬇ Backup
+      <span data-ic="download"></span> Backup
     </button>
     <button title="Restore data from a backup file" onclick="triggerRestoreJSON()"
       style="padding:7px 11px;background:var(--bg);border:1px solid var(--border);border-radius:20px;
              font-size:12px;font-weight:700;cursor:pointer;color:var(--text2);transition:all .15s;white-space:nowrap"
       onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'"
       onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text2)'">
-      ↩ Restore
+      <span data-ic="undo"></span> Restore
     </button>
   </div>
   <input type="file" id="restore-file-input" accept=".json" style="display:none" onchange="restoreJSON(this)">
@@ -980,55 +990,55 @@ input, select, textarea {
 
 <!-- ═══ RESTORE BANNER (shown when no data found) ═══ -->
 <div id="restore-banner" style="display:none;background:#FDF3E3;border-bottom:1px solid #F0D5A0;padding:8px 16px;align-items:center;gap:8px;font-size:12px">
-  <span>⚠️</span>
+  <span data-ic="alert-triangle" style="color:#C47A2A"></span>
   <span style="flex:1;color:#7A4F1A;font-weight:600">No data found — restore a backup to recover your transactions.</span>
-  <button onclick="triggerRestoreJSON()" style="padding:5px 11px;background:#C47A2A;color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap">↩ Restore</button>
-  <button onclick="document.getElementById('restore-banner').style.display='none'" style="padding:5px 8px;background:none;border:1px solid #C47A2A;border-radius:6px;font-size:11px;color:#7A4F1A;cursor:pointer">✕</button>
+  <button onclick="triggerRestoreJSON()" style="padding:5px 11px;background:#C47A2A;color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:4px"><span data-ic="undo"></span> Restore</button>
+  <button onclick="document.getElementById('restore-banner').style.display='none'" style="padding:5px 8px;background:none;border:1px solid #C47A2A;border-radius:6px;font-size:11px;color:#7A4F1A;cursor:pointer;display:flex"><span data-ic="x"></span></button>
 </div>
 
 <!-- ═══ REVIEW REMINDER BANNER ═══ -->
 <div id="review-banner">
-  <span class="rb-text" id="review-banner-text">📋 Time for your weekly review</span>
+  <span class="rb-text" id="review-banner-text">Time for your weekly review</span>
   <button class="rb-import" onclick="triggerImportFromBanner()">Import now</button>
   <button class="rb-dismiss" onclick="dismissReviewBanner()">Dismiss</button>
 </div>
 
 <!-- ═══ TABS ═══ -->
 <nav class="tabs">
-  <button class="tab on" data-tab="feed"><span class="tab-ico" style="display:none">🏠</span><span class="tab-lbl">Dashboard</span></button>
-  <button class="tab"    data-tab="flow"><span class="tab-ico" style="display:none">💸</span><span class="tab-lbl">Flow</span></button>
+  <button class="tab on" data-tab="feed"><span class="tab-ico" style="display:none" data-ic="home"></span><span class="tab-lbl">Dashboard</span></button>
+  <button class="tab"    data-tab="flow"><span class="tab-ico" style="display:none" data-ic="waves"></span><span class="tab-lbl">Flow</span></button>
   <!-- Desktop-only tabs (hidden on mobile, shown between flow and FAB on desktop) -->
-  <button class="tab desk-only" data-tab="recurring"><span class="tab-ico" style="display:none">🔁</span><span class="tab-lbl">Bills</span></button>
-  <button class="tab desk-only" data-tab="convert"><span class="tab-ico" style="display:none">💱</span><span class="tab-lbl">FX</span></button>
-  <button class="tab desk-only" data-tab="cards"><span class="tab-ico" style="display:none">💳</span><span class="tab-lbl">Cards</span></button>
+  <button class="tab desk-only" data-tab="recurring"><span class="tab-ico" style="display:none" data-ic="repeat"></span><span class="tab-lbl">Bills</span></button>
+  <button class="tab desk-only" data-tab="convert"><span class="tab-ico" style="display:none" data-ic="swap"></span><span class="tab-lbl">FX</span></button>
+  <button class="tab desk-only" data-tab="cards"><span class="tab-ico" style="display:none" data-ic="card"></span><span class="tab-lbl">Cards</span></button>
   <!-- FAB slot — mobile only, centered between Flow and Budgets -->
   <div class="tab-fab-slot mob-only">
     <button class="mob-fab" onclick="openQA()" aria-label="Add transaction">+</button>
   </div>
-  <button class="tab"    data-tab="budgets"><span class="tab-ico" style="display:none">🎯</span><span class="tab-lbl">Budgets</span></button>
+  <button class="tab"    data-tab="budgets"><span class="tab-ico" style="display:none" data-ic="target"></span><span class="tab-lbl">Budgets</span></button>
   <!-- Hamburger tab — mobile only -->
   <button class="tab tab-menu mob-only" onclick="toggleMobMenu()" id="mob-menu-tab">
-    <span class="tab-ico" style="display:none">☰</span><span class="tab-lbl">Menu</span>
+    <span class="tab-ico" style="display:none" data-ic="menu"></span><span class="tab-lbl">Menu</span>
   </button>
 </nav>
 
 <!-- ═══ MOBILE MENU DROPDOWN ═══ -->
 <div id="mob-menu-panel" style="display:none">
   <button class="mob-menu-item" onclick="switchTab('recurring');closeMobMenu()">
-    <span>🔁</span> Bills
+    <span data-ic="repeat"></span> Bills
   </button>
   <button class="mob-menu-item" onclick="switchTab('convert');closeMobMenu()">
-    <span>💱</span> FX Converter
+    <span data-ic="swap"></span> FX Converter
   </button>
   <button class="mob-menu-item" onclick="switchTab('cards');closeMobMenu()">
-    <span>💳</span> Cards
+    <span data-ic="card"></span> Cards
   </button>
   <div class="mob-menu-divider"></div>
   <button class="mob-menu-item" onclick="backupJSON();closeMobMenu()">
-    <span>⬇</span> Backup Data
+    <span data-ic="download"></span> Backup Data
   </button>
   <button class="mob-menu-item" onclick="triggerRestoreJSON();closeMobMenu()">
-    <span>↩</span> Restore Backup
+    <span data-ic="undo"></span> Restore Backup
   </button>
 </div>
 
@@ -1063,7 +1073,7 @@ input, select, textarea {
                 onclick="openCSVGuide()">How to export ›</button>
         <button class="bs" style="padding:5px 12px;font-size:12px;display:flex;align-items:center;gap:5px"
                 onclick="document.getElementById('csv-file-input').click()">
-          ⬆ Import CSV
+          <span data-ic="upload"></span> Import CSV
         </button>
       </div>
     </div>
@@ -1088,7 +1098,7 @@ input, select, textarea {
       </div>
       <div class="cbody">
         <div id="sankey-wrap">
-          <div id="sankey-canvas"><div class="sankey-empty"><div class="sankey-empty-ico">💸</div>Add transactions to see your cash flow</div></div>
+          <div id="sankey-canvas"><div class="sankey-empty"><div class="sankey-empty-ico" data-ic="coin"></div>Add transactions to see your cash flow</div></div>
           <div id="sankey-zoom-hint">scroll to zoom · drag to pan</div>
         </div>
         <p class="note" style="margin-top:10px;text-align:center">
@@ -1142,10 +1152,19 @@ input, select, textarea {
         <div id="budget-inputs"></div>
       </div>
     </div>
+    <!-- CATEGORY COLORS -->
+    <div class="card" style="padding:0;margin-top:14px">
+      <div class="chead">
+        <span class="ctitle">Category Colors</span>
+      </div>
+      <div class="cbody">
+        <p style="font-size:13px;color:var(--text2);margin-bottom:16px">
+          Pick a color for each category — it updates everywhere instantly.
+        </p>
+        <div class="cat-def-list" id="cat-def-list"></div>
+      </div>
+    </div>
   </div>
-
-  <!-- CATEGORY DEFINITIONS (in Budgets tab, below limits) -->
-  <div class="panel" id="panel-catdefs" style="display:none"></div>
 
   <!-- RECURRING -->
   <div class="panel" id="panel-recurring">
@@ -1177,7 +1196,7 @@ input, select, textarea {
     <div class="card" style="padding:0">
       <div class="chead">
         <span class="ctitle">USD ↔ GBP Converter</span>
-        <button class="bs" style="padding:5px 12px;font-size:12px" onclick="refreshRate()">↻ Refresh rate</button>
+        <button class="bs" style="padding:5px 12px;font-size:12px;display:inline-flex;align-items:center;gap:5px" onclick="refreshRate()"><span data-ic="refresh"></span> Refresh rate</button>
       </div>
       <div class="cbody">
         <div class="conv-hero">
@@ -1187,15 +1206,15 @@ input, select, textarea {
           </div>
           <div class="conv-grid">
             <div class="conv-box">
-              <div class="conv-box-lbl"><span class="conv-flag">🇺🇸</span> US Dollar</div>
+              <div class="conv-box-lbl"><span class="conv-flag">USD</span> US Dollar</div>
               <input class="conv-inp" id="conv-usd" type="number" min="0" step="0.01" placeholder="0.00" oninput="calcConv('usd')">
               <div class="conv-sub" id="conv-usd-sub">Enter an amount</div>
             </div>
             <div>
-              <div class="conv-swap" onclick="swapConv()" title="Swap">⇄</div>
+              <div class="conv-swap" onclick="swapConv()" title="Swap" data-ic="swap"></div>
             </div>
             <div class="conv-box">
-              <div class="conv-box-lbl"><span class="conv-flag">🇬🇧</span> British Pound</div>
+              <div class="conv-box-lbl"><span class="conv-flag">GBP</span> British Pound</div>
               <input class="conv-inp" id="conv-gbp" type="number" min="0" step="0.01" placeholder="0.00" oninput="calcConv('gbp')">
               <div class="conv-sub" id="conv-gbp-sub">Enter an amount</div>
             </div>
@@ -1236,9 +1255,9 @@ input, select, textarea {
     <div class="qa-handle"></div>
     <div class="qa-title">
       <span id="qa-title-text">Add Transaction</span>
-      <button class="qa-close" onclick="closeQA()">✕</button>
+      <button class="qa-close" onclick="closeQA()" data-ic="x"></button>
     </div>
-    <div class="edit-note-lbl" id="edit-note-lbl">✎ Editing existing transaction</div>
+    <div class="edit-note-lbl" id="edit-note-lbl"><span data-ic="edit" data-ic-size="12"></span> Editing existing transaction</div>
     <div class="qa-type-row">
       <button class="type-pill on-exp" id="tp-exp" onclick="setQAType('expense')">— Expense</button>
       <button class="type-pill"        id="tp-inc" onclick="setQAType('income')">+ Income</button>
@@ -1302,7 +1321,7 @@ input, select, textarea {
     <div class="qa-handle"></div>
     <div class="qa-title">
       <span>Transaction</span>
-      <button class="qa-close" onclick="closeTxDetail()">✕</button>
+      <button class="qa-close" onclick="closeTxDetail()" data-ic="x"></button>
     </div>
     <!-- header: icon + name + amount -->
     <div id="tdd-header" style="display:flex;align-items:center;gap:14px;padding:14px 22px 12px"></div>
@@ -1312,10 +1331,10 @@ input, select, textarea {
     <div style="display:flex;gap:10px;padding:4px 22px 8px">
       <button onclick="tddEdit()" style="flex:1;padding:13px;border-radius:12px;border:none;
         background:var(--accent);color:#fff;font-size:14px;font-weight:700;cursor:pointer;
-        touch-action:manipulation">✎ Edit</button>
+        touch-action:manipulation;display:flex;align-items:center;justify-content:center;gap:6px"><span data-ic="edit" data-ic-size="15"></span> Edit</button>
       <button onclick="tddDelete()" style="flex:1;padding:13px;border-radius:12px;
         border:1.5px solid var(--red);background:var(--red-lt);color:var(--red);
-        font-size:14px;font-weight:700;cursor:pointer;touch-action:manipulation">✕ Delete</button>
+        font-size:14px;font-weight:700;cursor:pointer;touch-action:manipulation;display:flex;align-items:center;justify-content:center;gap:6px"><span data-ic="trash" data-ic-size="15"></span> Delete</button>
     </div>
   </div>
 </div>
@@ -1365,9 +1384,9 @@ input, select, textarea {
       <div class="ob-logo"><div class="ob-logo-dot"></div>Trace</div>
       <div class="ob-tagline">Your money.<br>Yours alone.</div>
       <div class="ob-bullets">
-        <div class="ob-bullet">📴 Runs completely offline</div>
-        <div class="ob-bullet">🔒 All data stays only on this device</div>
-        <div class="ob-bullet">👤 No account, no login, no tracking</div>
+        <div class="ob-bullet"><span data-ic="wifi-off" data-ic-size="20" style="color:var(--accent)"></span> Runs completely offline</div>
+        <div class="ob-bullet"><span data-ic="lock" data-ic-size="20" style="color:var(--accent)"></span> All data stays only on this device</div>
+        <div class="ob-bullet"><span data-ic="ban" data-ic-size="20" style="color:var(--accent)"></span> No account, no login, no tracking</div>
       </div>
       <button class="ob-cta" onclick="obGoStep(2)">Get started →</button>
     </div>
@@ -1403,11 +1422,11 @@ input, select, textarea {
 
     <!-- Step 4: All set -->
     <div id="ob-step-4" style="display:none">
-      <div class="ob-checkmark">✅</div>
+      <div class="ob-checkmark" style="display:flex;justify-content:center;color:var(--green)"><span data-ic="check" data-ic-size="52"></span></div>
       <div class="ob-step-title" style="text-align:center">You're all set!</div>
       <div class="ob-summary" id="ob-summary"></div>
       <div class="ob-toggle-row">
-        <span class="ob-toggle-lbl">🔔 Enable reminders</span>
+        <span class="ob-toggle-lbl" style="display:flex;align-items:center;gap:6px"><span data-ic="bell" data-ic-size="16"></span> Enable reminders</span>
         <label class="ob-toggle">
           <input type="checkbox" id="ob-notif-toggle" onchange="obToggleNotifications(this.checked)">
           <span class="ob-toggle-slider"></span>
@@ -1424,7 +1443,7 @@ input, select, textarea {
   <div class="cg-modal">
     <div class="cg-head">
       <span class="cg-title">How to export your transactions</span>
-      <button class="cg-close" onclick="closeCSVGuide()">✕</button>
+      <button class="cg-close" onclick="closeCSVGuide()" data-ic="x"></button>
     </div>
     <div class="cg-tabs">
       <button class="cg-tab on" onclick="switchCSVTab('amex')">Amex</button>
@@ -1544,20 +1563,72 @@ const CAT_COLORS = {
   'Miscellaneous':  '#64748B',   // slate
   'Income':         '#16A34A',   // vivid green
 };
-const CAT_EMOJI = {
-  'Food & Drinks':  '🍔',
-  'Transport':      '🚌',
-  'Entertainment':  '🎮',
-  'Shopping':       '🛍️',
-  'Health':         '🏥',
-  'Housing':        '🏠',
-  'Utilities':      '⚡',
-  'Travel':         '✈️',
-  'Savings':        '💰',
-  'Miscellaneous':  '📦',
-  'Income':         '💼',
-};
 const CATS = Object.keys(CAT_COLORS);
+
+// ═══════════════════════════════════════════════
+// ICONS — inline SVG line-icon set (no emoji anywhere)
+// ═══════════════════════════════════════════════
+const ICONS = {
+  x: '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>',
+  trash: '<path d="M4 7h16M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2m3 0-1 13a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L6 7"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/>',
+  edit: '<path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/>',
+  check: '<polyline points="20 6 9 17 4 12"/>',
+  'alert-triangle': '<path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/><line x1="12" y1="9" x2="12" y2="13"/><circle cx="12" cy="17" r="0.75" fill="currentColor" stroke="none"/>',
+  card: '<rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/>',
+  repeat: '<path d="M17 2l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 22l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/>',
+  refresh: '<path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 3v6h-6"/>',
+  sparkle: '<path d="M12 2l1.8 6.2L20 10l-6.2 1.8L12 18l-1.8-6.2L4 10l6.2-1.8L12 2z" fill="currentColor" stroke="none"/>',
+  undo: '<path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-1"/>',
+  upload: '<path d="M12 19V5"/><path d="M6 11l6-6 6 6"/><path d="M4 21h16"/>',
+  download: '<path d="M12 5v14"/><path d="M6 13l6 6 6-6"/><path d="M4 21h16"/>',
+  swap: '<path d="M3 7h14"/><path d="M13 3l4 4-4 4"/><path d="M21 17H7"/><path d="M11 13l-4 4 4 4"/>',
+  clipboard: '<rect x="6" y="4" width="12" height="18" rx="2"/><rect x="9" y="2" width="6" height="4" rx="1"/><line x1="9" y1="11" x2="15" y2="11"/><line x1="9" y1="15" x2="15" y2="15"/>',
+  'file-text': '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/>',
+  calendar: '<rect x="3" y="5" width="18" height="16" rx="2"/><line x1="16" y1="3" x2="16" y2="7"/><line x1="8" y1="3" x2="8" y2="7"/><line x1="3" y1="10" x2="21" y2="10"/>',
+  'wifi-off': '<path d="M5 12.5a11 11 0 0 1 14 0"/><path d="M8.5 16a6 6 0 0 1 7 0"/><line x1="12" y1="20" x2="12.01" y2="20"/><line x1="2" y1="2" x2="22" y2="22"/>',
+  lock: '<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',
+  ban: '<circle cx="12" cy="12" r="9"/><line x1="5.6" y1="5.6" x2="18.4" y2="18.4"/>',
+  bell: '<path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M10.3 21a2 2 0 0 0 3.4 0"/>',
+  coin: '<circle cx="12" cy="12" r="9"/><path d="M12 7v10M15 9.5c-.3-1-1.4-1.5-3-1.5-1.8 0-3 .8-3 2s1.2 1.8 3 2c1.8.2 3 .8 3 2s-1.2 2-3 2c-1.6 0-2.7-.5-3-1.5"/>',
+  'trending-up': '<polyline points="3 17 9 11 13 15 21 6"/><polyline points="15 6 21 6 21 12"/>',
+  'trending-down': '<polyline points="3 7 9 13 13 9 21 18"/><polyline points="15 18 21 18 21 12"/>',
+  save: '<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"/><path d="M8 3v5h8V3"/><path d="M6 21v-8h12v8"/>',
+  target: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"/>',
+  waves: '<path d="M2 8c2-2 4-2 6 0s4 2 6 0 4-2 6 0 4 2 6 0"/><path d="M2 15c2-2 4-2 6 0s4 2 6 0 4-2 6 0 4 2 6 0"/>',
+  home: '<path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/><path d="M9 20v-6h6v6"/>',
+  smartphone: '<rect x="6" y="2" width="12" height="20" rx="2"/><line x1="11" y1="18" x2="13" y2="18"/>',
+  tag: '<path d="M20.6 12.8 12.8 20.6a2 2 0 0 1-2.8 0l-7.6-7.6a2 2 0 0 1-.6-1.4V4a2 2 0 0 1 2-2h7.6a2 2 0 0 1 1.4.6l7.6 7.6a2 2 0 0 1 0 2.8Z"/><circle cx="7.5" cy="7.5" r="1.2" fill="currentColor" stroke="none"/>',
+  box: '<path d="M21 8l-9-5-9 5 9 5 9-5Z"/><path d="M3 8v8l9 5 9-5V8"/><line x1="12" y1="13" x2="12" y2="21"/>',
+  briefcase: '<rect x="2" y="7" width="20" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="2" y1="13" x2="22" y2="13"/>',
+  bag: '<path d="M6 7h12l1 13a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2L6 7Z"/><path d="M9 7V5a3 3 0 0 1 6 0v2"/>',
+  heart: '<path d="M12 21s-7.5-4.6-10-9.3C.4 8 1.7 4.5 5 3.3 7.3 2.5 9.8 3.3 12 6c2.2-2.7 4.7-3.5 7-2.7 3.3 1.2 4.6 4.7 3 8.4C19.5 16.4 12 21 12 21Z"/>',
+  bolt: '<polygon points="13 2 3 14 11 14 10 22 21 10 13 10 13 2"/>',
+  plane: '<path d="M21 16v-2l-8-5V4.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V18l-3 2v1.5l4-1 4 1V20l-3-2v-4.5Z"/>',
+  utensils: '<path d="M4 2v6a2 2 0 0 0 2 2 2 2 0 0 0 2-2V2M8 2v6a2 2 0 0 1-2 2M6 10v12M18 2s-2 2-2 6 2 4 2 4v10"/>',
+  bus: '<rect x="3" y="6" width="18" height="11" rx="2"/><line x1="3" y1="12" x2="21" y2="12"/><circle cx="7.5" cy="19" r="1.5" fill="currentColor" stroke="none"/><circle cx="16.5" cy="19" r="1.5" fill="currentColor" stroke="none"/>',
+  play: '<circle cx="12" cy="12" r="9"/><polygon points="10 8 16 12 10 16 10 8" fill="currentColor" stroke="none"/>',
+  menu: '<line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>',
+};
+function ic(name, size) {
+  const inner = ICONS[name] || ICONS.tag;
+  const s = size || '1em';
+  return `<svg class="ic" viewBox="0 0 24 24" width="${s}" height="${s}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${inner}</svg>`;
+}
+const CAT_ICONS = {
+  'Food & Drinks':  'utensils',
+  'Transport':      'bus',
+  'Entertainment':  'play',
+  'Shopping':       'bag',
+  'Health':         'heart',
+  'Housing':        'home',
+  'Utilities':      'bolt',
+  'Travel':         'plane',
+  'Savings':        'trending-up',
+  'Miscellaneous':  'box',
+  'Income':         'briefcase',
+};
+const SWATCHES = ['#E8680A','#7C3AED','#0EA5E9','#DB2777','#16A34A','#4F46E5','#0891B2','#DC2626','#059669','#64748B','#D97706','#E11D48'];
+
 const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 const SMONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
@@ -1566,7 +1637,7 @@ let S = {
   recurring: [],
   budgets: {},
   categories: [...CATS],
-  settings: { currency: 'USD' },
+  settings: { currency: 'USD', catColors: {} },
   appliedMonths: [],
   onboardingDone: false,
   reviewFreqDays: 7,
@@ -1639,7 +1710,7 @@ function updateRateUI(state) {
   buildRefTable();
 }
 
-function refreshRate() { fetchRate(true).then(() => { toast('Rate refreshed ✓'); updateConvUI(); }); }
+function refreshRate() { fetchRate(true).then(() => { toast(`${ic('check',14)} Rate refreshed`); updateConvUI(); }); }
 
 // ═══════════════════════════════════════════════
 // ═══════════════════════════════════════════════
@@ -1706,6 +1777,8 @@ function migrateData() {
       delete S.budgets[old];
     }
   });
+  // Backfill custom-color override map for saves from before it existed
+  if (!S.settings.catColors) S.settings.catColors = {};
 }
 
 // hydrateAsync — tries IDB first, migrates from localStorage if empty
@@ -1746,8 +1819,24 @@ const today = () => { const d=new Date(); return `${d.getFullYear()}-${p2(d.getM
 const p2 = n => String(n).padStart(2,'0');
 const pd = s => new Date(s + 'T00:00:00');
 const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-const cc = c => CAT_COLORS[c] || '#888';
-const ce = c => CAT_EMOJI[c] || '📌';
+const cc = c => (S.settings.catColors && S.settings.catColors[c]) || CAT_COLORS[c] || '#888';
+function catIconHtml(cat, px) {
+  const size = px || 36;
+  return `<div class="cat-ico-tile" style="width:${size}px;height:${size}px;background:${cc(cat)}">${ic(CAT_ICONS[cat] || 'tag', Math.round(size*0.52)+'px')}</div>`;
+}
+function setCatColor(cat, hex) {
+  S.settings.catColors[cat] = hex;
+  persist();
+  renderCatDefs();
+  const active = document.querySelector('.tab.on');
+  if (active) {
+    const t = active.dataset.tab;
+    if (t === 'feed') renderFeed();
+    if (t === 'budgets') renderBudgets();
+    if (t === 'cards') renderCards();
+    if (t === 'flow') renderFlow();
+  }
+}
 
 function mTxns(m, y) {
   return S.transactions.filter(t => {
@@ -1762,7 +1851,7 @@ function mTxns(m, y) {
 let tTimer;
 function toast(msg) {
   const el = document.getElementById('toast');
-  el.textContent = msg;
+  el.innerHTML = msg;
   el.classList.add('show');
   clearTimeout(tTimer);
   tTimer = setTimeout(() => el.classList.remove('show'), 2600);
@@ -1816,6 +1905,13 @@ function switchTab(name) {
 }
 document.querySelectorAll('.tab[data-tab]').forEach(b => b.addEventListener('click', () => switchTab(b.dataset.tab)));
 
+// Populate every static data-ic="name" placeholder with its inline SVG icon
+document.querySelectorAll('[data-ic]').forEach(el => {
+  el.innerHTML = ic(el.dataset.ic, el.dataset.icSize);
+  if (el.style.display !== 'none') el.style.display = 'inline-flex';
+  el.style.verticalAlign = 'middle';
+});
+
 function toggleMobMenu() {
   const panel = document.getElementById('mob-menu-panel');
   const menuTab = document.getElementById('mob-menu-tab');
@@ -1848,7 +1944,7 @@ function buildCatGrid() {
     <button class="cat-pill${qaSelCat===c?' on':''}"
       style="${qaSelCat===c?'background:'+cc(c)+';border-color:'+cc(c):''}"
       onclick="selectCat('${c}')" data-cat="${c}">
-      <span class="cp-em">${ce(c)}</span>${c.split(' ')[0]}
+      <span class="cp-em">${ic(CAT_ICONS[c]||'tag',18)}</span>${c.split(' ')[0]}
     </button>`).join('');
 }
 
@@ -1887,7 +1983,7 @@ function buildQACardPills() {
   grid.innerHTML = keys.map(k => {
     const info = CARDS[k] || CARDS.none;
     return `<button class="card-pill" data-card="${k}" onclick="setQACard('${k}')">
-      <span class="cp-logo">💳</span>${info.short}
+      <span class="cp-logo">${ic('card',15)}</span>${info.short}
     </button>`;
   }).join('');
   // Update grid columns to match count
@@ -1987,8 +2083,7 @@ function openTxDetail(id) {
   const amtColor  = isIncome ? 'var(--green)' : 'var(--text)';
 
   document.getElementById('tdd-header').innerHTML = `
-    <div style="width:50px;height:50px;border-radius:14px;background:${catColor}20;
-                display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0">${ce(t.cat)}</div>
+    ${catIconHtml(t.cat, 50)}
     <div style="flex:1;min-width:0">
       <div style="font-size:17px;font-weight:800;color:var(--text);line-height:1.25;word-break:break-word">${esc(t.desc)}</div>
       <div style="font-size:12px;color:${catColor};font-weight:600;margin-top:3px">${t.cat}</div>
@@ -1997,9 +2092,9 @@ function openTxDetail(id) {
   `;
 
   document.getElementById('tdd-rows').innerHTML =
-    tddRowHtml('📅', 'Date',   fmtDateLong(t.date)) +
-    tddRowHtml('💳', 'Card',   cardInfo.label) +
-    (t.notes ? tddRowHtml('📝', 'Notes', t.notes) : '');
+    tddRowHtml(ic('calendar'), 'Date',   fmtDateLong(t.date)) +
+    tddRowHtml(ic('card'), 'Card',   cardInfo.label) +
+    (t.notes ? tddRowHtml(ic('edit'), 'Notes', t.notes) : '');
 
   document.getElementById('tx-detail-overlay').classList.add('open');
 }
@@ -2046,7 +2141,7 @@ function saveQA() {
   if (editId) {
     const idx = S.transactions.findIndex(t => t.id===editId);
     if (idx!==-1) S.transactions[idx] = { ...S.transactions[idx], amount, desc, cat: qaSelCat, date, notes, type: qaType, card: qaCard };
-    toast('Transaction updated ✓');
+    toast(`${ic('check',14)} Transaction updated`);
   } else {
     const tx = { id: uid(), amount, desc, cat: qaSelCat, date, notes, type: qaType, card: qaCard, recurringId: null, reviewed: true };
     S.transactions.unshift(tx);
@@ -2054,9 +2149,9 @@ function saveQA() {
       const r = { id: uid(), amount, desc, cat: qaSelCat, freq, notes, type: qaType, active: true };
       S.recurring.push(r);
       tx.recurringId = r.id;
-      toast('Saved + added to recurring ↻');
+      toast(`${ic('repeat',14)} Saved + added to recurring`);
     } else {
-      toast('Saved ✓');
+      toast(`${ic('check',14)} Saved`);
     }
   }
   persist(); closeQA(); refresh();
@@ -2117,7 +2212,7 @@ function renderFeed() {
       }
       return `<div class="bb">
         <div class="bb-top">
-          <span class="bb-name"><span class="dot" style="background:${cc(c)}"></span>${ce(c)} ${c}</span>
+          <span class="bb-name">${catIconHtml(c,20)}${c}</span>
           <span class="bb-amt">${rightLabel}</span>
         </div>
         <div class="track"><div class="fill" style="width:${barWidth}%;background:${barColor}"></div></div>
@@ -2142,7 +2237,7 @@ function renderFeed() {
   // Transaction feed
   if (!txns.length) {
     document.getElementById('feed-list').innerHTML =
-      '<div class="empty"><div class="empty-ico">📋</div><div class="empty-txt">No transactions yet — tap + Add to start</div></div>';
+      `<div class="empty"><div class="empty-ico">${ic('clipboard',28)}</div><div class="empty-txt">No transactions yet — tap + Add to start</div></div>`;
     return;
   }
 
@@ -2186,7 +2281,7 @@ function renderFeed() {
     Object.entries(byCat).forEach(([cat, catTxns]) => {
       const total = catTxns.filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0);
       html += `<div class="day-group">
-        <div class="day-label"><span style="color:${cc(cat)}">${ce(cat)} ${cat}</span>
+        <div class="day-label"><span style="display:inline-flex;align-items:center;gap:6px;color:${cc(cat)}">${ic(CAT_ICONS[cat]||'tag',12)} ${cat}</span>
           <span class="day-total">${fmt(total)}</span></div>
         ${catTxns.map(txRow).join('')}
       </div>`;
@@ -2199,7 +2294,7 @@ function renderFeed() {
       const info = (CARDS[cardKey]||CARDS.none);
       const total = cardTxns.filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0);
       html += `<div class="day-group">
-        <div class="day-label">💳 ${info.label}
+        <div class="day-label"><span style="display:inline-flex;align-items:center;gap:6px">${ic('card',12)}${info.label}</span>
           <span class="day-total">${fmt(total)}</span></div>
         ${cardTxns.map(txRow).join('')}
       </div>`;
@@ -2271,7 +2366,7 @@ function renderInsights() {
     const pct  = Math.round(Math.abs(diff) / prevExp * 100);
     const up   = diff > 0;
     html += `<div class="ins-card">
-      <div class="ins-ico">${up?'📈':'📉'}</div>
+      <div class="ins-ico ${up?'ins-up':'ins-down'}">${ic(up?'trending-up':'trending-down',22)}</div>
       <div class="ins-body">
         <div class="ins-title">vs ${SMONTHS[prevM]}</div>
         <div class="ins-val ${up?'ins-up':'ins-down'}">${up?'+':'-'}${pct}% spending</div>
@@ -2283,7 +2378,7 @@ function renderInsights() {
   const topCat = Object.entries(curCats).sort((a,b)=>b[1]-a[1])[0];
   if (topCat) {
     html += `<div class="ins-card">
-      <div class="ins-ico">${ce(topCat[0])}</div>
+      ${catIconHtml(topCat[0], 32)}
       <div class="ins-body">
         <div class="ins-title">Top category</div>
         <div class="ins-val" style="color:${cc(topCat[0])}">${topCat[0]}</div>
@@ -2303,7 +2398,7 @@ function renderInsights() {
     const up  = biggestPct > 0;
     const pct = Math.round(Math.abs(biggestPct) * 100);
     html += `<div class="ins-card">
-      <div class="ins-ico">${ce(biggestChange.cat)}</div>
+      ${catIconHtml(biggestChange.cat, 32)}
       <div class="ins-body">
         <div class="ins-title">Biggest shift</div>
         <div class="ins-val ${up?'ins-up':'ins-down'}">${biggestChange.cat} ${up?'▲':'▼'} ${pct}%</div>
@@ -2317,7 +2412,7 @@ function renderInsights() {
   });
   if (overBudget.length) {
     html += `<div class="ins-card ins-alert">
-      <div class="ins-ico">⚠️</div>
+      <div class="ins-ico" style="color:var(--red)">${ic('alert-triangle',22)}</div>
       <div class="ins-body">
         <div class="ins-title">Over budget</div>
         <div class="ins-val ins-up">${overBudget.slice(0,2).join(', ')}${overBudget.length>2?' +more':''}</div>
@@ -2331,7 +2426,7 @@ function renderInsights() {
     const rate  = Math.round(saved / curInc * 100);
     const good  = rate >= 0;
     html += `<div class="ins-card">
-      <div class="ins-ico">${good?'💰':'💸'}</div>
+      <div class="ins-ico ${good?'ins-down':'ins-up'}">${ic('coin',22)}</div>
       <div class="ins-body">
         <div class="ins-title">Savings rate</div>
         <div class="ins-val ${good?'ins-down':'ins-up'}">${good?'+':''}${rate}%</div>
@@ -2360,7 +2455,6 @@ function cardClipPath(fillPct) {
 
 function txRow(t) {
   const catColor = cc(t.cat);
-  const catBg    = catColor + '15';
   const cardKey  = t.card || 'none';
   const cardInfo = CARDS[cardKey] || CARDS.none;
   const isIncome = t.type === 'income';
@@ -2395,20 +2489,20 @@ function txRow(t) {
     </div>
 
     <!-- ── Left content ── -->
-    <div class="tx-ico" style="background:${catBg};flex-shrink:0">${ce(t.cat)}</div>
+    ${catIconHtml(t.cat, 36)}
     <div class="tx-mid" style="max-width:52%;min-width:0">
       <div class="tx-name">${esc(displayName)}</div>
       <div class="tx-meta">
         <span class="chip chip-cat" style="border-color:${catColor}30;color:${catColor}">${t.cat}</span>
-        ${t.recurringId ? '<span class="chip chip-rec">↻</span>' : ''}
+        ${t.recurringId ? `<span class="chip chip-rec">${ic('repeat',12)}</span>` : ''}
       </div>
     </div>
 
   </div>
   <!-- ── Hover-reveal edit/delete buttons (desktop only, hidden on mobile) ── -->
   <div class="tx-hover-btns">
-    <button class="ib e" title="Edit" onclick="event.stopPropagation();openQAEdit('${t.id}')">✎</button>
-    <button class="ib d" title="Delete" onclick="event.stopPropagation();deleteTx('${t.id}')">✕</button>
+    <button class="ib e" title="Edit" onclick="event.stopPropagation();openQAEdit('${t.id}')">${ic('edit',14)}</button>
+    <button class="ib d" title="Delete" onclick="event.stopPropagation();deleteTx('${t.id}')">${ic('trash',14)}</button>
   </div>
 </div>`;
 }
@@ -2492,7 +2586,7 @@ function renderFlow() {
   const expCat = Object.entries(expMap).sort((a,b)=>b[1]-a[1]);
 
   if (!incSrc.length && !expCat.length) {
-    container.innerHTML = '<div class="sankey-empty"><div class="sankey-empty-ico">💸</div><div>Add income and expenses to see your cash flow chart</div></div>';
+    container.innerHTML = `<div class="sankey-empty"><div class="sankey-empty-ico">${ic('coin',32)}</div><div>Add income and expenses to see your cash flow chart</div></div>`;
     initSankeyPanZoom();
     return;
   }
@@ -2632,7 +2726,7 @@ function renderFlow() {
     nodes += `<rect x="${n.x}" y="${n.y}" width="${nodeW}" height="${n.h}" rx="4" fill="${col}"/>`;
     const cy = n.y + n.h/2;
     labels += `
-      <text x="${n.x+nodeW+12}" y="${cy-7}" text-anchor="start" font-size="12" font-weight="600" fill="${skTxt}">${ce(n.cat)} ${esc(n.cat)}</text>
+      <text x="${n.x+nodeW+12}" y="${cy-7}" text-anchor="start" font-size="12" font-weight="600" fill="${skTxt}">${esc(n.cat)}</text>
       <text x="${n.x+nodeW+12}" y="${cy+9}" text-anchor="start" font-size="11" fill="${skTxt2}">${fmt(n.val)}</text>`;
   });
 
@@ -2642,7 +2736,7 @@ function renderFlow() {
     nodes += `<rect x="${xBudget}" y="${bRight}" width="${nodeW}" height="${remaining}" rx="4" fill="#BBF7D0"/>`;
     if (remaining > 20) {
       labels += `
-        <text x="${xBudget+nodeW+12}" y="${bRight+remaining/2-7}" text-anchor="start" font-size="12" font-weight="600" fill="#16A34A">💰 Saved</text>
+        <text x="${xBudget+nodeW+12}" y="${bRight+remaining/2-7}" text-anchor="start" font-size="12" font-weight="600" fill="#16A34A">Saved</text>
         <text x="${xBudget+nodeW+12}" y="${bRight+remaining/2+9}" text-anchor="start" font-size="11" fill="${skTxt2}">${fmt(savedAmt)}</text>`;
     }
   }
@@ -2921,7 +3015,7 @@ function renderCards() {
   // Per-card category breakdown
   const breakdownEl = document.getElementById('cards-breakdown');
   if (!txns.length) {
-    breakdownEl.innerHTML = '<div class="empty"><div class="empty-ico">💳</div><div class="empty-txt">No expense transactions this month</div></div>';
+    breakdownEl.innerHTML = `<div class="empty"><div class="empty-ico">${ic('card',28)}</div><div class="empty-txt">No expense transactions this month</div></div>`;
     return;
   }
 
@@ -2948,7 +3042,7 @@ function renderCards() {
           const pct = Math.round(amt/total*100);
           return `<div class="bb">
             <div class="bb-top">
-              <span class="bb-name"><span class="dot" style="background:${cc(cat)}"></span>${ce(cat)} ${cat}</span>
+              <span class="bb-name">${catIconHtml(cat,20)}${cat}</span>
               <span class="bb-amt">${fmt(amt)} <span style="color:var(--text3)">(${pct}%)</span></span>
             </div>
             <div class="track"><div class="fill" style="width:${pct}%;background:${cc(cat)}"></div></div>
@@ -2966,18 +3060,29 @@ function renderCards() {
 function renderCatDefs() {
   const el = document.getElementById('cat-def-list');
   if (!el) return;
-  el.innerHTML = Object.entries(CAT_DEFS).map(([cat, def]) => `
-    <div class="cat-def" id="cdef-${cat.replace(/\W/g,'_')}">
-      <div class="cat-def-hd" onclick="toggleCatDef('${cat.replace(/\W/g,'_')}')">
+  el.innerHTML = Object.entries(CAT_DEFS).map(([cat, def]) => {
+    const id = cat.replace(/\W/g,'_');
+    const curColor = cc(cat);
+    const swatches = SWATCHES.map(hex => `
+      <div class="cat-swatch${curColor.toLowerCase()===hex.toLowerCase()?' on':''}" style="background:${hex}"
+           onclick="event.stopPropagation();setCatColor('${cat}','${hex}')" title="${hex}">
+        ${curColor.toLowerCase()===hex.toLowerCase()?ic('check',12):''}
+      </div>`).join('');
+    return `
+    <div class="cat-def" id="cdef-${id}">
+      <div class="cat-def-hd" onclick="toggleCatDef('${id}')">
         <div class="cat-def-hd-left">
-          <span class="cat-def-dot" style="background:${cc(cat)}"></span>
-          <span style="font-size:16px">${ce(cat)}</span>
+          ${catIconHtml(cat, 28)}
           <span class="cat-def-name">${cat}</span>
         </div>
         <span class="cat-def-arr">▾</span>
       </div>
-      <div class="cat-def-body">${esc(def)}</div>
-    </div>`).join('');
+      <div class="cat-def-body">
+        <div class="cat-swatch-row">${swatches}</div>
+        <p style="margin-top:12px">${esc(def)}</p>
+      </div>
+    </div>`;
+  }).join('');
 }
 
 function toggleCatDef(id) {
@@ -2996,7 +3101,7 @@ function renderBudgets() {
     const usdVal = S.budgets[c] || '';
     const dispVal = usdVal ? toDisplay(usdVal).toFixed(0) : '';
     return `<div class="bset-row">
-      <div class="bset-name"><span class="dot" style="background:${cc(c)}"></span>${ce(c)} ${c}</div>
+      <div class="bset-name">${catIconHtml(c,20)}${c}</div>
       <div style="display:flex;align-items:center;gap:4px">
         <span style="font-size:14px;color:var(--text2)">${sym()}</span>
         <input class="bset-inp" type="number" id="b${c.replace(/\W/g,'_')}"
@@ -3004,6 +3109,7 @@ function renderBudgets() {
       </div>
     </div>`;
   }).join('');
+  renderCatDefs();
 }
 
 function saveBudgets() {
@@ -3015,7 +3121,7 @@ function saveBudgets() {
     if (!isNaN(displayVal) && displayVal>0) S.budgets[c] = toUSD(displayVal);
     else delete S.budgets[c];
   });
-  persist(); toast('Budgets saved ✓'); renderFeed();
+  persist(); toast(`${ic('check',14)} Budgets saved`); renderFeed();
 }
 
 // ═══════════════════════════════════════════════
@@ -3024,12 +3130,12 @@ function saveBudgets() {
 function renderRecurring() {
   const el = document.getElementById('rec-list');
   if (!S.recurring.length) {
-    el.innerHTML='<div class="empty"><div class="empty-ico">↻</div><div class="empty-txt">No recurring transactions yet</div></div>';
+    el.innerHTML=`<div class="empty"><div class="empty-ico">${ic('repeat',28)}</div><div class="empty-txt">No recurring transactions yet</div></div>`;
     return;
   }
   el.innerHTML = S.recurring.map(r => `
     <div class="rec-row">
-      <div class="tx-ico" style="background:${cc(r.cat)}18">${ce(r.cat)}</div>
+      ${catIconHtml(r.cat, 36)}
       <div class="ri">
         <div class="ri-name">${esc(r.desc)}</div>
         <div class="ri-meta">${r.cat} · Every ${r.freq==='weekly'?'week':'month'} · ${r.type}</div>
@@ -3037,8 +3143,8 @@ function renderRecurring() {
       <div class="rec-amt" style="${r.type==='income'?'color:var(--green)':''}">${r.type==='income'?'+':'-'}${fmt(r.amount)}</div>
       <div class="tx-btns" style="flex-shrink:0">
         <button class="ib" title="Apply now" onclick="applyRec('${r.id}')" style="font-size:10px">▶</button>
-        <button class="ib e" title="Edit" onclick="editRec('${r.id}')">✎</button>
-        <button class="ib d" title="Delete" onclick="deleteRec('${r.id}')">✕</button>
+        <button class="ib e" title="Edit" onclick="editRec('${r.id}')">${ic('edit',14)}</button>
+        <button class="ib d" title="Delete" onclick="deleteRec('${r.id}')">${ic('trash',14)}</button>
       </div>
     </div>`).join('');
 }
@@ -3048,7 +3154,7 @@ function applyRec(id) {
   if (!r) return;
   S.transactions.unshift({ id:uid(), amount:r.amount, desc:r.desc, cat:r.cat,
     date:today(), notes:r.notes||'', type:r.type, recurringId:r.id, reviewed: true });
-  persist(); toast('Applied: '+r.desc+' ✓'); renderFeed();
+  persist(); toast(`${ic('check',14)} Applied: `+r.desc); renderFeed();
 }
 
 function deleteRec(id) {
@@ -3096,7 +3202,7 @@ function setRMType(t) {
 
 function fillRMCat(sel) {
   const el = document.getElementById('rm-cat');
-  el.innerHTML = S.categories.map(c=>`<option value="${c}"${c===sel?' selected':''}>${ce(c)} ${c}</option>`).join('');
+  el.innerHTML = S.categories.map(c=>`<option value="${c}"${c===sel?' selected':''}>${c}</option>`).join('');
 }
 
 function saveRecurring() {
@@ -3110,10 +3216,10 @@ function saveRecurring() {
   if (rmEditId) {
     const i=S.recurring.findIndex(r=>r.id===rmEditId);
     if(i!==-1) S.recurring[i]={...S.recurring[i],desc,amount,cat,freq,notes,type:rmType};
-    toast('Updated ✓');
+    toast(`${ic('check',14)} Updated`);
   } else {
     S.recurring.push({id:uid(),desc,amount,cat,freq,notes,type:rmType,active:true});
-    toast('Recurring saved ↻');
+    toast(`${ic('repeat',14)} Recurring saved`);
   }
   persist(); closeRecModal(); renderRecurring();
 }
@@ -3142,7 +3248,7 @@ function maybeApplyRecurring() {
   });
   if (applied.length) {
     S.appliedMonths.push(key); persist();
-    toast(`Applied ${applied.length} recurring ↻`);
+    toast(`${ic('repeat',14)} Applied ${applied.length} recurring`);
   }
 }
 
@@ -3241,7 +3347,7 @@ function backupJSON() {
   a.download = `trace-backup-${dateStr}.json`;
   a.click();
   URL.revokeObjectURL(a.href);
-  toast('Backup saved ✓ — keep this file somewhere safe');
+  toast(`${ic('check',14)} Backup saved — keep this file somewhere safe`);
 }
 
 function triggerRestoreJSON() {
@@ -3257,7 +3363,7 @@ function restoreJSON(input) {
     try {
       const data = JSON.parse(e.target.result);
       if (!data._trace_backup) {
-        toast('⚠️ This doesn\'t look like a Trace backup file'); return;
+        toast(`${ic('alert-triangle',14)} This doesn't look like a Trace backup file`); return;
       }
       const txCount = (data.transactions||[]).length;
       if (!confirm(`Restore ${txCount} transactions from backup saved on ${data._savedAt ? new Date(data._savedAt).toLocaleDateString() : 'unknown date'}?\n\nThis will replace your current data.`)) return;
@@ -3266,11 +3372,11 @@ function restoreJSON(input) {
       S = { ...S, ...restored };
       persist();
       document.getElementById('restore-banner').style.display = 'none';
-      toast(`Restored ${txCount} transactions ✓`);
+      toast(`${ic('check',14)} Restored ${txCount} transactions`);
       refresh();
       updateMLabel();
     } catch(err) {
-      toast('⚠️ Could not read backup file — is it corrupted?');
+      toast(`${ic('alert-triangle',14)} Could not read backup file — is it corrupted?`);
     }
   };
   reader.readAsText(file);
@@ -3357,7 +3463,7 @@ function processOFXText(text, filename) {
     });
   }
   if (!txns.length) {
-    showImportBanner('warn', '⚠️ No transactions found in this OFX/QFX file.');
+    showImportBanner('warn', `${ic('alert-triangle',14)} No transactions found in this OFX/QFX file.`);
     return;
   }
   const fps = existingFingerprints();
@@ -3560,13 +3666,13 @@ function handleCSVFile(input) {
 function processCSVText(text, filename) {
   const parsed = parseCSV(text);
   if (!parsed || !parsed.rows.length) {
-    showImportBanner('warn', '⚠️ Could not read this file — make sure it\'s a CSV exported from your bank.');
+    showImportBanner('warn', `${ic('alert-triangle',14)} Could not read this file — make sure it's a CSV exported from your bank.`);
     return;
   }
   const cols = detectColumns(parsed.headers);
   importedRows = csvRowsToTxns(parsed.rows, cols);
   if (!importedRows.length) {
-    showImportBanner('warn', '⚠️ No valid transactions found. Check the file format.');
+    showImportBanner('warn', `${ic('alert-triangle',14)} No valid transactions found. Check the file format.`);
     return;
   }
   renderImportPreview(filename, cols.format);
@@ -3587,10 +3693,10 @@ function renderImportPreview(filename, format) {
   panel.style.display = '';
 
   const dupCount = importedRows.filter(r => r.isDuplicate).length;
-  const dupNote  = dupCount ? ` · <span style="color:var(--amber)">⚠ ${dupCount} already imported (pre-unchecked)</span>` : '';
+  const dupNote  = dupCount ? ` · <span style="color:var(--amber);display:inline-flex;align-items:center;gap:3px">${ic('alert-triangle',11)} ${dupCount} already imported (pre-unchecked)</span>` : '';
   const formatName = { amex:'American Express', apple:'Apple Card', chase:'Chase', monzo:'Monzo/Starling', barclays:'Barclays', ofx:'OFX/QFX Bank Export', generic:'Generic bank' }[format] || 'Bank';
-  banner.innerHTML = `<div class="imp-banner imp-banner-ok">
-    ✓ Detected <strong>${formatName}</strong> · ${importedRows.length} transactions from <em>${esc(filename)}</em>${dupNote}
+  banner.innerHTML = `<div class="imp-banner imp-banner-ok" style="display:flex;align-items:center;gap:6px">
+    ${ic('check',14)} Detected <strong>${formatName}</strong> · ${importedRows.length} transactions from <em>${esc(filename)}</em>${dupNote}
   </div>`;
 
   preview.innerHTML = `
@@ -3599,8 +3705,8 @@ function renderImportPreview(filename, format) {
         Rename vendors below, then re-guess categories — uncheck rows to skip
       </span>
       <div style="display:flex;align-items:center;gap:8px">
-        <button class="imp-reguess-btn" onclick="reguessAllCats()" title="Re-run category detection using your renamed descriptions">
-          ✨ Re-guess categories
+        <button class="imp-reguess-btn" onclick="reguessAllCats()" title="Re-run category detection using your renamed descriptions" style="display:inline-flex;align-items:center;gap:6px">
+          ${ic('sparkle',13)} Re-guess categories
         </button>
         <label style="font-size:12px;cursor:pointer;display:flex;align-items:center;gap:5px;white-space:nowrap">
           <input type="checkbox" checked id="imp-chk-all" onchange="toggleAllImport(this.checked)"> All
@@ -3630,7 +3736,7 @@ function renderImportPreview(filename, format) {
 
 function buildImportRow(r, i) {
   const catOpts = S.categories.map(c =>
-    `<option value="${c}"${c===r.cat?' selected':''}>${ce(c)} ${c}</option>`
+    `<option value="${c}"${c===r.cat?' selected':''}>${c}</option>`
   ).join('');
   const rawDiffers = r.rawDesc && r.rawDesc !== r.desc;
   const dupBadge = r.isDuplicate
@@ -3702,7 +3808,7 @@ function reguessAllCats() {
       setTimeout(() => sel.classList.remove('imp-cat-guessed'), 1200);
     }
   });
-  toast('Categories re-guessed from your names ✓');
+  toast(`${ic('check',14)} Categories re-guessed from your names`);
 }
 
 function renderAmtCell(i) {
@@ -3758,8 +3864,8 @@ function confirmImport() {
   persist();
   cancelImport();
   const msg = skipped
-    ? `Imported ${toAdd.length - skipped} transactions (${skipped} duplicates skipped) ✓`
-    : `Imported ${toAdd.length} transactions ✓`;
+    ? `${ic('check',14)} Imported ${toAdd.length - skipped} transactions (${skipped} duplicates skipped)`
+    : `${ic('check',14)} Imported ${toAdd.length} transactions`;
   toast(msg);
   renderFeed();
 }
@@ -3789,10 +3895,10 @@ function renderReviewQueue() {
   const collapseClass = rqCollapsed ? '' : ' open';
   card.innerHTML = `
     <div class="rq-header">
-      <span class="rq-title">🔍 To Review</span>
+      <span class="rq-title" style="display:flex;align-items:center;gap:6px">${ic('clipboard',13)} To Review</span>
       <span class="rq-count">${unreviewed.length}</span>
       <button class="rq-collapse${collapseClass}" onclick="toggleReviewQueue()" title="Collapse">▾</button>
-      <button class="rq-mark-all" onclick="markAllReviewed()">Mark all ✓</button>
+      <button class="rq-mark-all" onclick="markAllReviewed()" style="display:inline-flex;align-items:center;gap:5px">${ic('check',12)} Mark all</button>
     </div>
     ${rqCollapsed ? '' : `<div class="rq-body" id="rq-body">
       ${unreviewed.map(t => {
@@ -3800,11 +3906,11 @@ function renderReviewQueue() {
         const d = pd(t.date);
         const dateStr = d.toLocaleDateString('en-US',{month:'short',day:'numeric'});
         return `<div class="rq-row" id="rqr-${t.id}">
-          <span class="rq-ico">${ce(t.cat)}</span>
+          ${catIconHtml(t.cat, 26)}
           <span class="rq-name">${esc(dispName)}</span>
           <span class="rq-date">${dateStr}</span>
           <span class="rq-amt">${fmt(t.amount)}</span>
-          <button class="rq-check" onclick="markReviewed('${t.id}')" title="Mark reviewed">✓</button>
+          <button class="rq-check" onclick="markReviewed('${t.id}')" title="Mark reviewed">${ic('check',14)}</button>
         </div>`;
       }).join('')}
     </div>`}`;
@@ -3827,7 +3933,7 @@ function markReviewed(id) {
       const remaining = mTxns(vMonth, vYear).filter(t => t.reviewed === false);
       const card = document.getElementById('review-queue-card');
       if (card && !remaining.length) {
-        card.innerHTML = `<div class="rq-done">✅ All reviewed ✓</div>`;
+        card.innerHTML = `<div class="rq-done" style="display:flex;align-items:center;justify-content:center;gap:6px">${ic('check',16)} All reviewed</div>`;
         updateLastReviewIfAllDone();
         setTimeout(() => { card.style.display='none'; }, 2200);
       } else {
@@ -3849,10 +3955,10 @@ function markAllReviewed() {
   updateLastReviewIfAllDone();
   const card = document.getElementById('review-queue-card');
   if (card) {
-    card.innerHTML = `<div class="rq-done">✅ All reviewed ✓</div>`;
+    card.innerHTML = `<div class="rq-done" style="display:flex;align-items:center;justify-content:center;gap:6px">${ic('check',16)} All reviewed</div>`;
     setTimeout(() => { card.style.display='none'; }, 2200);
   }
-  toast('All transactions reviewed ✓');
+  toast(`${ic('check',14)} All transactions reviewed`);
 }
 
 function updateLastReviewIfAllDone() {
@@ -3874,7 +3980,7 @@ function checkReviewReminder() {
   if (!isDue) return;
   const label = S.reviewFreqDays <= 7 ? 'weekly' : S.reviewFreqDays <= 14 ? 'biweekly' : 'monthly';
   const textEl = document.getElementById('review-banner-text');
-  if (textEl) textEl.textContent = `📋 Time for your ${label} review`;
+  if (textEl) textEl.textContent = `Time for your ${label} review`;
   banner.style.display = 'flex';
 }
 
@@ -3985,7 +4091,7 @@ function renderBudgetRings() {
         </div>
       </div>
       <div class="bring-label">
-        <div class="bring-name">${ce(c)} ${c.split(' ')[0]}</div>
+        <div class="bring-name"><span style="display:inline-flex;align-items:center;gap:4px">${ic(CAT_ICONS[c]||'tag',12)}${c.split(' ')[0]}</span></div>
         <div class="bring-amounts">${subText}</div>
       </div>
     </div>`;
@@ -4056,7 +4162,7 @@ function obRenderCardList() {
           const isOn = _obCards.includes(k) ? ' on' : '';
           return `<div class="ob-card-tile${isOn}" data-card="${k}" onclick="obToggleCard('${k}')"
                     style="background:${info.gradient||''};color:${info.textColor||'#fff'}">
-            <div class="ob-card-tile-check">${isOn ? '✓' : ''}</div>
+            <div class="ob-card-tile-check">${isOn ? ic('check',11) : ''}</div>
             <div class="ob-card-tile-name">${info.label}</div>
           </div>`;
         }).join('')}
@@ -4109,7 +4215,7 @@ function obToggleCard(card) {
     const isOn = _obCards.includes(k);
     el.classList.toggle('on', isOn);
     const chk = el.querySelector('.ob-card-tile-check');
-    if (chk) chk.textContent = isOn ? '✓' : '';
+    if (chk) chk.innerHTML = isOn ? ic('check',11) : '';
   });
 }
 
@@ -4222,7 +4328,7 @@ function refresh() {
     bar.style.cssText = `position:fixed;bottom:0;left:0;right:0;background:#1C2B4A;color:#e8eeff;
       font-size:13px;padding:13px 18px;display:flex;align-items:center;gap:12px;
       z-index:9999;box-shadow:0 -2px 16px rgba(0,0,0,.25);font-family:-apple-system,sans-serif`;
-    bar.innerHTML = `<span style="font-size:18px">💾</span>
+    bar.innerHTML = `<span>${ic('save',18)}</span>
       <span style="flex:1">It's been a while — export a backup so you don't lose your data.</span>
       <button onclick="backupJSON();document.getElementById('backup-nudge').remove();
         localStorage.setItem('trace_last_backup',Date.now())"

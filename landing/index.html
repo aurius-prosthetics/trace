@@ -104,7 +104,8 @@ h1{font-family:'Cormorant Garamond',Georgia,serif;font-weight:700;font-size:clam
 .ring-txt span{font-size:9px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:.05em}
 .m-tx-list{flex:1;display:flex;flex-direction:column;gap:8px}
 .m-tx{display:flex;align-items:center;gap:10px}
-.m-tx-ico{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.m-tx-ico{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;color:#fff}
+.ic{display:inline-block;vertical-align:-0.125em}
 .m-tx-mid{flex:1;min-width:0}
 .m-tx-name{font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .m-tx-cat{font-size:10px;color:var(--text3)}
@@ -249,9 +250,9 @@ footer{padding:50px 0 40px;border-top:1px solid var(--border)}
             <div class="ring-txt"><b>70%</b><span>Budget</span></div>
           </div>
           <div class="m-tx-list">
-            <div class="m-tx"><div class="m-tx-ico" style="background:var(--acc-lt)">🍔</div><div class="m-tx-mid"><div class="m-tx-name">Food & Drinks</div><div class="m-tx-cat">Today</div></div><div class="m-tx-amt">-$18.40</div></div>
-            <div class="m-tx"><div class="m-tx-ico" style="background:#1A2E3A">🚇</div><div class="m-tx-mid"><div class="m-tx-name">Transport</div><div class="m-tx-cat">Yesterday</div></div><div class="m-tx-amt">-$6.00</div></div>
-            <div class="m-tx"><div class="m-tx-ico" style="background:#2A1F0E">🏠</div><div class="m-tx-mid"><div class="m-tx-name">Housing</div><div class="m-tx-cat">Oct 1</div></div><div class="m-tx-amt">-$1,450</div></div>
+            <div class="m-tx"><div class="m-tx-ico" style="background:#E8680A" data-ic="utensils" data-ic-size="15"></div><div class="m-tx-mid"><div class="m-tx-name">Food & Drinks</div><div class="m-tx-cat">Today</div></div><div class="m-tx-amt">-$18.40</div></div>
+            <div class="m-tx"><div class="m-tx-ico" style="background:#7C3AED" data-ic="bus" data-ic-size="15"></div><div class="m-tx-mid"><div class="m-tx-name">Transport</div><div class="m-tx-cat">Yesterday</div></div><div class="m-tx-amt">-$6.00</div></div>
+            <div class="m-tx"><div class="m-tx-ico" style="background:#4F46E5" data-ic="home" data-ic-size="15"></div><div class="m-tx-mid"><div class="m-tx-name">Housing</div><div class="m-tx-cat">Oct 1</div></div><div class="m-tx-amt">-$1,450</div></div>
           </div>
         </div>
         <div class="m-bar-row">
@@ -265,11 +266,11 @@ footer{padding:50px 0 40px;border-top:1px solid var(--border)}
 
 <div class="trust">
   <div class="wrap">
-    <span class="chip">📴 Works offline</span>
-    <span class="chip">🔒 On-device only</span>
-    <span class="chip">👤 No account</span>
-    <span class="chip">🚫 No tracking</span>
-    <span class="chip">💸 Free forever</span>
+    <span class="chip"><span data-ic="wifi-off" data-ic-size="14"></span> Works offline</span>
+    <span class="chip"><span data-ic="lock" data-ic-size="14"></span> On-device only</span>
+    <span class="chip"><span data-ic="ban" data-ic-size="14"></span> No account</span>
+    <span class="chip"><span data-ic="ban" data-ic-size="14"></span> No tracking</span>
+    <span class="chip"><span data-ic="coin" data-ic-size="14"></span> Free forever</span>
   </div>
 </div>
 
@@ -282,12 +283,12 @@ footer{padding:50px 0 40px;border-top:1px solid var(--border)}
     </div>
     <div class="feat-grid">
       <div class="feat-card reveal">
-        <div class="feat-ico">🎯</div>
+        <div class="feat-ico" data-ic="target" data-ic-size="21"></div>
         <h3>Budgets & spending rings</h3>
         <p>Set a limit per category and watch live donut rings fill up as you spend. Switch between $ and % any time.</p>
       </div>
       <div class="feat-card reveal">
-        <div class="feat-ico">🌊</div>
+        <div class="feat-ico" data-ic="waves" data-ic-size="21"></div>
         <h3>Cash-flow Sankey</h3>
         <p>See exactly where money comes from and where it goes, with a pannable, zoomable flow chart built for real budgets.</p>
         <svg class="sankey-mini" viewBox="0 0 220 46">
@@ -296,12 +297,12 @@ footer{padding:50px 0 40px;border-top:1px solid var(--border)}
         </svg>
       </div>
       <div class="feat-card reveal">
-        <div class="feat-ico">📄</div>
+        <div class="feat-ico" data-ic="file-text" data-ic-size="21"></div>
         <h3>Smart CSV import</h3>
         <p>Drop in a CSV from Amex, Apple Card, Chase, OFX/QFX, or any bank export. Every transaction is fingerprinted so duplicates never sneak in.</p>
       </div>
       <div class="feat-card reveal">
-        <div class="feat-ico">💳</div>
+        <div class="feat-ico" data-ic="card" data-ic-size="21"></div>
         <h3>Cards & recurring bills</h3>
         <p>Track spending across 26+ real card designs and keep recurring bills on autopilot.</p>
         <div class="card-swatches">
@@ -348,7 +349,7 @@ footer{padding:50px 0 40px;border-top:1px solid var(--border)}
     </div>
     <div class="install-grid reveal">
       <div class="install-card">
-        <h3>🍎 iOS (Safari)</h3>
+        <h3><span data-ic="smartphone" data-ic-size="16"></span> iOS (Safari)</h3>
         <ol class="install-steps">
           <li>Open Trace in Safari</li>
           <li>Tap the Share icon</li>
@@ -356,7 +357,7 @@ footer{padding:50px 0 40px;border-top:1px solid var(--border)}
         </ol>
       </div>
       <div class="install-card">
-        <h3>🤖 Android (Chrome)</h3>
+        <h3><span data-ic="smartphone" data-ic-size="16"></span> Android (Chrome)</h3>
         <ol class="install-steps">
           <li>Open Trace in Chrome</li>
           <li>Tap the menu (⋮)</li>
@@ -431,6 +432,71 @@ footer{padding:50px 0 40px;border-top:1px solid var(--border)}
 </footer>
 
 <script>
+const ICONS = {
+  x: '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>',
+  trash: '<path d="M4 7h16M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2m3 0-1 13a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L6 7"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/>',
+  edit: '<path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/>',
+  check: '<polyline points="20 6 9 17 4 12"/>',
+  'alert-triangle': '<path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/><line x1="12" y1="9" x2="12" y2="13"/><circle cx="12" cy="17" r="0.75" fill="currentColor" stroke="none"/>',
+  card: '<rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/>',
+  repeat: '<path d="M17 2l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 22l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/>',
+  refresh: '<path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 3v6h-6"/>',
+  sparkle: '<path d="M12 2l1.8 6.2L20 10l-6.2 1.8L12 18l-1.8-6.2L4 10l6.2-1.8L12 2z" fill="currentColor" stroke="none"/>',
+  undo: '<path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-1"/>',
+  upload: '<path d="M12 19V5"/><path d="M6 11l6-6 6 6"/><path d="M4 21h16"/>',
+  download: '<path d="M12 5v14"/><path d="M6 13l6 6 6-6"/><path d="M4 21h16"/>',
+  swap: '<path d="M3 7h14"/><path d="M13 3l4 4-4 4"/><path d="M21 17H7"/><path d="M11 13l-4 4 4 4"/>',
+  clipboard: '<rect x="6" y="4" width="12" height="18" rx="2"/><rect x="9" y="2" width="6" height="4" rx="1"/><line x1="9" y1="11" x2="15" y2="11"/><line x1="9" y1="15" x2="15" y2="15"/>',
+  'file-text': '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/>',
+  calendar: '<rect x="3" y="5" width="18" height="16" rx="2"/><line x1="16" y1="3" x2="16" y2="7"/><line x1="8" y1="3" x2="8" y2="7"/><line x1="3" y1="10" x2="21" y2="10"/>',
+  'wifi-off': '<path d="M5 12.5a11 11 0 0 1 14 0"/><path d="M8.5 16a6 6 0 0 1 7 0"/><line x1="12" y1="20" x2="12.01" y2="20"/><line x1="2" y1="2" x2="22" y2="22"/>',
+  lock: '<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',
+  ban: '<circle cx="12" cy="12" r="9"/><line x1="5.6" y1="5.6" x2="18.4" y2="18.4"/>',
+  bell: '<path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M10.3 21a2 2 0 0 0 3.4 0"/>',
+  coin: '<circle cx="12" cy="12" r="9"/><path d="M12 7v10M15 9.5c-.3-1-1.4-1.5-3-1.5-1.8 0-3 .8-3 2s1.2 1.8 3 2c1.8.2 3 .8 3 2s-1.2 2-3 2c-1.6 0-2.7-.5-3-1.5"/>',
+  'trending-up': '<polyline points="3 17 9 11 13 15 21 6"/><polyline points="15 6 21 6 21 12"/>',
+  'trending-down': '<polyline points="3 7 9 13 13 9 21 18"/><polyline points="15 18 21 18 21 12"/>',
+  save: '<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"/><path d="M8 3v5h8V3"/><path d="M6 21v-8h12v8"/>',
+  target: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"/>',
+  waves: '<path d="M2 8c2-2 4-2 6 0s4 2 6 0 4-2 6 0 4 2 6 0"/><path d="M2 15c2-2 4-2 6 0s4 2 6 0 4-2 6 0 4 2 6 0"/>',
+  home: '<path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/><path d="M9 20v-6h6v6"/>',
+  smartphone: '<rect x="6" y="2" width="12" height="20" rx="2"/><line x1="11" y1="18" x2="13" y2="18"/>',
+  tag: '<path d="M20.6 12.8 12.8 20.6a2 2 0 0 1-2.8 0l-7.6-7.6a2 2 0 0 1-.6-1.4V4a2 2 0 0 1 2-2h7.6a2 2 0 0 1 1.4.6l7.6 7.6a2 2 0 0 1 0 2.8Z"/><circle cx="7.5" cy="7.5" r="1.2" fill="currentColor" stroke="none"/>',
+  box: '<path d="M21 8l-9-5-9 5 9 5 9-5Z"/><path d="M3 8v8l9 5 9-5V8"/><line x1="12" y1="13" x2="12" y2="21"/>',
+  briefcase: '<rect x="2" y="7" width="20" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="2" y1="13" x2="22" y2="13"/>',
+  bag: '<path d="M6 7h12l1 13a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2L6 7Z"/><path d="M9 7V5a3 3 0 0 1 6 0v2"/>',
+  heart: '<path d="M12 21s-7.5-4.6-10-9.3C.4 8 1.7 4.5 5 3.3 7.3 2.5 9.8 3.3 12 6c2.2-2.7 4.7-3.5 7-2.7 3.3 1.2 4.6 4.7 3 8.4C19.5 16.4 12 21 12 21Z"/>',
+  bolt: '<polygon points="13 2 3 14 11 14 10 22 21 10 13 10 13 2"/>',
+  plane: '<path d="M21 16v-2l-8-5V4.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V18l-3 2v1.5l4-1 4 1V20l-3-2v-4.5Z"/>',
+  utensils: '<path d="M4 2v6a2 2 0 0 0 2 2 2 2 0 0 0 2-2V2M8 2v6a2 2 0 0 1-2 2M6 10v12M18 2s-2 2-2 6 2 4 2 4v10"/>',
+  bus: '<rect x="3" y="6" width="18" height="11" rx="2"/><line x1="3" y1="12" x2="21" y2="12"/><circle cx="7.5" cy="19" r="1.5" fill="currentColor" stroke="none"/><circle cx="16.5" cy="19" r="1.5" fill="currentColor" stroke="none"/>',
+  play: '<circle cx="12" cy="12" r="9"/><polygon points="10 8 16 12 10 16 10 8" fill="currentColor" stroke="none"/>',
+  menu: '<line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>',
+};
+function ic(name, size) {
+  const inner = ICONS[name] || ICONS.tag;
+  const s = size || '1em';
+  return `<svg class="ic" viewBox="0 0 24 24" width="${s}" height="${s}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${inner}</svg>`;
+}
+const CAT_ICONS = {
+  'Food & Drinks':  'utensils',
+  'Transport':      'bus',
+  'Entertainment':  'play',
+  'Shopping':       'bag',
+  'Health':         'heart',
+  'Housing':        'home',
+  'Utilities':      'bolt',
+  'Travel':         'plane',
+  'Savings':        'trending-up',
+  'Miscellaneous':  'box',
+  'Income':         'briefcase',
+};
+document.querySelectorAll('[data-ic]').forEach(el => {
+  el.innerHTML = ic(el.dataset.ic, el.dataset.icSize);
+  if (el.style.display !== 'none') el.style.display = 'inline-flex';
+  el.style.verticalAlign = 'middle';
+});
+
 document.getElementById('yr').textContent = new Date().getFullYear();
 
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
