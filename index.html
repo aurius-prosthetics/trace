@@ -78,7 +78,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 
 /* ── LAYOUT ── */
 .content{max-width:820px;margin:0 auto;padding:22px 20px}
-.panel{display:none}.panel.on{display:block}
+.panel{display:none}
+.panel.on{display:block;animation:panelIn .28s cubic-bezier(.4,0,.2,1)}
+@keyframes panelIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes itemIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.tx-wrap,.ins-card,.bring,.cmp-row{animation:itemIn .3s cubic-bezier(.4,0,.2,1) both}
 
 /* ── CARDS ── */
 .card{background:var(--surf);border:1px solid var(--border);border-radius:var(--r);
@@ -286,8 +290,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 #sankey-canvas svg { display:block; }
 #sankey-zoom-hint { position:absolute; bottom:10px; right:12px; font-size:11px;
   color:var(--text3); pointer-events:none; opacity:.7; }
-.sk-path{transition:opacity .15s}
-.sk-path:hover{opacity:.9!important}
+.sk-path{transition:opacity .2s}
+.sk-path:hover{opacity:.95!important}
+.sk-path.dimmed{opacity:.08!important}
+.sk-node{filter:drop-shadow(0 1px 3px rgba(0,0,0,.3));transition:filter .2s,opacity .2s}
+.sk-node:hover{filter:drop-shadow(0 2px 6px rgba(0,0,0,.4))}
+.sk-node.dimmed{opacity:.25}
 .sankey-empty{text-align:center;padding:80px 20px;color:var(--text2)}
 .sankey-empty-ico{font-size:32px;margin-bottom:12px}
 
@@ -312,13 +320,17 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 .ins-alert { border-color:#FCA5A5; background:#FFF5F5; }
 
 /* ── QUICK-ADD MODAL ── */
-.qa-overlay{position:fixed;inset:0;background:rgba(16,24,36,.42);backdrop-filter:blur(3px);
-            z-index:200;display:none;align-items:flex-end;justify-content:center}
-.qa-overlay.open{display:flex;animation:fadeIn .18s ease}
+.qa-overlay{position:fixed;inset:0;background:rgba(16,24,36,0);backdrop-filter:blur(0px);
+            z-index:200;display:flex;align-items:flex-end;justify-content:center;
+            opacity:0;visibility:hidden;pointer-events:none;
+            transition:opacity .22s ease,background .22s ease,backdrop-filter .22s ease,visibility 0s linear .22s}
+.qa-overlay.open{opacity:1;visibility:visible;pointer-events:auto;background:rgba(16,24,36,.42);backdrop-filter:blur(3px);
+                  transition:opacity .22s ease,background .22s ease,backdrop-filter .22s ease,visibility 0s linear 0s}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 .qa-sheet{background:var(--surf);border-radius:24px 24px 0 0;width:100%;max-width:520px;
-          padding:0 0 34px;box-shadow:var(--sh2);animation:slideUp .22s ease}
-@keyframes slideUp{from{transform:translateY(60px);opacity:0}to{transform:translateY(0);opacity:1}}
+          padding:0 0 34px;box-shadow:var(--sh2);
+          transform:translateY(40px);transition:transform .28s cubic-bezier(.4,0,.2,1)}
+.qa-overlay.open .qa-sheet{transform:translateY(0)}
 .qa-handle{width:36px;height:4px;background:var(--border);border-radius:99px;margin:12px auto 0}
 .qa-title{font-size:16px;font-weight:800;padding:14px 22px 0;letter-spacing:-.02em;
           display:flex;justify-content:space-between;align-items:center}
@@ -397,11 +409,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 .rec-amt{font-size:14px;font-weight:800;font-variant-numeric:tabular-nums}
 
 /* ── MODALS ── */
-.overlay{position:fixed;inset:0;background:rgba(16,24,36,.38);backdrop-filter:blur(2px);
-         z-index:300;display:none;align-items:center;justify-content:center;padding:20px}
-.overlay.open{display:flex}
+.overlay{position:fixed;inset:0;background:rgba(16,24,36,0);backdrop-filter:blur(0);
+         z-index:300;display:flex;align-items:center;justify-content:center;padding:20px;
+         opacity:0;visibility:hidden;pointer-events:none;
+         transition:opacity .2s ease,background .2s ease,backdrop-filter .2s ease,visibility 0s linear .2s}
+.overlay.open{opacity:1;visibility:visible;pointer-events:auto;background:rgba(16,24,36,.38);backdrop-filter:blur(2px);
+              transition:opacity .2s ease,background .2s ease,backdrop-filter .2s ease,visibility 0s linear 0s}
 .modal{background:var(--surf);border-radius:var(--r);padding:24px;width:100%;
-       max-width:450px;box-shadow:var(--sh2)}
+       max-width:450px;box-shadow:var(--sh2);
+       transform:scale(.94);transition:transform .22s cubic-bezier(.4,0,.2,1)}
+.overlay.open .modal{transform:scale(1)}
 .modal-title{font-size:16px;font-weight:800;margin-bottom:18px;letter-spacing:-.02em}
 .mg{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .fg{display:flex;flex-direction:column;gap:5px}.fg.full{grid-column:1/-1}
@@ -805,8 +822,9 @@ input, select, textarea {
 
 /* ── ONBOARDING OVERLAY ── */
 .ob-overlay{position:fixed;inset:0;background:var(--surf);z-index:1000;display:flex;
-            align-items:center;justify-content:center;padding:24px;overflow-y:auto}
-.ob-overlay.hidden{display:none}
+            align-items:center;justify-content:center;padding:24px;overflow-y:auto;
+            opacity:1;visibility:visible;transition:opacity .3s ease,visibility 0s linear 0s}
+.ob-overlay.hidden{opacity:0;visibility:hidden;pointer-events:none;transition:opacity .3s ease,visibility 0s linear .3s}
 .ob-card{max-width:460px;width:100%;margin:auto}
 .ob-logo{font-size:28px;font-weight:900;letter-spacing:-.05em;display:flex;align-items:center;
          gap:10px;margin-bottom:10px}
@@ -914,6 +932,7 @@ input, select, textarea {
 .bring-svg-wrap{position:relative;width:90px;height:90px;flex-shrink:0}
 .bring-svg-wrap svg{width:90px;height:90px}
 .bring-svg-wrap circle{fill:none}
+.bring-arc{transition:stroke-dasharray .7s cubic-bezier(.4,0,.2,1)}
 .bring-center{position:absolute;inset:0;display:flex;flex-direction:column;
               align-items:center;justify-content:center;text-align:center;line-height:1.2;padding:4px}
 .bring-amt{font-size:12px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.02em;word-break:break-all}
@@ -923,11 +942,16 @@ input, select, textarea {
 .bring-amounts{font-size:10px;color:var(--text3);font-variant-numeric:tabular-nums;margin-top:1px}
 
 /* ── CSV GUIDE MODAL ── */
-#csv-guide-modal{position:fixed;inset:0;background:rgba(16,24,36,.42);backdrop-filter:blur(3px);
-                  z-index:400;display:none;align-items:center;justify-content:center;padding:20px}
-#csv-guide-modal.open{display:flex;animation:fadeIn .18s ease}
+#csv-guide-modal{position:fixed;inset:0;background:rgba(16,24,36,0);backdrop-filter:blur(0);
+                  z-index:400;display:flex;align-items:center;justify-content:center;padding:20px;
+                  opacity:0;visibility:hidden;pointer-events:none;
+                  transition:opacity .2s ease,background .2s ease,backdrop-filter .2s ease,visibility 0s linear .2s}
+#csv-guide-modal.open{opacity:1;visibility:visible;pointer-events:auto;background:rgba(16,24,36,.42);backdrop-filter:blur(3px);
+                       transition:opacity .2s ease,background .2s ease,backdrop-filter .2s ease,visibility 0s linear 0s}
 .cg-modal{background:var(--surf);border-radius:var(--r);width:100%;max-width:500px;
-           max-height:88vh;overflow-y:auto;box-shadow:var(--sh2)}
+           max-height:88vh;overflow-y:auto;box-shadow:var(--sh2);
+           transform:scale(.94);transition:transform .22s cubic-bezier(.4,0,.2,1)}
+#csv-guide-modal.open .cg-modal{transform:scale(1)}
 .cg-head{display:flex;align-items:center;justify-content:space-between;
           padding:20px 22px 0;margin-bottom:16px}
 .cg-title{font-size:17px;font-weight:800;letter-spacing:-.03em}
@@ -1639,6 +1663,7 @@ let S = {
   categories: [...CATS],
   settings: { currency: 'USD', catColors: {} },
   appliedMonths: [],
+  appliedWeeks: [],
   onboardingDone: false,
   reviewFreqDays: 7,
   notificationsEnabled: false,
@@ -1779,6 +1804,8 @@ function migrateData() {
   });
   // Backfill custom-color override map for saves from before it existed
   if (!S.settings.catColors) S.settings.catColors = {};
+  // Backfill weekly-recurring tracking for saves from before it existed
+  if (!S.appliedWeeks) S.appliedWeeks = [];
 }
 
 // hydrateAsync — tries IDB first, migrates from localStorage if empty
@@ -2434,6 +2461,75 @@ function renderInsights() {
       </div></div>`;
   }
 
+  // Spending pace — only meaningful while the real current month is still in progress
+  const now2 = new Date();
+  const isCurMonth = vMonth===now2.getMonth() && vYear===now2.getFullYear();
+  if (isCurMonth && curExp > 0) {
+    const dayOfMonth  = now2.getDate();
+    const daysInMonth = new Date(vYear, vMonth+1, 0).getDate();
+    const dailyAvg    = curExp / dayOfMonth;
+    const projected   = dailyAvg * daysInMonth;
+    const daysLeft     = daysInMonth - dayOfMonth;
+    html += `<div class="ins-card">
+      <div class="ins-ico">${ic('trending-up',22)}</div>
+      <div class="ins-body">
+        <div class="ins-title">On pace for</div>
+        <div class="ins-val">${fmt(projected)}</div>
+        <div class="ins-sub">${fmt(dailyAvg)}/day · ${daysLeft} day${daysLeft===1?'':'s'} left</div>
+      </div></div>`;
+  }
+
+  // Weekday vs weekend split — only once there's enough data to mean something
+  {
+    let wkdaySpend = 0, wkendSpend = 0;
+    curTxns.filter(t=>t.type==='expense').forEach(t => {
+      const dow = pd(t.date).getDay();
+      if (dow===0 || dow===6) wkendSpend += t.amount; else wkdaySpend += t.amount;
+    });
+    const daysSoFar = isCurMonth ? now2.getDate() : new Date(vYear, vMonth+1, 0).getDate();
+    let wkendDays = 0;
+    for (let d=1; d<=daysSoFar; d++) { const dow = new Date(vYear, vMonth, d).getDay(); if (dow===0||dow===6) wkendDays++; }
+    const wkdayDays = daysSoFar - wkendDays;
+    const totalSpend = wkdaySpend + wkendSpend;
+    if (totalSpend > 0 && wkendDays > 0 && wkdayDays > 0) {
+      const wkendShare = wkendSpend / totalSpend;
+      const expectedShare = wkendDays / daysSoFar;
+      if (wkendShare - expectedShare > 0.12) {
+        const perWkendDay = wkendSpend / wkendDays, perWkdayDay = wkdaySpend / wkdayDays;
+        const timesMore = perWkdayDay > 0 ? (perWkendDay / perWkdayDay) : 0;
+        html += `<div class="ins-card">
+          <div class="ins-ico ins-up">${ic('trending-up',22)}</div>
+          <div class="ins-body">
+            <div class="ins-title">Weekend pattern</div>
+            <div class="ins-val ins-up">${Math.round(wkendShare*100)}% spent on weekends</div>
+            <div class="ins-sub">${timesMore >= 1.15 ? `~${timesMore.toFixed(1)}× your weekday rate` : `just ${Math.round(expectedShare*100)}% of days`}</div>
+          </div></div>`;
+      }
+    }
+  }
+
+  // Most expensive single day — a concrete, memorable fact rather than just a total
+  {
+    const byDate = {};
+    curTxns.filter(t=>t.type==='expense').forEach(t => { byDate[t.date] = (byDate[t.date]||0) + t.amount; });
+    const topDay = Object.entries(byDate).sort((a,b)=>b[1]-a[1])[0];
+    if (topDay && Object.keys(byDate).length > 1) {
+      const [dateStr, amt] = topDay;
+      const dayTxns = curTxns.filter(t=>t.type==='expense' && t.date===dateStr);
+      const dayCats = {};
+      dayTxns.forEach(t => dayCats[t.cat] = (dayCats[t.cat]||0)+t.amount);
+      const topCatThatDay = Object.entries(dayCats).sort((a,b)=>b[1]-a[1])[0];
+      const dLabel = pd(dateStr).toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+      html += `<div class="ins-card">
+        <div class="ins-ico">${ic('calendar',22)}</div>
+        <div class="ins-body">
+          <div class="ins-title">Priciest day</div>
+          <div class="ins-val">${fmt(amt)} on ${dLabel}</div>
+          <div class="ins-sub">${topCatThatDay ? `mostly ${topCatThatDay[0]}` : `${dayTxns.length} transaction${dayTxns.length===1?'':'s'}`}</div>
+        </div></div>`;
+    }
+  }
+
   if (!html) { el.style.display='none'; return; }
   el.style.display = 'flex';
   el.innerHTML = html;
@@ -2517,6 +2613,18 @@ function initSankeyPanZoom() {
   const wrap = document.getElementById('sankey-wrap');
   if (!wrap || wrap._skInited) return;
   wrap._skInited = true;
+  // Hover a flow or node to highlight it and dim everything unrelated
+  wrap.addEventListener('mouseover', e => {
+    const el = e.target.closest('[data-k]');
+    if (!el) return;
+    const k = el.dataset.k;
+    wrap.querySelectorAll('[data-k]').forEach(n => n.classList.toggle('dimmed', n.dataset.k !== k));
+  });
+  wrap.addEventListener('mouseout', e => {
+    if (e.target.closest('[data-k]') && !e.relatedTarget?.closest?.('[data-k]')) {
+      wrap.querySelectorAll('.dimmed').forEach(n => n.classList.remove('dimmed'));
+    }
+  });
   const applyT = () => {
     const c = document.getElementById('sankey-canvas');
     if (c) c.style.transform = `translate(${skTransform.x}px,${skTransform.y}px) scale(${skTransform.scale})`;
@@ -2680,12 +2788,13 @@ function renderFlow() {
     const x0 = n.x + nodeW;
     const x1 = xBudget;
     const mid = (x0 + x1) / 2;
-    paths += `<path class="sk-path" d="
+    const key = 'inc-'+esc(n.name);
+    paths += `<path class="sk-path" data-k="${key}" d="
       M${x0} ${n.y}
       C${mid} ${n.y},${mid} ${n.bY},${x1} ${n.bY}
       L${x1} ${n.bY+n.fh}
       C${mid} ${n.bY+n.fh},${mid} ${n.y+n.h},${x0} ${n.y+n.h}
-      Z" fill="#16A34A" fill-opacity="0.28" stroke="#16A34A" stroke-opacity="0.5" stroke-width="1.5"/>`;
+      Z" fill="#16A34A" fill-opacity="0.32" stroke="#16A34A" stroke-opacity="0.65" stroke-width="2"/>`;
   });
 
   // Budget → Expense flows
@@ -2694,18 +2803,20 @@ function renderFlow() {
     const x1 = n.x;
     const mid = (x0 + x1) / 2;
     const col = cc(n.cat);
-    paths += `<path class="sk-path" d="
+    const key = 'exp-'+esc(n.cat);
+    paths += `<path class="sk-path" data-k="${key}" d="
       M${x0} ${n.bY}
       C${mid} ${n.bY},${mid} ${n.y},${x1} ${n.y}
       L${x1} ${n.y+n.h}
       C${mid} ${n.y+n.h},${mid} ${n.bY+n.fh},${x0} ${n.bY+n.fh}
-      Z" fill="${col}" fill-opacity="0.32" stroke="${col}" stroke-opacity="0.55" stroke-width="1.5"/>`;
+      Z" fill="${col}" fill-opacity="0.38" stroke="${col}" stroke-opacity="0.7" stroke-width="2"/>`;
   });
 
   // Income source nodes + labels
   incNodes.forEach(n => {
     if (!hasIncome) return;
-    nodes += `<rect x="${n.x}" y="${n.y}" width="${nodeW}" height="${n.h}" rx="4" fill="#16A34A"/>`;
+    const key = 'inc-'+esc(n.name);
+    nodes += `<rect class="sk-node" data-k="${key}" x="${n.x}" y="${n.y}" width="${nodeW}" height="${n.h}" rx="4" fill="#16A34A" stroke="#ffffff" stroke-opacity=".5"/>`;
     const cy = n.y + n.h/2;
     const name = n.name.length > 16 ? n.name.slice(0,15)+'…' : n.name;
     labels += `
@@ -2714,7 +2825,7 @@ function renderFlow() {
   });
 
   // Budget node
-  nodes += `<rect x="${xBudget}" y="${budgetY}" width="${nodeW}" height="${budgetBarH}" rx="4" fill="${skAcc}"/>`;
+  nodes += `<rect class="sk-node" x="${xBudget}" y="${budgetY}" width="${nodeW}" height="${budgetBarH}" rx="4" fill="${skAcc}" stroke="#ffffff" stroke-opacity=".5"/>`;
   const bCy = budgetY + budgetBarH/2;
   labels += `
     <text x="${xBudget+nodeW/2}" y="${bCy-10}" text-anchor="middle" font-size="12" font-weight="700" fill="${skAcc}">Budget</text>
@@ -2723,7 +2834,8 @@ function renderFlow() {
   // Expense category nodes + labels
   expNodes.forEach(n => {
     const col = cc(n.cat);
-    nodes += `<rect x="${n.x}" y="${n.y}" width="${nodeW}" height="${n.h}" rx="4" fill="${col}"/>`;
+    const key = 'exp-'+esc(n.cat);
+    nodes += `<rect class="sk-node" data-k="${key}" x="${n.x}" y="${n.y}" width="${nodeW}" height="${n.h}" rx="4" fill="${col}" stroke="#ffffff" stroke-opacity=".5"/>`;
     const cy = n.y + n.h/2;
     labels += `
       <text x="${n.x+nodeW+12}" y="${cy-7}" text-anchor="start" font-size="12" font-weight="600" fill="${skTxt}">${esc(n.cat)}</text>
@@ -2841,6 +2953,11 @@ function renderCompare() {
 
     curLbl  = isCurrentMonth ? SMONTHS[vMonth]+' 1–'+cutoffDay : SMONTHS[vMonth]+' '+vYear+' (full)';
     prevLbl = isCurrentMonth ? SMONTHS[prevMonth]+' 1–'+cutoffDay : SMONTHS[prevMonth]+' '+prevYear+' (full)';
+
+    // Label the pill "Month" when comparing two complete months (any past month you're
+    // viewing), vs "MTD" only when the real current month is only partially over.
+    const mtdPill = document.querySelector('.cmp-pill[data-w="0"]');
+    if (mtdPill) mtdPill.textContent = isCurrentMonth ? 'MTD' : 'Month';
   }
 
   const curTotal  = curTxns.reduce((s,t)=>s+t.amount,0);
@@ -2904,14 +3021,14 @@ function renderCompare() {
       labels: chartLabels,
       datasets: [
         {
-          label: SMONTHS[vMonth],
+          label: curLbl,
           data: curData,
           backgroundColor: '#4A7C6E',
           borderRadius: 5,
           barPercentage: 0.7
         },
         {
-          label: SMONTHS[prevMonth],
+          label: prevLbl,
           data: prevData,
           backgroundColor: '#9AA3B2',
           borderRadius: 5,
@@ -2958,7 +3075,6 @@ function renderCompare() {
     const hasPrev = !!prevByCat[cat];
     const diff = cur - prev;
     const color = cc(cat);
-    const emoji = ce(cat);
 
     let deltaClass = 'flat', deltaText = '—';
     if (hasCur && hasPrev) {
@@ -2980,8 +3096,8 @@ function renderCompare() {
 
     return `<div class="cmp-row">
       <div class="cmp-row-name">
-        <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${color};flex-shrink:0"></span>
-        ${emoji} ${cat}
+        ${catIconHtml(cat, 22)}
+        ${cat}
       </div>
       <div class="cmp-row-amt">${curAmt}</div>
       <div class="cmp-row-arrow">&#8594;</div>
@@ -3227,14 +3343,17 @@ function saveRecurring() {
 // ═══════════════════════════════════════════════
 // AUTO-APPLY RECURRING
 // ═══════════════════════════════════════════════
+const weekKey = d => Math.floor(d.getTime() / (7*86400000));
+
 function maybeApplyRecurring() {
-  const key=`${vYear}-${vMonth}`;
-  if (S.appliedMonths.includes(key)) return;
   const now=new Date();
-  if (vMonth!==now.getMonth()||vYear!==now.getFullYear()) return;
+  if (vMonth!==now.getMonth()||vYear!==now.getFullYear()) return; // only when viewing the real current month
   const applied=[];
-  S.recurring.forEach(r => {
-    if (r.freq==='monthly') {
+
+  const monthKey=`${vYear}-${vMonth}`;
+  if (!S.appliedMonths.includes(monthKey)) {
+    S.recurring.forEach(r => {
+      if (r.freq!=='monthly') return;
       const already = S.transactions.some(t =>
         t.recurringId===r.id &&
         pd(t.date).getMonth()===vMonth && pd(t.date).getFullYear()===vYear
@@ -3244,10 +3363,28 @@ function maybeApplyRecurring() {
           date:today(),notes:r.notes||'',type:r.type,recurringId:r.id,reviewed:true});
         applied.push(r.desc);
       }
-    }
-  });
+    });
+    S.appliedMonths.push(monthKey);
+  }
+
+  const wk=weekKey(now);
+  if (!S.appliedWeeks.includes(wk)) {
+    S.recurring.forEach(r => {
+      if (r.freq!=='weekly') return;
+      const already = S.transactions.some(t => t.recurringId===r.id && weekKey(pd(t.date))===wk);
+      if (!already) {
+        S.transactions.unshift({id:uid(),amount:r.amount,desc:r.desc,cat:r.cat,
+          date:today(),notes:r.notes||'',type:r.type,recurringId:r.id,reviewed:true});
+        applied.push(r.desc);
+      }
+    });
+    S.appliedWeeks.push(wk);
+    // Keep the week-tracking array from growing forever — only the last 10 weeks matter
+    if (S.appliedWeeks.length > 10) S.appliedWeeks = S.appliedWeeks.slice(-10);
+  }
+
   if (applied.length) {
-    S.appliedMonths.push(key); persist();
+    persist();
     toast(`${ic('repeat',14)} Applied ${applied.length} recurring`);
   }
 }
@@ -3370,6 +3507,7 @@ function restoreJSON(input) {
       // Strip meta keys before merging
       const { _trace_backup, _version, _savedAt, ...restored } = data;
       S = { ...S, ...restored };
+      migrateData();
       persist();
       document.getElementById('restore-banner').style.display = 'none';
       toast(`${ic('check',14)} Restored ${txCount} transactions`);
@@ -3982,6 +4120,23 @@ function checkReviewReminder() {
   const textEl = document.getElementById('review-banner-text');
   if (textEl) textEl.textContent = `Time for your ${label} review`;
   banner.style.display = 'flex';
+  maybeNotifyReview(label);
+}
+
+// Fires a real OS notification when a review is due — the one thing the
+// "Enable reminders" toggle promises. Only fires once per due period per
+// page load: there's no background push (fully client-side app), so this
+// only reaches the user while Trace happens to be open.
+let _reviewNotifiedFor = null;
+function maybeNotifyReview(label) {
+  if (!S.notificationsEnabled) return;
+  if (!('Notification' in window) || Notification.permission !== 'granted') return;
+  const key = S.lastReviewDate || 'never';
+  if (_reviewNotifiedFor === key) return;
+  _reviewNotifiedFor = key;
+  try {
+    new Notification('Trace', { body: `Time for your ${label} review`, tag: 'trace-review' });
+  } catch(e) {}
 }
 
 function triggerImportFromBanner() {
@@ -4077,10 +4232,10 @@ function renderBudgetRings() {
       <div class="bring-svg-wrap">
         <svg viewBox="0 0 90 90" xmlns="http://www.w3.org/2000/svg">
           <circle cx="${CX}" cy="${CY}" r="${R}" stroke="${trackStroke}" stroke-width="${SW}" ${trackDash}/>
-          ${showArc ? `<circle cx="${CX}" cy="${CY}" r="${R}"
+          ${showArc ? `<circle class="bring-arc" cx="${CX}" cy="${CY}" r="${R}"
             stroke="${fillColor}" stroke-width="${SW}"
             stroke-linecap="round"
-            stroke-dasharray="${fillDashArray}"
+            stroke-dasharray="0 ${CIRC}" data-target="${fillDashArray}"
             stroke-dashoffset="0"
             transform="rotate(-90 ${CX} ${CY})"
           />` : ''}
@@ -4096,6 +4251,10 @@ function renderBudgetRings() {
       </div>
     </div>`;
   }).join('');
+  // Draw the arcs in rather than snapping straight to their final value
+  requestAnimationFrame(() => {
+    el.querySelectorAll('.bring-arc').forEach(c => c.setAttribute('stroke-dasharray', c.dataset.target));
+  });
 }
 
 // ═══════════════════════════════════════════════
