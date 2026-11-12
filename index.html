@@ -16,11 +16,13 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" crossorigin="anonymous"></script>
 <style>
 :root {
-  --bg:      #F2F4F7;
+  --bg:      #F3F7F5;
   --surf:    #FFFFFF;
   --surf2:   #F8F9FB;
-  --border:  #E2E8F0;
-  --text:    #18202C;
+  --border:  #D3DDD8;
+  --rule:    #27312E;
+  --grid:    rgba(74,124,110,.11);
+  --text:    #151A19;
   --text2:   #5A6578;
   --text3:   #627083;
   --on-acc:  #FFFFFF;
@@ -33,16 +35,16 @@
   --red-lt:  #FAECEC;
   --amber:   #C47A2A;
   --amb-lt:  #FDF3E3;
-  --sh:      0 1px 3px rgba(0,0,0,0.06),0 1px 2px rgba(0,0,0,0.04);
+  --sh:      none;
   --sh2:     0 8px 24px rgba(0,0,0,0.10);
-  --r:       14px;
-  --r2:      10px;
-  --r3:      7px;
+  --r:       6px;
+  --r2:      4px;
+  --r3:      4px;
   color-scheme: light;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
-     background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;min-height:100vh}
+     background-color:var(--bg);background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:24px 24px;color:var(--text);font-size:14px;line-height:1.5;min-height:100vh}
 
 /* focus + banner */
 .hint-touch{display:none}
@@ -586,14 +588,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 /* ── DARK MODE ── */
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg:     #0F1117;
-    --surf:   #1A1F2E;
-    --surf2:  #232838;
-    --border: #2E3447;
-    --text:   #E8EEFF;
-    --text2:  #A3AEC6;
-    --text3:  #8490AA;
-    --on-acc: #0F1117;
+    --bg:     #0E1513;
+    --rule:   #6E827A;
+    --grid:   rgba(107,176,158,.08);
+    --surf:   #151E1C;
+    --surf2:  #1C2826;
+    --border: #2B3A36;
+    --text:   #E6EFEA;
+    --text2:  #A9B9B2;
+    --text3:  #8DA198;
+    --on-acc: #0E1513;
     --accent: #5B9A8A;
     --acc-lt: #1A2E2A;
     --acc-dk: #6BB09E;
@@ -603,7 +607,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
     --red-lt: #2A1414;
     --amber:  #D4943A;
     --amb-lt: #2A1F0E;
-    --sh:     0 1px 3px rgba(0,0,0,0.4),0 1px 2px rgba(0,0,0,0.3);
+    --sh:     none;
     --sh2:    0 8px 24px rgba(0,0,0,0.5);
     color-scheme: dark;
   }
@@ -765,7 +769,6 @@ input, select, textarea {
 
   /* Stats grid — 2 col on mobile */
   .stats { grid-template-columns: 1fr 1fr; }
-  .stats .stat:nth-child(3) { grid-column: 1 / -1; }
   .stat { padding: 12px 14px; }
   .stat-val { font-size: 22px; }
 
@@ -931,14 +934,14 @@ input, select, textarea {
 .rq-done{text-align:center;padding:16px;font-size:13px;color:var(--green);font-weight:600}
 
 /* ── REVIEW REMINDER BANNER ── */
-#review-banner{display:none;background:var(--amb-lt);border-bottom:1px solid #f0d5a0;
+#review-banner{display:none;background:var(--surf);border-bottom:1px solid var(--rule);
                padding:9px 18px;align-items:center;gap:10px;font-size:13px}
-.rb-text{flex:1;color:var(--amber);font-weight:600;font-size:13px}
-.rb-import{padding:6px 13px;background:var(--amber);color:#fff;border:none;
-            border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;
+.rb-text{flex:1;color:var(--text);font-weight:600;font-size:13px}
+.rb-import{padding:6px 13px;background:var(--text);color:var(--surf);border:none;
+            border-radius:4px;font-size:12px;font-weight:700;cursor:pointer;
             white-space:nowrap;transition:all .15s}
-.rb-import:hover{background:#a8621a}
-.rb-dismiss{font-size:12px;color:var(--amber);background:none;border:none;
+.rb-import:hover{background:var(--acc-dk)}
+.rb-dismiss{font-size:12px;color:var(--text2);background:none;border:none;
              cursor:pointer;text-decoration:underline;white-space:nowrap;font-weight:600}
 
 /* ── BUDGET RINGS ── */
@@ -992,6 +995,63 @@ input, select, textarea {
 .cg-got-it{width:100%;padding:13px;background:var(--accent);color:#fff;border:none;border-radius:11px;
             font-size:15px;font-weight:800;cursor:pointer;transition:all .15s;letter-spacing:-.02em}
 .cg-got-it:hover{background:var(--acc-dk)}
+
+/* ── KAKEIBO SKIN: notebook page, ink rules, week tally ── */
+.hdr{border-bottom:1.5px solid var(--rule);box-shadow:none}
+.tabs{border-bottom:1px solid var(--rule)}
+.card,.modal{border:1px solid var(--rule);box-shadow:none}
+.cur-wrap{border-radius:4px;border-color:var(--rule)}
+.m-btn{border-radius:4px;border-color:var(--rule)}
+.add-fab{border-radius:4px;box-shadow:none;border:1px solid var(--acc-dk)}
+.add-fab:hover{transform:none;box-shadow:none}
+.btn-save,.btn-cancel{border-radius:4px}
+.type-pill,.card-pill,.ob-card-tile{border-radius:4px}
+.chip{border-radius:3px}
+.stats{gap:0;margin-bottom:0;background:var(--surf);border:1px solid var(--rule);border-radius:var(--r);overflow:hidden}
+.stat{border:0;border-radius:0;box-shadow:none;background:transparent;border-right:1px solid var(--border);padding:12px 16px}
+.stat:last-child{border-right:0}
+.stat-val{font-size:22px;letter-spacing:-.02em}
+.stat-sub{display:none}
+.weeks{display:grid;grid-template-columns:repeat(var(--wk,5),1fr);background:var(--surf);border:1px solid var(--rule);border-top:0;border-radius:0 0 var(--r) var(--r);margin:-1px 0 14px}
+.wk{padding:8px 6px 10px;text-align:center;border-right:1px solid var(--border);min-width:0}
+.wk:last-child{border-right:0}
+.wk-n{font-size:10px;font-weight:800;letter-spacing:.08em;color:var(--text3)}
+.wk-amt{font-size:12px;font-weight:800;font-variant-numeric:tabular-nums;margin:2px 0 5px;white-space:nowrap}
+.wk-t{display:flex;flex-wrap:wrap;gap:3px 5px;justify-content:center;min-height:14px;align-items:center}
+.tg{position:relative;display:inline-flex;gap:2px;height:12px}
+.tg i{width:1.5px;height:12px;background:var(--text2)}
+.tg.five::after{content:'';position:absolute;left:-2px;right:-2px;top:5px;height:1.5px;background:var(--text2);transform:rotate(-24deg)}
+.wk.now{background:var(--acc-lt)}
+.wk.now .wk-n{color:var(--acc-dk)}
+.wk.now .tg i,.wk.now .tg.five::after{background:var(--acc-dk)}
+.wk.empty .wk-amt{color:var(--text3);font-weight:600}
+.tx{border:1px solid var(--rule);border-radius:0;box-shadow:none;margin-bottom:-1px}
+.tx:hover{box-shadow:none;background:var(--surf2)}
+.tx-ico,.cat-ico-tile{border-radius:4px}
+.ib{border-radius:4px}
+.day-group{margin-bottom:12px}
+.qa-sheet{border-radius:10px 10px 0 0}
+.sort-pill,.bv-toggle,.bv-btn,.cat-pill,.bs{border-radius:4px}
+.sort-pill{border-width:1px;border-color:var(--rule)}
+.bs{border-color:var(--rule)}
+.qa-title,.modal-title{letter-spacing:-.01em}
+@media (max-width:640px){
+  .stats{grid-template-columns:repeat(3,1fr)}
+  .stat{padding:10px 10px}.stat-val{font-size:17px}
+  .stat-lbl{font-size:9px}
+  .wk-amt{font-size:11px}
+}
+
+/* ledger lines: card panel becomes a quiet amount column */
+.tx{min-height:52px}
+.ins-card{border-radius:var(--r);box-shadow:none;border-color:var(--rule)}
+.tx-cbg{clip-path:none;width:34%;padding:0 14px;background:none!important;border-left:1px solid var(--border);box-shadow:none!important}
+.tx-cbg::after{display:none}
+.tx-cbg-lbl{display:none}
+.tx-cbg-amt{font-size:15px;font-weight:800;color:var(--text)!important}
+.tx-cbg-card-name{font-size:9px;opacity:.7;color:var(--text3)!important;margin-top:1px}
+.tx-cbg .a-inc-cbg,.tx-cbg .a-inc-cbg-apple{color:var(--green)!important}
+.tx[style*="box-shadow"]{box-shadow:none!important}
 </style>
 </head>
 <body>
@@ -1091,13 +1151,14 @@ input, select, textarea {
 
   <!-- FEED -->
   <div class="panel on" id="panel-feed">
-    <div style="display:flex;justify-content:flex-end;margin-bottom:6px" class="mobile-cur-row">
+    <div style="justify-content:flex-end;margin-bottom:6px" class="mobile-cur-row">
       <div class="cur-wrap" id="mobile-cur-wrap">
         <button class="cur-btn on" id="mob-btn-usd" onclick="setCurrency('USD')">$ USD</button>
         <button class="cur-btn"    id="mob-btn-gbp" onclick="setCurrency('GBP')">£ GBP</button>
       </div>
     </div>
     <div class="stats" id="feed-stats"></div>
+    <div class="weeks" id="feed-weeks"></div>
     <div class="card" id="feed-bars-card" style="padding:0">
       <div class="chead">
         <span class="ctitle">Budget Breakdown</span>
@@ -2211,13 +2272,37 @@ function deleteTx(id) {
 // ═══════════════════════════════════════════════
 // RENDER FEED
 // ═══════════════════════════════════════════════
+function renderWeeks(txns) {
+  const el = document.getElementById('feed-weeks'); if (!el) return;
+  const dim = new Date(vYear, vMonth+1, 0).getDate();
+  const n = dim > 28 ? 5 : 4;
+  const now = new Date();
+  const cur = (now.getMonth()===vMonth && now.getFullYear()===vYear) ? Math.min(Math.ceil(now.getDate()/7), n) : 0;
+  const wk = Array.from({length:n}, () => ({sum:0, cnt:0}));
+  txns.filter(t => t.type==='expense').forEach(t => {
+    const d = parseInt(String(t.date).slice(8,10), 10);
+    const w = wk[Math.min(Math.ceil(d/7), n) - 1];
+    if (w) { w.sum += t.amount; w.cnt++; }
+  });
+  const marks = c => {
+    let h = '', left = Math.min(c, 15);
+    while (left > 0) { const k = Math.min(left, 5); h += `<span class="tg${k===5?' five':''}">${'<i></i>'.repeat(k)}</span>`; left -= k; }
+    return h + (c > 15 ? `<span class="wk-amt" style="margin:0">+${c-15}</span>` : '');
+  };
+  el.style.setProperty('--wk', n);
+  el.innerHTML = wk.map((w,i) => `<div class="wk${i+1===cur?' now':''}${w.cnt?'':' empty'}">
+    <div class="wk-n">W${i+1}</div>
+    <div class="wk-amt">${w.cnt ? fmt(w.sum).replace(/\.\d\d$/,'') : '·'}</div>
+    <div class="wk-t">${marks(w.cnt)}</div></div>`).join('');
+}
+
 function renderFeed() {
   const txns = mTxns(vMonth, vYear);
   const inc = txns.filter(t=>t.type==='income').reduce((s,t)=>s+t.amount,0);
   const exp = txns.filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0);
   const bal = inc - exp;
   const firstRun = !S.transactions.length;
-  ['feed-stats','feed-bars-card','feed-sec','sort-bar'].forEach(id => { const el=document.getElementById(id); if (el) el.style.display = firstRun ? 'none' : ''; });
+  ['feed-stats','feed-weeks','feed-bars-card','feed-sec','sort-bar'].forEach(id => { const el=document.getElementById(id); if (el) el.style.display = firstRun ? 'none' : ''; });
 
   document.getElementById('feed-stats').innerHTML = `
     <div class="stat">
@@ -2235,6 +2320,8 @@ function renderFeed() {
       <div class="stat-val ${bal<0?'sv-red':'sv-grn'}">${fmt(bal)}</div>
       <div class="stat-sub">${inc>0?Math.round(bal/inc*100)+'% saved':'No income yet'}</div>
     </div>`;
+
+  renderWeeks(txns);
 
   // Budget bars
   const expByCat = {};
@@ -4515,18 +4602,18 @@ function refresh() {
     localStorage.setItem(NUDGE_KEY, now);
     const bar = document.createElement('div');
     bar.id = 'backup-nudge';
-    bar.style.cssText = `position:fixed;bottom:0;left:0;right:0;background:#1C2B4A;color:#e8eeff;
-      font-size:13px;padding:13px 18px;display:flex;align-items:center;gap:12px;
-      z-index:9999;box-shadow:0 -2px 16px rgba(0,0,0,.25);font-family:-apple-system,sans-serif`;
+    bar.style.cssText = `position:fixed;bottom:0;left:0;right:0;background:var(--surf);color:var(--text);
+      font-size:13px;padding:13px 18px calc(13px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:12px;
+      z-index:9999;border-top:1.5px solid var(--rule);font-family:inherit`;
     bar.innerHTML = `<span>${ic('save',18)}</span>
       <span style="flex:1">It's been a while — export a backup so you don't lose your data.</span>
       <button onclick="backupJSON();document.getElementById('backup-nudge').remove();
         localStorage.setItem('trace_last_backup',Date.now())"
-        style="background:#E8680A;border:none;color:#fff;padding:7px 14px;border-radius:7px;
+        style="background:var(--accent);border:none;color:var(--on-acc);padding:8px 14px;border-radius:4px;
         font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap">Export backup</button>
       <button onclick="document.getElementById('backup-nudge').remove()"
-        style="background:transparent;border:1px solid rgba(255,255,255,.2);color:#a8bfda;
-        padding:7px 10px;border-radius:7px;font-size:12px;cursor:pointer">Later</button>`;
+        style="background:transparent;border:1px solid var(--rule);color:var(--text2);
+        padding:8px 10px;border-radius:4px;font-size:12px;cursor:pointer">Later</button>`;
     document.body.appendChild(bar);
   }, 4000);
 })();
