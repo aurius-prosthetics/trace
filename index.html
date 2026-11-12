@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Trace — Expense Tracker</title>
 <link rel="manifest" href="manifest.json">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -22,7 +22,8 @@
   --border:  #E2E8F0;
   --text:    #18202C;
   --text2:   #5A6578;
-  --text3:   #9AA3B2;
+  --text3:   #627083;
+  --on-acc:  #FFFFFF;
   --accent:  #4A7C6E;
   --acc-lt:  #EAF2F0;
   --acc-dk:  #355C51;
@@ -43,6 +44,23 @@
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
      background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;min-height:100vh}
 
+/* focus + banner */
+.hint-touch{display:none}
+@media (pointer:coarse){.hint-mouse{display:none}.hint-touch{display:inline}
+  .m-btn,.qa-close,.cg-close{min-width:44px;min-height:44px}
+  .bv-btn,.sort-pill,.bs,.rb-dismiss,.rb-import{min-height:36px}}
+.first-run{padding:28px 22px;text-align:center}
+.first-run h2{font-size:18px;font-weight:800;letter-spacing:-.02em;margin-bottom:6px}
+.first-run p{font-size:13px;color:var(--text2);margin:0 auto 16px;max-width:32ch}
+.first-run .btn-save{flex:none;width:100%;max-width:280px}
+.first-run .bs{margin-top:10px}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.qa-amount:focus-visible,.qa-input:focus-visible,.fi:focus-visible,.bset-inp:focus-visible,.conv-inp:focus-visible{outline:none}
+.bn{display:none;background:var(--amb-lt);border-bottom:1px solid var(--border);padding:8px 16px;align-items:center;gap:8px;font-size:12px}
+.bn-msg{flex:1;color:var(--text);font-weight:600}
+.bn-btn{padding:6px 12px;min-height:32px;background:var(--text);color:var(--surf);border:none;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:4px;white-space:nowrap}
+.bn-x{padding:6px 8px;min-height:32px;background:none;border:1px solid var(--border);border-radius:6px;color:var(--text2);cursor:pointer;display:flex;align-items:center}
+
 /* ── HEADER ── */
 .hdr{background:var(--surf);border-bottom:1px solid var(--border);padding:env(safe-area-inset-top) 22px 0;
      display:flex;align-items:center;gap:12px;min-height:54px;height:calc(54px + env(safe-area-inset-top));
@@ -55,14 +73,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 .cur-wrap{display:flex;background:var(--bg);border:1px solid var(--border);border-radius:8px;overflow:hidden}
 .cur-btn{padding:5px 12px;font-size:12px;font-weight:700;letter-spacing:.01em;
          background:none;border:none;cursor:pointer;color:var(--text3);transition:all .15s}
-.cur-btn.on{background:var(--accent);color:#fff}
+.cur-btn.on{background:var(--accent);color:var(--on-acc)}
 .mnav{display:flex;align-items:center;gap:6px}
 .m-btn{width:26px;height:26px;background:none;border:1px solid var(--border);border-radius:6px;
        cursor:pointer;display:flex;align-items:center;justify-content:center;
        color:var(--text2);font-size:14px;transition:all .15s}
 .m-btn:hover{border-color:var(--accent);color:var(--accent)}
 .m-lbl{min-width:112px;text-align:center;font-size:13px;font-weight:600}
-.add-fab{padding:7px 16px;background:var(--accent);color:#fff;border:none;border-radius:20px;
+.add-fab{padding:7px 16px;background:var(--accent);color:var(--on-acc);border:none;border-radius:20px;
          font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;
          transition:all .2s;box-shadow:0 2px 8px rgba(74,124,110,.35);letter-spacing:-.01em}
 .add-fab:hover{background:var(--acc-dk);transform:translateY(-1px);box-shadow:0 4px 12px rgba(74,124,110,.4)}
@@ -328,7 +346,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
                   transition:opacity .22s ease,background .22s ease,backdrop-filter .22s ease,visibility 0s linear 0s}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 .qa-sheet{background:var(--surf);border-radius:24px 24px 0 0;width:100%;max-width:520px;
-          padding:0 0 34px;box-shadow:var(--sh2);
+          padding:0;box-shadow:var(--sh2);max-height:100dvh;overflow-y:auto;overscroll-behavior:contain;
           transform:translateY(40px);transition:transform .28s cubic-bezier(.4,0,.2,1)}
 .qa-overlay.open .qa-sheet{transform:translateY(0)}
 .qa-handle{width:36px;height:4px;background:var(--border);border-radius:99px;margin:12px auto 0}
@@ -339,17 +357,18 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 .qa-type-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:14px 22px 0}
 .type-pill{padding:10px;border:2px solid var(--border);border-radius:10px;font-size:13px;
            font-weight:700;cursor:pointer;background:none;text-align:center;transition:all .15s}
-.type-pill.on-exp{border-color:var(--red);background:var(--red-lt);color:var(--red)}
+.type-pill.on-exp{border-color:var(--accent);background:var(--acc-lt);color:var(--acc-dk)}
 .type-pill.on-inc{border-color:var(--green);background:var(--grn-lt);color:var(--green)}
 
 .qa-amount-wrap{padding:10px 22px 4px;text-align:center}
 .qa-amount-lbl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--text3);margin-bottom:6px}
 .qa-amt-row{display:flex;align-items:center;justify-content:center;gap:4px}
 .qa-sym{font-size:28px;font-weight:800;color:var(--text2)}
+.qa-amt-row{gap:2px}
 .qa-amount{font-size:42px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.04em;
            border:none;outline:none;background:transparent;text-align:center;
-           color:var(--text);width:200px;caret-color:var(--accent)}
-.qa-amount::placeholder{color:var(--border)}
+           color:var(--text);width:6ch;min-width:120px;max-width:60vw;field-sizing:content;caret-color:var(--accent)}
+.qa-amount::placeholder{color:var(--text3);opacity:.6}
 
 .qa-row{padding:6px 22px}
 .qa-lbl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;
@@ -383,8 +402,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
          cursor:pointer;padding:4px 0}
 .chk-row input{width:15px;height:15px;accent-color:var(--accent);cursor:pointer;flex-shrink:0}
 
-.qa-save-row{padding:14px 22px 0;display:flex;gap:8px}
-.btn-save{flex:1;padding:13px;background:var(--accent);color:#fff;border:none;border-radius:11px;
+.qa-save-row{padding:12px 22px calc(14px + env(safe-area-inset-bottom));display:flex;gap:8px;position:sticky;bottom:0;background:var(--surf);border-top:1px solid var(--border);margin-top:10px}
+.btn-save{flex:1;padding:13px;background:var(--accent);color:var(--on-acc);border:none;border-radius:11px;
           font-size:15px;font-weight:800;cursor:pointer;transition:all .15s;letter-spacing:-.02em}
 .btn-save:hover{background:var(--acc-dk)}
 .btn-save:active{transform:scale(.98)}
@@ -572,8 +591,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
     --surf2:  #232838;
     --border: #2E3447;
     --text:   #E8EEFF;
-    --text2:  #8A96B0;
-    --text3:  #4A5568;
+    --text2:  #A3AEC6;
+    --text3:  #8490AA;
+    --on-acc: #0F1117;
     --accent: #5B9A8A;
     --acc-lt: #1A2E2A;
     --acc-dk: #6BB09E;
@@ -826,8 +846,8 @@ input, select, textarea {
             opacity:1;visibility:visible;transition:opacity .3s ease,visibility 0s linear 0s}
 .ob-overlay.hidden{opacity:0;visibility:hidden;pointer-events:none;transition:opacity .3s ease,visibility 0s linear .3s}
 .ob-card{max-width:460px;width:100%;margin:auto}
-.ob-logo{font-size:28px;font-weight:900;letter-spacing:-.05em;display:flex;align-items:center;
-         gap:10px;margin-bottom:10px}
+.ob-logo{font-family:'Cormorant Garamond',Georgia,serif;font-size:44px;font-weight:700;letter-spacing:-.01em;line-height:1;
+         margin-bottom:10px}
 .ob-logo-dot{width:12px;height:12px;background:var(--accent);border-radius:50%}
 .ob-tagline{font-size:22px;font-weight:800;letter-spacing:-.03em;color:var(--text);margin-bottom:28px;line-height:1.3}
 .ob-bullets{display:flex;flex-direction:column;gap:14px;margin-bottom:36px}
@@ -985,9 +1005,9 @@ input, select, textarea {
     <button class="cur-btn"    id="btn-gbp" onclick="setCurrency('GBP')">£ GBP</button>
   </div>
   <div class="mnav">
-    <button class="m-btn" onclick="changeMonth(-1)">&#8249;</button>
+    <button class="m-btn" onclick="changeMonth(-1)" aria-label="Previous month">&#8249;</button>
     <span class="m-lbl" id="mLabel"></span>
-    <button class="m-btn" onclick="changeMonth(1)">&#8250;</button>
+    <button class="m-btn" onclick="changeMonth(1)" aria-label="Next month">&#8250;</button>
   </div>
   <div class="hdr-backup-btns" style="display:flex;gap:6px">
     <button title="Backup all data to a file" onclick="backupJSON()"
@@ -1013,11 +1033,11 @@ input, select, textarea {
 </header>
 
 <!-- ═══ RESTORE BANNER (shown when no data found) ═══ -->
-<div id="restore-banner" style="display:none;background:#FDF3E3;border-bottom:1px solid #F0D5A0;padding:8px 16px;align-items:center;gap:8px;font-size:12px">
-  <span data-ic="alert-triangle" style="color:#C47A2A"></span>
-  <span style="flex:1;color:#7A4F1A;font-weight:600">No data found — restore a backup to recover your transactions.</span>
-  <button onclick="triggerRestoreJSON()" style="padding:5px 11px;background:#C47A2A;color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:4px"><span data-ic="undo"></span> Restore</button>
-  <button onclick="document.getElementById('restore-banner').style.display='none'" style="padding:5px 8px;background:none;border:1px solid #C47A2A;border-radius:6px;font-size:11px;color:#7A4F1A;cursor:pointer;display:flex"><span data-ic="x"></span></button>
+<div id="restore-banner" class="bn" role="alert">
+  <span data-ic="alert-triangle" style="color:var(--amber)"></span>
+  <span class="bn-msg">Your saved transactions weren't found on this device. Restore a backup to get them back.</span>
+  <button class="bn-btn" onclick="triggerRestoreJSON()"><span data-ic="undo"></span> Restore</button>
+  <button class="bn-x" aria-label="Dismiss" onclick="document.getElementById('restore-banner').style.display='none'"><span data-ic="x"></span></button>
 </div>
 
 <!-- ═══ REVIEW REMINDER BANNER ═══ -->
@@ -1078,7 +1098,7 @@ input, select, textarea {
       </div>
     </div>
     <div class="stats" id="feed-stats"></div>
-    <div class="card" style="padding:0">
+    <div class="card" id="feed-bars-card" style="padding:0">
       <div class="chead">
         <span class="ctitle">Budget Breakdown</span>
         <div class="bv-toggle">
@@ -1090,7 +1110,7 @@ input, select, textarea {
     </div>
     <div id="review-queue-card" class="card" style="padding:0;display:none"></div>
 
-    <div class="sec-lbl" style="display:flex;align-items:center;justify-content:space-between">
+    <div class="sec-lbl" id="feed-sec" style="display:flex;align-items:center;justify-content:space-between">
       <span>Transactions</span>
       <div style="display:flex;align-items:center;gap:8px">
         <button class="bs" style="padding:4px 10px;font-size:11px;color:var(--accent);border-color:var(--accent);background:var(--acc-lt)"
@@ -1123,7 +1143,7 @@ input, select, textarea {
       <div class="cbody">
         <div id="sankey-wrap">
           <div id="sankey-canvas"><div class="sankey-empty"><div class="sankey-empty-ico" data-ic="coin"></div>Add transactions to see your cash flow</div></div>
-          <div id="sankey-zoom-hint">scroll to zoom · drag to pan</div>
+          <div id="sankey-zoom-hint"><span class="hint-mouse">scroll to zoom · drag to pan</span><span class="hint-touch">pinch to zoom · drag to pan</span></div>
         </div>
         <p class="note" style="margin-top:10px;text-align:center">
           Income sources → Budget → Spending categories. Scroll to zoom, drag to pan.
@@ -1275,50 +1295,47 @@ input, select, textarea {
 
 <!-- ═══ QUICK-ADD SHEET ═══ -->
 <div class="qa-overlay" id="qa-overlay" onclick="qaOverlayClick(event)">
-  <div class="qa-sheet" id="qa-sheet">
+  <div class="qa-sheet" id="qa-sheet" role="dialog" aria-modal="true" aria-label="Add transaction">
     <div class="qa-handle"></div>
     <div class="qa-title">
       <span id="qa-title-text">Add Transaction</span>
-      <button class="qa-close" onclick="closeQA()" data-ic="x"></button>
+      <button class="qa-close" onclick="closeQA()" data-ic="x" aria-label="Close"></button>
     </div>
     <div class="edit-note-lbl" id="edit-note-lbl"><span data-ic="edit" data-ic-size="12"></span> Editing existing transaction</div>
     <div class="qa-type-row">
       <button class="type-pill on-exp" id="tp-exp" onclick="setQAType('expense')">— Expense</button>
       <button class="type-pill"        id="tp-inc" onclick="setQAType('income')">+ Income</button>
     </div>
-    <div class="qa-row" style="padding-top:10px">
-      <div class="qa-lbl">Card</div>
-    </div>
-    <div class="card-pill-row" id="qa-card-grid"></div>
-
     <div class="qa-amount-wrap">
       <div class="qa-amount-lbl">Amount</div>
       <div class="qa-amt-row">
         <span class="qa-sym" id="qa-sym">$</span>
-        <input class="qa-amount" id="qa-amt" type="number" min="0" step="0.01" placeholder="0.00" inputmode="decimal">
+        <input class="qa-amount" id="qa-amt" type="number" min="0" step="0.01" placeholder="0.00" inputmode="decimal" aria-label="Amount">
       </div>
-    </div>
-    <div class="qa-row">
-      <div class="qa-lbl">Description</div>
-      <input class="qa-input" id="qa-desc" type="text" placeholder="What was this for?" autocomplete="off">
-    </div>
-    <div class="qa-row">
-      <div class="qa-lbl">Notes <span style="font-size:10px;opacity:.5;font-weight:500;text-transform:none;letter-spacing:0">— optional</span></div>
-      <input class="qa-input" id="qa-notes" type="text" placeholder="Any extra details…" autocomplete="off">
     </div>
     <div class="qa-row">
       <div class="qa-lbl">Category</div>
     </div>
     <div class="cat-grid" id="qa-cat-grid"></div>
+    <div class="qa-row">
+      <div class="qa-lbl">Description <span style="font-size:10px;opacity:.7;font-weight:500;text-transform:none;letter-spacing:0">optional</span></div>
+      <input class="qa-input" id="qa-desc" type="text" placeholder="What was this for?" autocomplete="off">
+    </div>
 
     <button class="more-toggle" id="more-toggle-btn" onclick="toggleMore()">
       More options <span class="arr">▾</span>
     </button>
     <div class="more-opts" id="more-opts">
+      <div class="qa-lbl" style="margin-top:4px">Card</div>
+      <div class="card-pill-row" id="qa-card-grid" style="padding:0 0 8px"></div>
       <div class="more-grid">
         <div class="fg">
           <label>Date</label>
           <input class="fi" type="date" id="qa-date">
+        </div>
+        <div class="fg">
+          <label>Notes</label>
+          <input class="fi" type="text" id="qa-notes" placeholder="Any extra details…" autocomplete="off">
         </div>
       </div>
       <label class="chk-row" style="margin-top:8px">
@@ -1334,18 +1351,17 @@ input, select, textarea {
 
     <div class="qa-save-row">
       <button class="btn-save" id="qa-save-btn" onclick="saveQA()">Save</button>
-      <button class="btn-cancel" onclick="closeQA()">Cancel</button>
     </div>
   </div>
 </div>
 
 <!-- ═══ TRANSACTION DETAIL SHEET ═══ -->
 <div class="qa-overlay" id="tx-detail-overlay" onclick="closeTxDetail(event)">
-  <div class="qa-sheet" id="tx-detail-sheet" style="max-height:80vh;overflow-y:auto">
+  <div class="qa-sheet" id="tx-detail-sheet" role="dialog" aria-modal="true" aria-label="Transaction details" style="max-height:80vh;overflow-y:auto">
     <div class="qa-handle"></div>
     <div class="qa-title">
       <span>Transaction</span>
-      <button class="qa-close" onclick="closeTxDetail()" data-ic="x"></button>
+      <button class="qa-close" onclick="closeTxDetail()" data-ic="x" aria-label="Close"></button>
     </div>
     <!-- header: icon + name + amount -->
     <div id="tdd-header" style="display:flex;align-items:center;gap:14px;padding:14px 22px 12px"></div>
@@ -1405,7 +1421,7 @@ input, select, textarea {
 
     <!-- Step 1: Welcome -->
     <div id="ob-step-1">
-      <div class="ob-logo"><div class="ob-logo-dot"></div>Trace</div>
+      <div class="ob-logo">Trace</div>
       <div class="ob-tagline">Your money.<br>Yours alone.</div>
       <div class="ob-bullets">
         <div class="ob-bullet"><span data-ic="wifi-off" data-ic-size="20" style="color:var(--accent)"></span> Runs completely offline</div>
@@ -1467,7 +1483,7 @@ input, select, textarea {
   <div class="cg-modal">
     <div class="cg-head">
       <span class="cg-title">How to export your transactions</span>
-      <button class="cg-close" onclick="closeCSVGuide()" data-ic="x"></button>
+      <button class="cg-close" onclick="closeCSVGuide()" data-ic="x" aria-label="Close"></button>
     </div>
     <div class="cg-tabs">
       <button class="cg-tab on" onclick="switchCSVTab('amex')">Amex</button>
@@ -1777,6 +1793,7 @@ const IDB = (() => {
 
 // persist — writes to IDB (durable) and localStorage (fast session cache)
 function persist() {
+  if (S.transactions.length) { try { localStorage.setItem('trace-had-data','1'); } catch(e) {} }
   const json = JSON.stringify(S);
   try { localStorage.setItem(STORE_KEY, json); } catch(e) {}
   IDB.set(STORE_KEY, json).catch(() => {});
@@ -2034,7 +2051,7 @@ function openQA(prefill) {
   document.getElementById('more-toggle-btn').classList.remove('open');
   setQAType('expense');
   buildQACardPills();
-  setQACard(S.onboardingCards?.[0] || 'amex');
+  setQACard(S.lastCard || 'none');
   buildCatGrid();
   document.getElementById('qa-overlay').classList.add('open');
   setTimeout(() => document.getElementById('qa-amt').focus(), 120);
@@ -2152,15 +2169,15 @@ document.getElementById('qa-recurring').addEventListener('change', function() {
 
 function saveQA() {
   const displayAmt = parseFloat(document.getElementById('qa-amt').value);
-  const desc   = document.getElementById('qa-desc').value.trim();
+  const descRaw = document.getElementById('qa-desc').value.trim();
   const date   = document.getElementById('qa-date').value || today();
   const notes  = document.getElementById('qa-notes').value.trim();
   const isRec  = document.getElementById('qa-recurring').checked;
   const freq   = document.getElementById('qa-freq').value;
 
   if (isNaN(displayAmt) || displayAmt <= 0) { toast('Enter a valid amount'); document.getElementById('qa-amt').focus(); return; }
-  if (!desc) { toast('Add a description'); document.getElementById('qa-desc').focus(); return; }
   if (!qaSelCat) { toast('Pick a category'); return; }
+  const desc = descRaw || qaSelCat;
 
   // Always store in USD regardless of display currency
   const amount = toUSD(displayAmt);
@@ -2181,6 +2198,7 @@ function saveQA() {
       toast(`${ic('check',14)} Saved`);
     }
   }
+  S.lastCard = qaCard;
   persist(); closeQA(); refresh();
 }
 
@@ -2198,6 +2216,8 @@ function renderFeed() {
   const inc = txns.filter(t=>t.type==='income').reduce((s,t)=>s+t.amount,0);
   const exp = txns.filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0);
   const bal = inc - exp;
+  const firstRun = !S.transactions.length;
+  ['feed-stats','feed-bars-card','feed-sec','sort-bar'].forEach(id => { const el=document.getElementById(id); if (el) el.style.display = firstRun ? 'none' : ''; });
 
   document.getElementById('feed-stats').innerHTML = `
     <div class="stat">
@@ -2212,7 +2232,7 @@ function renderFeed() {
     </div>
     <div class="stat">
       <div class="stat-lbl">Balance</div>
-      <div class="stat-val ${bal<0?'sv-red':'sv-acc'}">${fmt(bal)}</div>
+      <div class="stat-val ${bal<0?'sv-red':'sv-grn'}">${fmt(bal)}</div>
       <div class="stat-sub">${inc>0?Math.round(bal/inc*100)+'% saved':'No income yet'}</div>
     </div>`;
 
@@ -2262,6 +2282,16 @@ function renderFeed() {
   renderSortBar();
 
   // Transaction feed
+  if (firstRun) {
+    document.getElementById('feed-list').innerHTML = `<div class="card first-run">
+      <h2>Log your first expense</h2>
+      <p>Everything you add stays on this device. Nothing is uploaded.</p>
+      <button class="btn-save" onclick="openQA()">Add an expense</button>
+      <div><button class="bs" onclick="document.getElementById('csv-file-input').click()">Import a bank CSV</button>
+      <button class="bs" onclick="openCSVGuide()">How to export ›</button></div>
+    </div>`;
+    return;
+  }
   if (!txns.length) {
     document.getElementById('feed-list').innerHTML =
       `<div class="empty"><div class="empty-ico">${ic('clipboard',28)}</div><div class="empty-txt">No transactions yet — tap + Add to start</div></div>`;
@@ -4110,7 +4140,7 @@ function updateLastReviewIfAllDone() {
 // REVIEW REMINDER BANNER
 // ═══════════════════════════════════════════════
 function checkReviewReminder() {
-  if (!S.onboardingDone) return; // don't show during onboarding
+  if (!S.onboardingDone || !S.transactions.length) return; // nothing to review yet
   const banner = document.getElementById('review-banner');
   if (!banner) return;
   const freqMs = S.reviewFreqDays * 86400000;
@@ -4453,7 +4483,8 @@ function refresh() {
   buildCatGrid();
   maybeApplyRecurring();
   // Show restore banner if no data found
-  if (!S.transactions.length) {
+  let hadData = false; try { hadData = !!localStorage.getItem('trace-had-data'); } catch(e) {}
+  if (!S.transactions.length && hadData) {
     const banner = document.getElementById('restore-banner');
     if (banner) banner.style.display = 'flex';
   }
