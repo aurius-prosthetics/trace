@@ -1,66 +1,210 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-11-12T00:00:00Z",
+  "generatedAt": "2026-11-12T12:00:00Z",
   "title": "Design System: Trace",
   "extensions": {
     "colorMeta": {
-      "ledger-sage": { "role": "primary", "displayName": "Ledger Sage", "canonical": "#4A7C6E", "tonalRamp": ["#1B2F2A","#274439","#355C51","#4A7C6E","#6C9A8D","#93B8AD","#C3DAD3","#EAF2F0"] },
-      "paper": { "role": "neutral", "displayName": "Paper", "canonical": "#F2F4F7", "tonalRamp": ["#18202C","#5A6578","#9AA3B2","#C5CCD6","#E2E8F0","#EDF0F4","#F2F4F7","#FFFFFF"] },
-      "income-green": { "role": "secondary", "displayName": "Income Green", "canonical": "#2D7A52", "tonalRamp": ["#123322","#1B4D33","#2D7A52","#4E9972","#7BB899","#A7D2BC","#C9E6D7","#E5F4EE"] },
-      "overspend-red": { "role": "secondary", "displayName": "Overspend Red", "canonical": "#B84040", "tonalRamp": ["#3D1414","#6B2424","#B84040","#C96464","#D98C8C","#E7B3B3","#F2D3D3","#FAECEC"] },
-      "caution-amber": { "role": "secondary", "displayName": "Caution Amber", "canonical": "#C47A2A", "tonalRamp": ["#3F2610","#6B4116","#C47A2A","#D09550","#DDB27F","#E9CDA6","#F3E2C7","#FDF3E3"] }
+      "ledger-sage": {
+        "role": "primary",
+        "displayName": "Ledger Sage",
+        "canonical": "#4A7C6E",
+        "tonalRamp": [
+          "#1B2F2A",
+          "#274439",
+          "#355C51",
+          "#4A7C6E",
+          "#6C9A8D",
+          "#93B8AD",
+          "#C3DAD3",
+          "#EAF2F0"
+        ]
+      },
+      "paper": {
+        "role": "neutral",
+        "displayName": "Paper",
+        "canonical": "#F2F4F7",
+        "tonalRamp": [
+          "#18202C",
+          "#5A6578",
+          "#9AA3B2",
+          "#C5CCD6",
+          "#E2E8F0",
+          "#EDF0F4",
+          "#F2F4F7",
+          "#FFFFFF"
+        ]
+      },
+      "income-green": {
+        "role": "secondary",
+        "displayName": "Income Green",
+        "canonical": "#2D7A52",
+        "tonalRamp": [
+          "#123322",
+          "#1B4D33",
+          "#2D7A52",
+          "#4E9972",
+          "#7BB899",
+          "#A7D2BC",
+          "#C9E6D7",
+          "#E5F4EE"
+        ]
+      },
+      "overspend-red": {
+        "role": "secondary",
+        "displayName": "Overspend Red",
+        "canonical": "#B84040",
+        "tonalRamp": [
+          "#3D1414",
+          "#6B2424",
+          "#B84040",
+          "#C96464",
+          "#D98C8C",
+          "#E7B3B3",
+          "#F2D3D3",
+          "#FAECEC"
+        ]
+      },
+      "caution-amber": {
+        "role": "secondary",
+        "displayName": "Caution Amber",
+        "canonical": "#C47A2A",
+        "tonalRamp": [
+          "#3F2610",
+          "#6B4116",
+          "#C47A2A",
+          "#D09550",
+          "#DDB27F",
+          "#E9CDA6",
+          "#F3E2C7",
+          "#FDF3E3"
+        ]
+      }
     },
     "typographyMeta": {
-      "wordmark": { "displayName": "Wordmark", "purpose": "The Trace wordmark in the header only." },
-      "stat": { "displayName": "Stat", "purpose": "Headline money figures, tabular." },
-      "label": { "displayName": "Label", "purpose": "Tracked uppercase captions." }
+      "wordmark": {
+        "displayName": "Wordmark",
+        "purpose": "The Trace wordmark in the header only."
+      },
+      "stat": {
+        "displayName": "Stat",
+        "purpose": "Headline money figures, tabular."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Tracked uppercase captions."
+      }
     },
     "shadows": [
-      { "name": "rest", "value": "0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)", "purpose": "Cards, rows, header." },
-      { "name": "lift", "value": "0 8px 24px rgba(0,0,0,0.10)", "purpose": "Sheets, modals, card tiles." },
-      { "name": "add-glow", "value": "0 2px 8px rgba(74,124,110,.35)", "purpose": "Header add button." }
+      {
+        "name": "sheet",
+        "value": "0 8px 24px rgba(0,0,0,0.10)",
+        "purpose": "Bottom sheets and modals only."
+      }
     ],
     "motion": [
-      { "name": "ease-standard", "value": "cubic-bezier(.4,0,.2,1)", "purpose": "Row entrance (.3s) and progress fills (.5s)." },
-      { "name": "state", "value": ".15s", "purpose": "Hover, focus and press transitions." }
+      {
+        "name": "ease-standard",
+        "value": "cubic-bezier(.4,0,.2,1)",
+        "purpose": "Row entrance (.3s) and progress fills (.5s)."
+      },
+      {
+        "name": "state",
+        "value": ".15s",
+        "purpose": "Hover, focus and press transitions."
+      }
     ],
     "breakpoints": [
-      { "name": "mobile", "value": "640px" },
-      { "name": "narrow", "value": "420px" }
+      {
+        "name": "mobile",
+        "value": "640px"
+      },
+      {
+        "name": "narrow",
+        "value": "420px"
+      }
     ]
   },
   "components": [
-    { "name": "Primary Button", "kind": "button", "refersTo": "button-primary", "description": "Main form action (Save).",
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Main form action (Save).",
       "html": "<button class=\"ds-btn\">Save</button>",
-      "css": ".ds-btn{padding:13px 28px;background:var(--accent,#4A7C6E);color:#fff;border:none;border-radius:11px;font:800 15px -apple-system,system-ui,sans-serif;letter-spacing:-.02em;cursor:pointer;transition:all .15s}.ds-btn:hover{background:var(--acc-dk,#355C51)}.ds-btn:active{transform:scale(.98)}.ds-btn:focus-visible{outline:2px solid var(--accent,#4A7C6E);outline-offset:2px}" },
-    { "name": "Add Pill", "kind": "button", "refersTo": "button-add", "description": "Header add-transaction button.",
-      "html": "<button class=\"ds-add\">+ Add</button>",
-      "css": ".ds-add{padding:7px 16px;background:var(--accent,#4A7C6E);color:#fff;border:none;border-radius:20px;font:700 13px -apple-system,system-ui,sans-serif;cursor:pointer;box-shadow:0 2px 8px rgba(74,124,110,.35);transition:all .2s}.ds-add:hover{background:var(--acc-dk,#355C51);transform:translateY(-1px)}.ds-add:focus-visible{outline:2px solid var(--accent,#4A7C6E);outline-offset:2px}" },
-    { "name": "Text Field", "kind": "input", "refersTo": "input", "description": "Form input with sage focus.",
+      "css": ".ds-btn{padding:13px 28px;background:var(--accent,#4A7C6E);color:#fff;border:none;border-radius:4px;font:800 15px -apple-system,system-ui,sans-serif;letter-spacing:-.02em;cursor:pointer;transition:all .15s}.ds-btn:hover{background:var(--acc-dk,#355C51)}.ds-btn:active{transform:scale(.98)}.ds-btn:focus-visible{outline:2px solid var(--accent,#4A7C6E);outline-offset:2px}"
+    },
+    {
+      "name": "Text Field",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Form input with sage focus.",
       "html": "<input class=\"ds-fi\" placeholder=\"Description\">",
-      "css": ".ds-fi{padding:9px 11px;border:1.5px solid var(--border,#E2E8F0);border-radius:7px;font:14px -apple-system,system-ui,sans-serif;color:var(--text,#18202C);background:var(--surf2,#F8F9FB);outline:none;width:100%;transition:all .15s}.ds-fi:focus{border-color:var(--accent,#4A7C6E);background:var(--surf,#fff)}" },
-    { "name": "Category Chip", "kind": "chip", "refersTo": "chip", "description": "Pill tag on transaction rows.",
+      "css": ".ds-fi{padding:9px 11px;border:1.5px solid var(--border,#E2E8F0);border-radius:4px;font:14px -apple-system,system-ui,sans-serif;color:var(--text,#18202C);background:var(--surf2,#F8F9FB);outline:none;width:100%;transition:all .15s}.ds-fi:focus{border-color:var(--accent,#4A7C6E);background:var(--surf,#fff)}"
+    },
+    {
+      "name": "Category Chip",
+      "kind": "chip",
+      "refersTo": "chip",
+      "description": "Pill tag on transaction rows.",
       "html": "<span class=\"ds-chip\">Food &amp; Drinks</span>",
-      "css": ".ds-chip{font:600 10px -apple-system,system-ui,sans-serif;padding:2px 7px;border-radius:99px;border:1px solid var(--border,#E2E8F0);background:var(--bg,#F2F4F7);color:var(--text2,#5A6578)}" },
-    { "name": "Stat Tile", "kind": "card", "refersTo": "stat-tile", "description": "Headline figure with caption.",
-      "html": "<div class=\"ds-stat\"><div class=\"ds-lbl\">Spent</div><div class=\"ds-val\">$1,284</div></div>",
-      "css": ".ds-stat{background:var(--surf,#fff);border:1px solid var(--border,#E2E8F0);border-radius:14px;padding:15px 18px;box-shadow:0 1px 3px rgba(0,0,0,.06)}.ds-lbl{font:800 10px -apple-system,system-ui,sans-serif;text-transform:uppercase;letter-spacing:.09em;color:var(--text3,#9AA3B2);margin-bottom:4px}.ds-val{font:800 26px -apple-system,system-ui,sans-serif;font-variant-numeric:tabular-nums;letter-spacing:-.03em;color:var(--text,#18202C)}" },
-    { "name": "Transaction Row", "kind": "custom", "refersTo": "transaction-row", "description": "Signature list row.",
-      "html": "<div class=\"ds-tx\"><div class=\"ds-ico\"></div><div class=\"ds-mid\"><div class=\"ds-name\">Corner Cafe</div><span class=\"ds-chip2\">Food &amp; Drinks</span></div><div class=\"ds-amt\">$6.40</div></div>",
-      "css": ".ds-tx{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--surf,#fff);border:1px solid var(--border,#E2E8F0);border-radius:10px;box-shadow:0 1px 3px rgba(0,0,0,.06)}.ds-ico{width:36px;height:36px;border-radius:10px;background:var(--acc-lt,#EAF2F0)}.ds-mid{flex:1;min-width:0}.ds-name{font:600 13px -apple-system,system-ui,sans-serif;color:var(--text,#18202C)}.ds-chip2{font:600 10px -apple-system,system-ui,sans-serif;padding:2px 7px;border-radius:99px;border:1px solid var(--border,#E2E8F0);background:var(--bg,#F2F4F7);color:var(--text2,#5A6578)}.ds-amt{font:800 14px -apple-system,system-ui,sans-serif;font-variant-numeric:tabular-nums;color:var(--text,#18202C)}" }
+      "css": ".ds-chip{font:600 10px -apple-system,system-ui,sans-serif;padding:2px 7px;border-radius:4px;border:1px solid var(--border,#E2E8F0);background:var(--bg,#F2F4F7);color:var(--text2,#5A6578)}"
+    },
+    {
+      "name": "Week Tally",
+      "kind": "custom",
+      "refersTo": "week-tally",
+      "description": "Weekly spend with entry tally marks.",
+      "html": "<div class=\"ds-wk\"><div class=\"ds-n\">W2</div><div class=\"ds-a\">$88</div><div class=\"ds-t\"><i></i><i></i><i></i><i></i></div></div>",
+      "css": ".ds-wk{display:inline-block;min-width:72px;padding:8px 6px;text-align:center;background:var(--acc-lt,#EAF2F0);border:1px solid var(--rule,#27312E)}.ds-n{font:800 10px system-ui;letter-spacing:.08em;color:var(--acc-dk,#355C51)}.ds-a{font:800 12px system-ui;font-variant-numeric:tabular-nums;margin:2px 0 5px}.ds-t{display:flex;gap:2px;justify-content:center}.ds-t i{width:1.5px;height:12px;background:var(--acc-dk,#355C51)}"
+    }
   ],
   "narrative": {
-    "northStar": "The Private Ledger",
-    "overview": "Trace looks like a personal account book kept by someone careful: quiet paper-toned surfaces, hairline rules, figures aligned in tabular columns, and a single muted green used the way a ledger uses ink. Nothing performs. The interface stays out of the way of a task that happens in seconds, usually on a phone with one thumb.",
-    "keyCharacteristics": ["Flat, hairline-bordered surfaces; depth only for things that float.", "One accent (Ledger Sage); semantic green, red and amber appear only to mean something.", "Money in heavy, tight, tabular numerals.", "System sans for the whole app; one serif moment, the wordmark.", "Every color is a CSS variable with a dark-mode override."],
-    "rules": [
-      { "name": "The One Ink Rule", "body": "Ledger Sage is the only brand accent. Green, red and amber are semantic and never decorate.", "section": "colors" },
-      { "name": "The Variable Rule", "body": "No hex in component CSS or chart configs. Read variables at render time so both themes work.", "section": "colors" },
-      { "name": "The Tabular Rule", "body": "Every amount uses font-variant-numeric: tabular-nums so columns of money align.", "section": "typography" },
-      { "name": "The One Serif Rule", "body": "Cormorant appears only in the wordmark.", "section": "typography" },
-      { "name": "The Flat-At-Rest Rule", "body": "If it doesn't float over content, it has a border, not a shadow.", "section": "elevation" }
+    "northStar": "The Kakeibo Notebook",
+    "overview": "Trace is the screen version of a Japanese household-budget notebook: a graph-paper page you fill in, ruled in ink, with the month tallied by week. Content lives on white pages with 1px ink rules and small corners; no soft shadows.",
+    "keyCharacteristics": [
+      "Graph-paper ground with white pages and ink-colored hairlines.",
+      "Ledger Sage is the only accent; green, red and amber are semantic.",
+      "Summary strip plus week tally replaces the three-tile hero metrics.",
+      "Square-ish corners (4-6px); depth only for sheets and the FAB.",
+      "Tabular numerals; system sans throughout; serif only for the wordmark."
     ],
-    "dos": ["Do use the CSS variables for every color, in both themes, including chart configs.", "Do set money in tabular, heavy numerals.", "Do use Ledger Sage for the single primary action on a screen.", "Do keep tap targets thumb-sized on mobile and respect safe areas.", "Do honor prefers-reduced-motion (already global)."],
-    "donts": ["Don't hardcode hex in new CSS.", "Don't add a second brand accent or use red/green/amber decoratively.", "Don't use shadows on resting surfaces.", "Don't introduce another typeface, or use the serif outside the wordmark.", "Don't use emoji as UI icons; the app uses its own SVG icon set."]
+    "rules": [
+      {
+        "name": "The One Ink Rule",
+        "body": "Ledger Sage is the only brand accent.",
+        "section": "colors"
+      },
+      {
+        "name": "The Variable Rule",
+        "body": "No hex in component CSS or charts; read variables at render time.",
+        "section": "colors"
+      },
+      {
+        "name": "The Tabular Rule",
+        "body": "Amounts use font-variant-numeric: tabular-nums.",
+        "section": "typography"
+      },
+      {
+        "name": "The One Serif Rule",
+        "body": "Cormorant appears only in the wordmark.",
+        "section": "typography"
+      },
+      {
+        "name": "The Ink-Not-Shadow Rule",
+        "body": "If it doesn't float over content, it gets a rule, not a shadow.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do use variables for every color in both themes.",
+      "Do keep money in tabular numerals and rows square so they stack.",
+      "Do show state by form as well as color (tally marks, struck rows), not color alone."
+    ],
+    "donts": [
+      "Don't reintroduce three separate hero-metric tiles or soft-shadow rounded cards.",
+      "Don't add a second accent or use red, green or amber decoratively.",
+      "Don't use emoji as UI icons or the serif outside the wordmark.",
+      "Don't hardcode hex in new CSS."
+    ]
   }
 }
