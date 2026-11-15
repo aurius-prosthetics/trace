@@ -1045,11 +1045,15 @@ input, select, textarea {
 /* ledger lines: card panel becomes a quiet amount column */
 .tx{min-height:52px}
 .ins-card{border-radius:var(--r);box-shadow:none;border-color:var(--rule)}
-.tx-cbg{clip-path:none;width:34%;padding:0 14px;background:none!important;border-left:1px solid var(--border);box-shadow:none!important}
+.tx-cbg{clip-path:none!important;width:38%!important;padding:0 12px;background:color-mix(in srgb,var(--cc,#9AA3B2) 30%,var(--surf))!important;border-left:1px solid var(--border);border-right:10px solid var(--cc,#9AA3B2);box-shadow:none!important}
 .tx-cbg::after{display:none}
 .tx-cbg-lbl{display:none}
 .tx-cbg-amt{font-size:15px;font-weight:800;color:var(--text)!important}
-.tx-cbg-card-name{font-size:9px;opacity:.7;color:var(--text3)!important;margin-top:1px}
+.tx-cbg-card-name{font-size:10px;font-weight:700;opacity:1;color:var(--text)!important;margin-top:2px;display:flex;align-items:center;gap:5px;letter-spacing:.02em;text-transform:none}
+.cdot{width:10px;height:10px;border-radius:50%;background:var(--cc,#9AA3B2);border:1px solid var(--rule);flex:none}
+.card-pill{border-left:6px solid var(--cc,var(--border))}
+.card-pill.need{outline:2px solid var(--red);outline-offset:2px}
+.always-row{padding:4px 22px 6px}
 .tx-cbg .a-inc-cbg,.tx-cbg .a-inc-cbg-apple{color:var(--green)!important}
 .tx[style*="box-shadow"]{box-shadow:none!important}
 </style>
@@ -1374,6 +1378,9 @@ input, select, textarea {
         <input class="qa-amount" id="qa-amt" type="number" min="0" step="0.01" placeholder="0.00" inputmode="decimal" aria-label="Amount">
       </div>
     </div>
+    <div class="qa-row" style="padding-top:10px"><div class="qa-lbl">Card <span style="text-transform:none;letter-spacing:0;font-weight:500">required</span></div></div>
+    <div class="card-pill-row" id="qa-card-grid" style="padding-top:0"></div>
+    <label class="chk-row always-row"><input type="checkbox" id="qa-always"> Always use this card</label>
     <div class="qa-row">
       <div class="qa-lbl">Category</div>
     </div>
@@ -1387,8 +1394,6 @@ input, select, textarea {
       More options <span class="arr">▾</span>
     </button>
     <div class="more-opts" id="more-opts">
-      <div class="qa-lbl" style="margin-top:4px">Card</div>
-      <div class="card-pill-row" id="qa-card-grid" style="padding:0 0 8px"></div>
       <div class="more-grid">
         <div class="fg">
           <label>Date</label>
@@ -2060,6 +2065,7 @@ function selectCat(c) {
 
 function setQACard(c) {
   qaCard = c;
+  document.querySelectorAll('#qa-card-grid .card-pill.need').forEach(el => el.classList.remove('need'));
   document.querySelectorAll('#qa-card-grid .card-pill').forEach(el => {
     const k = el.dataset.card;
     const info = CARDS[k] || CARDS.none;
@@ -2087,7 +2093,7 @@ function buildQACardPills() {
   const keys = (S.onboardingCards && S.onboardingCards.length) ? S.onboardingCards : ['amex','apple','chase','none'];
   grid.innerHTML = keys.map(k => {
     const info = CARDS[k] || CARDS.none;
-    return `<button class="card-pill" data-card="${k}" onclick="setQACard('${k}')">
+    return `<button class="card-pill" data-card="${k}" style="--cc:${info.glowColor||'#9AA3B2'}" onclick="setQACard('${k}')">
       <span class="cp-logo">${ic('card',15)}</span>${info.short}
     </button>`;
   }).join('');
@@ -2112,7 +2118,8 @@ function openQA(prefill) {
   document.getElementById('more-toggle-btn').classList.remove('open');
   setQAType('expense');
   buildQACardPills();
-  setQACard(S.lastCard || 'none');
+  setQACard(S.alwaysCard || '');
+  document.getElementById('qa-always').checked = !!S.alwaysCard;
   buildCatGrid();
   document.getElementById('qa-overlay').classList.add('open');
   setTimeout(() => document.getElementById('qa-amt').focus(), 120);
@@ -2133,6 +2140,7 @@ function openQAEdit(id) {
   document.getElementById('qa-date').value = tx.date;
   buildQACardPills();
   setQACard(tx.card || 'none');
+  document.getElementById('qa-always').checked = !!S.alwaysCard && S.alwaysCard === (tx.card || 'none');
   document.getElementById('qa-notes').value = tx.notes || '';
   document.getElementById('qa-recurring').checked = false;
   document.getElementById('qa-freq-wrap').style.display = 'none';
@@ -2237,6 +2245,11 @@ function saveQA() {
   const freq   = document.getElementById('qa-freq').value;
 
   if (isNaN(displayAmt) || displayAmt <= 0) { toast('Enter a valid amount'); document.getElementById('qa-amt').focus(); return; }
+  if (!qaCard) {
+    toast('Pick a card first');
+    const g = document.getElementById('qa-card-grid'); g.querySelectorAll('.card-pill').forEach(b => b.classList.add('need'));
+    g.scrollIntoView({block:'center',behavior:'smooth'}); return;
+  }
   if (!qaSelCat) { toast('Pick a category'); return; }
   const desc = descRaw || qaSelCat;
 
@@ -2259,7 +2272,8 @@ function saveQA() {
       toast(`${ic('check',14)} Saved`);
     }
   }
-  S.lastCard = qaCard;
+  if (document.getElementById('qa-always').checked) S.alwaysCard = qaCard;
+  else if (!editId) S.alwaysCard = null;
   persist(); closeQA(); refresh();
 }
 
@@ -2695,10 +2709,10 @@ function txRow(t) {
        onclick="openTxDetail('${t.id}')">
 
     <!-- ── Diagonal card-themed right half ── -->
-    <div class="tx-cbg tx-cbg-card${metalClass}" style="clip-path:${clipPath};width:100%;background:${cardInfo.gradient||'linear-gradient(135deg,#4A5568,#718096)'}">
+    <div class="tx-cbg tx-cbg-card" style="--cc:${glowColor}">
       <div class="tx-cbg-lbl" style="color:${cardInfo.textColor||'#fff'}">${isIncome ? 'received' : 'charged'}</div>
-      <div class="tx-cbg-amt ${amtColorClass}" style="color:${cardInfo.textColor||'#fff'}">${isIncome ? '+' : '-'}${fmt(t.amount)}</div>
-      <div class="tx-cbg-card-name" style="color:${cardInfo.textColor||'#fff'}">${cardInfo.label}</div>
+      <div class="tx-cbg-amt ${amtColorClass}">${isIncome ? '+' : '-'}${fmt(t.amount)}</div>
+      <div class="tx-cbg-card-name"><span class="cdot"></span>${cardInfo.short||cardInfo.label}</div>
     </div>
 
     <!-- ── Left content ── -->
